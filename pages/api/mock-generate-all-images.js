@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     console.log('🎨 模拟批量生成图片:', {
       frameCount: frames.length,
       hasReference: !!referenceImage,
-      characters: characters?.length || 0
+      hasPrompts: frames.some(f => f.prompt || f.jimengPrompt)
     });
 
     // 模拟批量处理时间
@@ -60,6 +60,8 @@ export default async function handler(req, res) {
       return {
         sequence: frame.sequence,
         imageUrl: imageUrl,
+        prompt: frame.prompt || frame.jimengPrompt,
+        chineseDescription: frame.chineseDescription || frame.displayDescription,
         error: null // 模拟成功生成
       };
     });

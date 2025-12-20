@@ -201,49 +201,67 @@ const StoryboardDisplay = ({
 
                   {/* 信息区域 */}
                   <div className="space-y-4">
-                    {/* 分镜描述 */}
+                    {/* 中文场景描述 */}
                     <div className="p-4 bg-cyan-500/10 rounded-lg border border-cyan-500/30 backdrop-blur-sm">
                       <h4 className="text-sm font-semibold text-cyan-300 mb-2 font-['Orbitron'] flex items-center gap-2">
                         <span>📋</span>
-                        <span>场景描述</span>
+                        <span>中文描述</span>
+                        {frame.frameType && (
+                          <span className="text-xs bg-cyan-500/20 px-2 py-1 rounded">
+                            {frame.frameType}
+                          </span>
+                        )}
                       </h4>
                       <p className="text-sm text-cyan-100/90 leading-relaxed font-['Rajdhani']">
-                        {frame.description}
+                        {frame.displayDescription || frame.chineseDescription || frame.description || '暂无描述'}
                       </p>
+                    </div>
+
+                    {/* AI提示词区域 */}
+                    <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/30 backdrop-blur-sm">
+                      <h4 className="text-sm font-semibold text-purple-300 mb-2 font-['Orbitron'] flex items-center gap-2">
+                        <span>🤖</span>
+                        <span>即梦提示词</span>
+                      </h4>
+                      <div className="bg-gray-900/50 p-3 rounded border border-purple-500/20 max-h-32 overflow-y-auto">
+                        <code className="text-xs text-purple-100/90 font-mono leading-relaxed break-all">
+                          {frame.prompt || frame.jimengPrompt || '等待AI分析生成...'}
+                        </code>
+                      </div>
                     </div>
 
                     {/* 元数据网格 */}
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 bg-purple-500/10 rounded border border-purple-500/30 backdrop-blur-sm">
-                        <span className="text-xs font-semibold text-purple-300 font-['Orbitron'] flex items-center gap-1">
-                          <span>👥</span>角色
-                        </span>
-                        <p className="text-xs text-purple-100/80 mt-1 font-['Rajdhani']">
-                          {frame.characters?.join(', ') || '无'}
-                        </p>
-                      </div>
                       <div className="p-3 bg-green-500/10 rounded border border-green-500/30 backdrop-blur-sm">
                         <span className="text-xs font-semibold text-green-300 font-['Orbitron'] flex items-center gap-1">
-                          <span>😊</span>情绪
+                          <span>🎬</span>场次
                         </span>
                         <p className="text-xs text-green-100/80 mt-1 font-['Rajdhani']">
-                          {frame.emotion || '中性'}
+                          第{frame.sceneIndex || frame.sequence}场
                         </p>
                       </div>
                       <div className="p-3 bg-blue-500/10 rounded border border-blue-500/30 backdrop-blur-sm">
                         <span className="text-xs font-semibold text-blue-300 font-['Orbitron'] flex items-center gap-1">
-                          <span>📹</span>镜头
+                          <span>🎞️</span>类型
                         </span>
                         <p className="text-xs text-blue-100/80 mt-1 font-['Rajdhani']">
-                          {frame.camera_angle || '正常'}
+                          {frame.frameType || '标准帧'}
                         </p>
                       </div>
                       <div className="p-3 bg-yellow-500/10 rounded border border-yellow-500/30 backdrop-blur-sm">
                         <span className="text-xs font-semibold text-yellow-300 font-['Orbitron'] flex items-center gap-1">
-                          <span>⭐</span>关键
+                          <span>📹</span>镜头
                         </span>
                         <p className="text-xs text-yellow-100/80 mt-1 font-['Rajdhani']">
-                          {frame.key_moment || '无'}
+                          {frame.camera_angle || '标准镜头'}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-pink-500/10 rounded border border-pink-500/30 backdrop-blur-sm">
+                        <span className="text-xs font-semibold text-pink-300 font-['Orbitron'] flex items-center gap-1">
+                          <span>😊</span>情绪
+                        </span>
+                        <p className="text-xs text-pink-100/80 mt-1 font-['Rajdhani']">
+                          {frame.emotion || '中性'}
                         </p>
                       </div>
                     </div>

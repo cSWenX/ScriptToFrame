@@ -3,6 +3,7 @@ import Head from 'next/head';
 import ScriptInput from '../components/ScriptInput';
 import ControlPanel from '../components/ControlPanel';
 import StoryboardDisplay from '../components/StoryboardDisplay';
+import { getApiEndpoint } from '../config/api-config';
 
 /**
  * ScriptToFrame 主页面
@@ -27,7 +28,7 @@ export default function Home() {
   };
 
   /**
-   * AI分析剧本
+   * AI智能分析剧本 (新4步工作流)
    */
   const handleAnalyzeScript = async (config) => {
     if (!script || !scriptValid) {
@@ -38,9 +39,14 @@ export default function Home() {
     setIsAnalyzing(true);
     setCurrentConfig(config);
 
+    // 清除之前的分析结果
+    setAnalysisResult(null);
+    setFrames([]);
+    setFirstFrameData(null);
+
     try {
-      // 临时使用模拟API，Claude代理SSL问题解决后可切换回 '/api/analyze-script'
-      const apiEndpoint = '/api/mock-analyze-script'; // 可改回 '/api/analyze-script'
+      // 使用配置的智能分析API端点
+      const apiEndpoint = getApiEndpoint('intelligentAnalyze');
 
       const response = await fetch(apiEndpoint, {
         method: 'POST',
@@ -49,7 +55,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           script,
-          frameCount: config.frameCount,
+          sceneCount: config.frameCount, // 改为sceneCount
           style: config.style,
           genre: config.genre
         }),
@@ -59,28 +65,36 @@ export default function Home() {
 
       if (result.success) {
         setAnalysisResult(result.data);
-        // 初始化分镜框架
+        // 新的框架结构包含完整提示词和中文描述
         const frameStructure = result.data.storyboard_frames.map(frame => ({
           ...frame,
           id: `frame_${frame.sequence}`,
+          // 新增字段支持
+          displayDescription: frame.chineseDescription,
+          prompt: frame.jimengPrompt,
           isGenerating: false,
           imageUrl: null,
           error: null
         }));
         setFrames(frameStructure);
+
+        console.log(`✅ 智能分析完成，生成${frameStructure.length}个关键帧`);
       } else {
-        alert(`分析失败: ${result.error}`);
+        alert(`智能分析失败: ${result.error}`);
+        if (result.failedStep) {
+          console.error('失败步骤:', result.failedStep);
+        }
       }
     } catch (error) {
-      console.error('分析失败:', error);
-      alert('分析失败，请检查网络连接');
+      console.error('智能分析网络错误:', error);
+      alert('智能分析失败，请检查网络连接和API配置');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
   /**
-   * 生成第一张图
+   * 生成第一张图 (新版本支持即梦提示词)
    */
   const handleGenerateFirstFrame = async (config) => {
     if (!analysisResult || !frames.length) {
@@ -93,17 +107,28 @@ export default function Home() {
     try {
       const firstFrame = frames[0];
 
-      // 临时使用模拟API
-      const response = await fetch('/api/mock-generate-first-image', {
+      // 检查是否有提示词
+      if (!firstFrame.prompt && !firstFrame.jimengPrompt) {
+        alert('请先完成AI智能分析，生成提示词');
+        setIsGeneratingFirst(false);
+        return;
+      }
+
+      // 使用配置的图片生成API端点
+      const response = await fetch(getApiEndpoint('generateFirstImage'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          // 新的数据结构
           frame: firstFrame,
-          characters: analysisResult.script_analysis.characters,
+          prompt: firstFrame.prompt || firstFrame.jimengPrompt,
+          chineseDescription: firstFrame.displayDescription || firstFrame.chineseDescription,
           style: config.style,
-          config: config
+          config: config,
+          // 兼容性字段
+          characters: [] // 不再需要，但保持兼容性
         }),
       });
 
@@ -138,11 +163,19 @@ export default function Home() {
   };
 
   /**
-   * 生成所有分镜图
+   * 生成所有分镜图 (新版本：智能检测是否需要先分析)
    */
   const handleGenerateAllFrames = async (config) => {
-    if (!firstFrameData) {
-      alert('请先生成第一张图');
+    // 智能检测：如果没有提示词，先执行分析
+    if (!analysisResult || !frames.length) {
+      alert('请先进行AI智能分析');
+      return;
+    }
+
+    // 检查是否有有效的提示词
+    const hasValidPrompts = frames.some(frame => frame.prompt || frame.jimengPrompt);
+    if (!hasValidPrompts) {
+      alert('请先完成AI智能分析，生成提示词');
       return;
     }
 
@@ -156,17 +189,18 @@ export default function Home() {
         )
       );
 
-      // 临时使用模拟API
-      const response = await fetch('/api/mock-generate-all-images', {
+      // 使用配置的批量生成API端点
+      const response = await fetch(getApiEndpoint('generateAllImages'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          frames: frames.filter((_, index) => index > 0), // 排除第一帧
-          referenceImage: firstFrameData.imageUrl,
-          characters: analysisResult.script_analysis.characters,
-          config: config
+          frames: frames, // 发送所有帧（API内部处理）
+          referenceImage: firstFrameData?.imageUrl || null,
+          config: config,
+          // 兼容性字段
+          characters: [] // 不再需要，但保持兼容性
         }),
       });
 
@@ -175,9 +209,7 @@ export default function Home() {
       if (result.success) {
         // 更新所有帧的结果
         setFrames(prevFrames =>
-          prevFrames.map((frame, index) => {
-            if (index === 0) return frame; // 第一帧不变
-
+          prevFrames.map((frame) => {
             const generatedFrame = result.data.find(f => f.sequence === frame.sequence);
             if (generatedFrame) {
               return {
@@ -190,6 +222,8 @@ export default function Home() {
             return { ...frame, isGenerating: false };
           })
         );
+
+        console.log(`✅ 成功生成${result.data.length}张分镜图`);
       } else {
         alert(`批量生成失败: ${result.error}`);
       }
@@ -224,8 +258,8 @@ export default function Home() {
       const targetFrame = frames[frameIndex];
       const isFirstFrame = frameIndex === 0;
 
-      // 临时使用模拟API
-      const response = await fetch('/api/mock-regenerate-image', {
+      // 使用配置的重新生成API端点
+      const response = await fetch(getApiEndpoint('regenerateImage'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

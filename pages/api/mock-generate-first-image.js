@@ -29,19 +29,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { frame, characters, style, config } = req.body;
+    const { frame, prompt, chineseDescription, characters, style, config } = req.body;
 
-    if (!frame || !characters) {
+    // 兼容新旧数据结构
+    if (!frame) {
       return res.status(400).json({
         success: false,
-        error: '缺少必要参数: frame, characters'
+        error: '缺少必要参数: frame'
       });
     }
 
     console.log('🎨 模拟生成第一张图片:', {
       frameSequence: frame.sequence,
-      style: style,
-      characters: characters.length
+      hasPrompt: !!(prompt || frame.prompt || frame.jimengPrompt),
+      chineseDesc: chineseDescription || frame.chineseDescription || frame.displayDescription,
+      style: style
     });
 
     // 模拟处理时间
@@ -51,7 +53,6 @@ export default async function handler(req, res) {
     let imageUrl;
     const frameIndex = (frame.sequence - 1) % mockAnimeImageUrls.length;
 
-    // 根据风格调整图片主题色
     if (style && style.includes('dark')) {
       // 暗色主题的占位符
       const darkColors = ['2C3E50', '34495E', '7F8C8D', '95A5A6'];
@@ -62,8 +63,11 @@ export default async function handler(req, res) {
       imageUrl = mockAnimeImageUrls[frameIndex];
     }
 
-    // 使用实际的详细提示词
-    const optimizedPrompt = frame.prompt || `${style} style, ${characters.map(c => c.name).join(' and ')} in ${frame.scene}, ${frame.description}, ${frame.emotion} emotion, highly detailed anime illustration, professional quality, 16:9 aspect ratio`;
+    // 使用实际的详细提示词或生成简单描述
+    const actualPrompt = prompt || frame.prompt || frame.jimengPrompt;
+    const description = chineseDescription || frame.chineseDescription || frame.displayDescription;
+
+    const optimizedPrompt = actualPrompt || `${style} style anime illustration, ${description}, high quality, detailed, 16:9 aspect ratio`;
 
     console.log('✅ 模拟图片生成完成');
 
@@ -73,6 +77,7 @@ export default async function handler(req, res) {
         imageUrl: imageUrl,
         localPath: `/tmp/mock_first_frame_${frame.sequence}.jpg`,
         prompt: optimizedPrompt,
+        chineseDescription: description,
         taskId: `mock_task_${Date.now()}`,
         frame: frame
       }

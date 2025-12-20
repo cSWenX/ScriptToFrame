@@ -1,0 +1,249 @@
+/**
+ * 智能剧本分析API - 替换原有的mock-analyze-script
+ * 执行4步Claude工作流：故事切分 → 关键帧提取 → 提示词生成 → 结果整合
+ */
+
+// 使用代理API，不能用官方SDK
+
+// 第一步：故事切分的提示词
+const STEP1_PROMPT_TEMPLATE = `# Role: 资深编辑与分镜师
+
+# Task:
+请阅读我提供的【故事文本】，并将其切分为【Target_Number】个部分。
+切分后的每一部分将用于生成单张关键分镜，因此需要保证每一段的文字量适中，且包含明确的画面信息。
+
+# Inputs:
+1. 故事文本: {SCRIPT_CONTENT}
+2. 切分份数 (Target_Number): {SCENE_COUNT}
+
+# Constraints:
+1. 保持故事原汁原味，不要删减细节，只是进行物理切分。
+2. 确保切分点落在情节转折或动作变换的自然停顿处。
+
+# Output Format:
+请严格按照以下格式输出每一份：
+
+---
+## 第X份
+**完整剧情原文**: [这里必须放入切分出来的原始故事文本，不要概括]
+**核心视觉点**: [用一句话提炼这段文字最核心的画面内容]
+---`;
+
+// 第二步：关键帧提取的提示词
+const STEP2_PROMPT_TEMPLATE = `# Role: 视觉导演
+
+# Task:
+基于上一步切分的每一份【完整剧情原文】，将其转化为具体的画面视觉描述。
+
+# Logic Rules (关键):
+1. 对于 **第1份 到 第{LAST_SCENE_INDEX}份**：
+   - 只提炼 **1个"开始帧"**。这个画面代表该段剧情开始时的状态。
+2. 对于 **最后一份 (第{SCENE_COUNT}份)**：
+   - 提炼 **1个"开始帧"**。
+   - 额外提炼 **1个"结束帧"**（作为整个故事的落幅/结局）。
+
+# Requirement:
+描述必须包含：
+- **主体**: 角色是谁，在做什么动作。
+- **环境**: 背景细节，天气，时间。
+- **氛围**: 光影颜色，情绪基调。
+
+# Input (上一步的切分结果):
+{SEGMENTED_STORY}
+
+# Output Format:
+---
+## 第X份
+**帧类型**: [开始帧 / 结束帧]
+**画面描述**: (例如：暴雨夜，林默站在霓虹闪烁的巷口，风衣被风吹起，右手按在刀柄上，眼神冷冽)
+---`;
+
+// 第三步：即梦提示词生成
+const STEP3_PROMPT_TEMPLATE = `# Role: AI绘图提示词专家 (即梦/Jimeng 专项优化)
+
+# Setup (角色一致性):
+在生成提示词之前，请先帮我建立主要角色的【特征词库】。
+对于故事中的主角，请固定以下格式：
+- [角色名]: (具体的发型, 发色, 瞳色, 服装细节, 特殊配饰)
+*请确保在每一条包含该角色的提示词中，都完整包含这些特征词。*
+
+# Style & Quality (画风设置):
+每一条提示词必须包含以下前缀：
+(Masterpiece, top quality, highly detailed, 8k resolution, cinematic lighting, dynamic composition) + {STYLE_SETTING}
+
+# Task:
+将第二步得到的每一个"画面描述"转化为即梦可用的提示词。
+
+# Input (上一步的关键帧结果):
+{EXTRACTED_FRAMES}
+
+# Output Format:
+请严格按以下格式输出：
+
+---
+### [序号] 第X份-[帧类型]
+**中文辅助描述**: [简短的中文画面说明，方便我确认]
+**Jimeng Prompt**: [画风修饰词], [角色特征词], [动作与具体场景描述], [环境与光影], [镜头语言: 如 close-up, wide angle, depth of field] --ar 16:9
+---`;
+
+// 调用DeepSeek API的通用函数
+async function callDeepSeek(prompt, stepName) {
+  try {
+    console.log(`🤖 执行${stepName}...`);
+
+    const response = await fetch(process.env.DEEPSEEK_BASE_URL + '/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 4000,
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch (error) {
+    console.error(`❌ ${stepName}失败:`, error);
+    throw new Error(`${stepName}失败: ${error.message}`);
+  }
+}
+
+// 解析第三步的结果，提取提示词和中文描述
+function parseStep3Results(claudeResponse) {
+  const frames = [];
+  const sections = claudeResponse.split('---').filter(section => section.trim());
+
+  sections.forEach((section, index) => {
+    const chineseMatch = section.match(/\*\*中文辅助描述\*\*:\s*([^\n]+)/);
+    const promptMatch = section.match(/\*\*Jimeng Prompt\*\*:\s*([^\n]+)/);
+    const typeMatch = section.match(/第(\d+)份-(开始帧|结束帧)/);
+
+    if (chineseMatch && promptMatch && typeMatch) {
+      frames.push({
+        sequence: index + 1,
+        sceneIndex: parseInt(typeMatch[1]),
+        frameType: typeMatch[2],
+        chineseDescription: chineseMatch[1].trim(),
+        jimengPrompt: promptMatch[1].trim(),
+        imageUrl: null,
+        isGenerating: false,
+        error: null
+      });
+    }
+  });
+
+  return frames;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
+
+  try {
+    const { script, sceneCount, style, genre } = req.body;
+
+    if (!script || !sceneCount) {
+      return res.status(400).json({
+        success: false,
+        error: '缺少必要参数: script, sceneCount'
+      });
+    }
+
+    console.log('🎭 开始智能剧本分析:', {
+      scriptLength: script.length,
+      sceneCount,
+      style,
+      genre
+    });
+
+    // 第一步：故事切分
+    const step1Prompt = STEP1_PROMPT_TEMPLATE
+      .replace('{SCRIPT_CONTENT}', script)
+      .replace('{SCENE_COUNT}', sceneCount.toString());
+
+    const segmentedStory = await callDeepSeek(step1Prompt, '第1步: 故事切分');
+
+    // 第二步：关键帧提取
+    const step2Prompt = STEP2_PROMPT_TEMPLATE
+      .replace('{LAST_SCENE_INDEX}', (sceneCount - 1).toString())
+      .replace('{SCENE_COUNT}', sceneCount.toString())
+      .replace('{SEGMENTED_STORY}', segmentedStory);
+
+    const extractedFrames = await callDeepSeek(step2Prompt, '第2步: 关键帧提取');
+
+    // 第三步：提示词生成
+    const styleMapping = {
+      'anime': 'anime style',
+      'realistic': 'photorealistic style',
+      'cyberpunk': 'cyberpunk style',
+      'traditional': 'traditional chinese painting style'
+    };
+
+    const step3Prompt = STEP3_PROMPT_TEMPLATE
+      .replace('{STYLE_SETTING}', styleMapping[style] || style)
+      .replace('{EXTRACTED_FRAMES}', extractedFrames);
+
+    const promptResults = await callDeepSeek(step3Prompt, '第3步: 提示词生成');
+
+    // 第四步：解析结果
+    const frames = parseStep3Results(promptResults);
+
+    if (frames.length === 0) {
+      throw new Error('第4步: 结果解析失败，未能提取到有效的提示词');
+    }
+
+    console.log(`✅ 智能分析完成，生成${frames.length}个关键帧`);
+
+    // 构造返回结果
+    const result = {
+      success: true,
+      data: {
+        script_analysis: {
+          sceneCount: sceneCount,
+          frameCount: frames.length,
+          genre_detected: genre,
+          segmented_story: segmentedStory,
+          extracted_frames: extractedFrames
+        },
+        storyboard_frames: frames,
+        recommendedStyle: style,
+        recommendedGenre: genre,
+        intelligentAnalysisComplete: true
+      }
+    };
+
+    res.status(200).json(result);
+
+  } catch (error) {
+    console.error('❌ 智能剧本分析失败:', error);
+
+    // 判断是哪一步失败
+    let stepInfo = '';
+    if (error.message.includes('第1步')) stepInfo = '第1步 故事切分';
+    else if (error.message.includes('第2步')) stepInfo = '第2步 关键帧提取';
+    else if (error.message.includes('第3步')) stepInfo = '第3步 提示词生成';
+    else if (error.message.includes('第4步')) stepInfo = '第4步 结果解析';
+    else stepInfo = '未知步骤';
+
+    res.status(500).json({
+      success: false,
+      error: `智能分析失败 - ${stepInfo}: ${error.message}`,
+      failedStep: stepInfo
+    });
+  }
+}

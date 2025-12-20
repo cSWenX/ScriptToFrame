@@ -108,7 +108,8 @@ const ControlPanel = ({
         {/* 关键帧数量 */}
         <div>
           <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            关键帧数量: <span className="text-purple-400 font-bold">{frameCount}</span>
+            剧场数量: <span className="text-purple-400 font-bold">{frameCount}</span>
+            <span className="text-xs text-purple-300/70">(生成{frameCount + 1}帧)</span>
           </label>
           <input
             type="range"
