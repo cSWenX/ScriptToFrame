@@ -95,14 +95,14 @@ const StoryboardDisplay = ({
             <div key={frame.id} className="cyber-card relative">
               {/* 序号标识 */}
               <div className="absolute -left-3 -top-3 w-8 h-8 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm font-['Orbitron'] z-10 border-2 border-gray-900">
-                {frame.sequence}
+                {index + 1}
               </div>
 
               <div className="cyber-card-header">
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-semibold text-cyan-300 font-['Orbitron'] tracking-wide">
-                      FRAME {String(frame.sequence).padStart(2, '0')}
+                      FRAME {String(index + 1).padStart(2, '0')}
                     </h3>
                     <p className="text-cyan-400/70 text-sm font-['Rajdhani']">
                       {frame.scene || '未定义场景'}
@@ -148,7 +148,7 @@ const StoryboardDisplay = ({
                         <>
                           <img
                             src={frame.imageUrl}
-                            alt={`分镜图 ${frame.sequence}`}
+                            alt={`分镜图 ${index + 1}`}
                             className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                             onClick={() => openImageModal(frame)}
                           />
@@ -237,7 +237,7 @@ const StoryboardDisplay = ({
                           <span>🎬</span>场次
                         </span>
                         <p className="text-xs text-green-100/80 mt-1 font-['Rajdhani']">
-                          第{frame.sceneIndex || frame.sequence}场
+                          第{index + 1}场
                         </p>
                       </div>
                       <div className="p-3 bg-blue-500/10 rounded border border-blue-500/30 backdrop-blur-sm">
@@ -307,14 +307,14 @@ const StoryboardDisplay = ({
             <div className="relative">
               <img
                 src={selectedFrame.imageUrl}
-                alt={`分镜图 ${selectedFrame.sequence}`}
+                alt={`分镜图 ${frames.findIndex(f => f.id === selectedFrame.id) + 1}`}
                 className="max-w-full max-h-[80vh] object-contain rounded"
               />
 
               {/* 图片信息叠层 */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b">
                 <div className="text-cyan-300 font-['Orbitron'] text-lg">
-                  FRAME {String(selectedFrame.sequence).padStart(2, '0')}
+                  FRAME {String(frames.findIndex(f => f.id === selectedFrame.id) + 1).padStart(2, '0')}
                 </div>
                 <div className="text-cyan-400/80 font-['Rajdhani'] text-sm">
                   {selectedFrame.scene}

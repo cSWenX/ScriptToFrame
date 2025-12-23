@@ -1,9 +1,7 @@
 /**
- * 生成第一张图API接口 - 火山引擎即梦 (使用官方SDK)
- * POST /api/generate-first-image
+ * 火山引擎即梦 (Jimeng V4) - 最终修正版
+ * 使用官方 SDK 托管签名，彻底解决 InvalidCredential 问题
  */
-
-// 引入火山引擎官方SDK
 const { Service } = require('@volcengine/openapi');
 
 export default async function handler(req, res) {
@@ -12,198 +10,168 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { frame, prompt, chineseDescription, characters, style, config } = req.body;
+    const { frame, prompt } = req.body;
+    const actualPrompt = prompt || frame?.prompt || frame?.jimengPrompt;
 
-    // 兼容新旧数据结构
-    if (!frame) {
-      return res.status(400).json({
-        success: false,
-        error: '缺少必要参数: frame'
-      });
-    }
-
-    console.log('🎨 生成第一张图片:', {
-      frameSequence: frame.sequence,
-      hasPrompt: !!(prompt || frame.prompt || frame.jimengPrompt),
-      chineseDesc: chineseDescription || frame.chineseDescription || frame.displayDescription,
-      style: style
-    });
-
-    const actualPrompt = prompt || frame.prompt || frame.jimengPrompt;
     if (!actualPrompt) {
-      return res.status(400).json({
-        success: false,
-        error: '缺少图片生成提示词'
-      });
+      return res.status(400).json({ success: false, error: '缺少必要参数: prompt' });
     }
 
-    try {
-      // 调用火山引擎API (使用官方SDK)
-      const imageUrl = await callVolcengineAPI(actualPrompt);
+    console.log(`\n🎨 [API启动] 提示词: "${actualPrompt.substring(0, 30)}..."`);
 
-      const result = {
+    // 调用生成函数
+    const imageUrl = await generateImageV4(actualPrompt);
+
+    res.status(200).json({
+      success: true,
+      data: {
         imageUrl: imageUrl,
-        localPath: `/tmp/volcengine_first_frame_${frame.sequence}.jpg`,
+        taskId: `jimeng_v4_${Date.now()}`,
         prompt: actualPrompt,
-        chineseDescription: chineseDescription || frame.chineseDescription || frame.displayDescription,
-        taskId: `volcengine_task_${Date.now()}`,
         frame: frame
-      };
-
-      console.log('✅ 第一张图片生成完成');
-
-      res.status(200).json({
-        success: true,
-        data: result
-      });
-
-    } catch (error) {
-      console.error('火山引擎API调用失败:', error);
-      res.status(500).json({
-        success: false,
-        error: `火山引擎API错误: ${error.message}`
-      });
-    }
+      }
+    });
 
   } catch (error) {
-    console.error('生成第一张图API错误:', error);
-    res.status(500).json({
-      success: false,
-      error: '生成图片时发生错误'
-    });
+    console.error('❌ [流程终止]:', error.message);
+    res.status(500).json({ success: false, error: error.message });
   }
 }
 
 /**
- * 调用火山引擎即梦API (使用官方SDK - 完整异步流程)
+ * 核心逻辑：即梦 V4 生成 (提交 -> 轮询)
  */
-async function callVolcengineAPI(prompt) {
-  const accessKey = process.env.VOLCENGINE_ACCESS_KEY_ID;
-  const secretKey = process.env.VOLCENGINE_SECRET_ACCESS_KEY;
+async function generateImageV4(prompt) {
+  
+  // 1. 初始化服务 (带密钥清洗)
+  const visualService = createVisualService();
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  if (!accessKey || !secretKey) {
-    throw new Error('火山引擎API密钥未配置');
-  }
-
-  console.log('🔥 开始调用火山引擎API (官方SDK)...', {
-    accessKey: accessKey.substring(0, 8) + '***',
-    secretKeyLength: secretKey.length
+  // --- Step 1: 提交任务 ---
+  console.log('\n🚀 [Step 1] 提交任务 (CVProcess)...');
+  
+  const submitResult = await visualService.fetchOpenAPI({
+    Action: 'CVProcess', // 使用通用接口，SDK会自动路由
+    Version: '2022-08-31',
+    Method: 'POST',
+    Body: {
+      req_key: 'jimeng_t2i_v40', // V4 模型 Key
+      prompt: prompt,
+      // V4 部分参数可能需要直接放在这里
+      logo_info: { add_logo: false } 
+    }
   });
 
-  // 创建视觉服务实例
-  const visualService = new Service({
+  const submitData = submitResult.data || {};
+
+  // 错误检查
+  if (submitResult.code !== 10000) {
+      throw new Error(`提交失败: ${submitResult.message} (Code: ${submitResult.code})`);
+  }
+
+  // 极少情况：同步直接出图
+  if (submitData.image_urls?.length > 0) {
+    return submitData.image_urls[0];
+  }
+
+  const taskId = submitData.task_id;
+  if (!taskId) {
+    throw new Error(`任务提交响应异常 (无TaskID): ${JSON.stringify(submitData)}`);
+  }
+
+  console.log(`⏳ [Step 2] 获得 TaskID: ${taskId}，开始轮询...`);
+
+  // --- Step 2: 轮询结果 ---
+  // V4 比较慢，建议轮询次数多一点
+  for (let i = 0; i < 60; i++) {
+    await sleep(2000); // 间隔 2s
+
+    // 构造 V4 必须的查询参数
+    // 注意：即梦V4查询必须传 req_json 字符串来指定 return_url
+    const queryReqJson = JSON.stringify({
+        return_url: true, 
+        logo_info: { add_logo: false }
+    });
+
+    const queryResult = await visualService.fetchOpenAPI({
+      Action: 'CVSync2AsyncGetResult', // 必须使用这个异步查询接口
+      Version: '2022-08-31',
+      Method: 'POST',
+      Body: {
+        req_key: 'jimeng_t2i_v40',
+        task_id: taskId,
+        req_json: queryReqJson // <--- 关键！没有这个查不到 URL
+      }
+    });
+
+    const qData = queryResult.data || {};
+    const status = qData.status; // V4 返回可能是字符串 'done' 或数字
+
+    // 成功判断 (兼容 done 和 1)
+    if (status === 'done' || status === 1) {
+      console.log(`\n✅ [轮询成功] 第 ${i+1} 次查询完成`);
+      
+      // 解析图片 URL
+      let finalUrl = qData.image_url; // 尝试直接获取
+
+      // 如果外层没有，解析 resp_data (V4 常见情况)
+      if (!finalUrl && qData.resp_data) {
+        try {
+          const parsed = typeof qData.resp_data === 'string' 
+            ? JSON.parse(qData.resp_data) 
+            : qData.resp_data;
+          
+          if (parsed.image_urls?.length > 0) {
+            finalUrl = parsed.image_urls[0];
+          }
+        } catch (e) {
+          console.warn('解析 resp_data 出错', e);
+        }
+      }
+
+      if (finalUrl) return finalUrl;
+      
+      // 如果还没 URL，可能是 Base64
+      if (qData.binary_data_base64?.length > 0) {
+          console.warn('⚠️ 仅返回了 Base64 数据 (请检查 return_url 是否生效)');
+          return `data:image/png;base64,${qData.binary_data_base64[0]}`;
+      }
+      
+      throw new Error('任务显示成功但未找到图片链接');
+
+    } else if (status === 'failed' || status === -1 || status === 2) {
+      throw new Error(`任务执行失败 (Status: ${status})`);
+    }
+
+    console.log(`... 轮询中 (状态: ${status})`);
+  }
+
+  throw new Error('生成超时 (120秒)');
+}
+
+/**
+ * 🔧 工具：创建配置正确的 Service 实例
+ */
+function createVisualService() {
+  // 1. 清洗密钥：去除可能存在的引号、空格、换行
+  const rawAK = process.env.VOLCENGINE_ACCESS_KEY_ID || '';
+  const rawSK = process.env.VOLCENGINE_SECRET_ACCESS_KEY || '';
+
+  const accessKey = rawAK.trim().replace(/['"]/g, '');
+  const secretKey = rawSK.trim().replace(/['"]/g, '');
+
+  if (!accessKey || !secretKey) {
+    throw new Error('未配置 VOLCENGINE_ACCESS_KEY_ID 或 VOLCENGINE_SECRET_ACCESS_KEY');
+  }
+
+  // 2. 初始化 SDK
+  return new Service({
     accessKeyId: accessKey,
     secretKey: secretKey,
     serviceName: 'cv',
     host: 'visual.volcengineapi.com',
-    protocol: 'https:', // <--- 【建议添加】确保使用 HTTPS
     region: 'cn-north-1',
-    pathname: '/', // <--- 关键！必须加上这个，否则会报 50402 URL Error
+    protocol: 'https:', 
+    pathname: '/', // 修复 URL 错误的关键
   });
-
-  try {
-    console.log('🚀 [即梦API] 正在提交任务...');
-
-    // --- 第一步：提交任务 ---
-    // 使用 CVSync2AsyncSubmitTask 接口
-    const submitRes = await visualService.fetchOpenAPI({
-      Action: 'CVSync2AsyncSubmitTask',
-      Version: '2022-08-31',
-      Method: 'POST', // <--- 【关键修复】必须显式指定 POST
-      Query: {},
-      Body: {
-        req_json: JSON.stringify({
-          req_key: "jimeng_t2i_v40",
-          prompt: prompt,
-          return_url: true,
-          logo_info: { add_logo: false }
-        })
-      },
-    });
-
-    console.log('📦 提交响应:', JSON.stringify(submitRes, null, 2));
-
-    const data = submitRes.data || {};
-
-    // 情况A：虽然少见，但有时候会直接同步返回图片
-    if (data.image_urls && data.image_urls.length > 0) {
-      console.log('✅ [即梦API] 立即生成成功');
-      return data.image_urls[0];
-    }
-
-    // 情况B：返回任务ID (这是最常见的情况)
-    if (data.task_id) {
-      const taskId = data.task_id;
-      console.log(`⏳ [即梦API] 任务已提交，ID: ${taskId}，开始轮询...`);
-
-      // --- 第二步：循环查询结果 ---
-      // 最多查 30 次，每次间隔 2 秒 (共等待 60秒)
-      for (let i = 0; i < 30; i++) {
-        await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒
-
-        const queryRes = await visualService.fetchOpenAPI({
-          Action: 'CVSync2AsyncGetResult', // 使用正确的查询接口
-          Version: '2022-08-31',
-          Method: 'POST', // <--- 【建议添加】保持一致性
-          Query: {},
-          Body: {
-            req_json: JSON.stringify({
-              req_key: "jimeng_t2i_v40",
-              task_id: taskId
-            })
-          },
-        });
-
-        console.log(`📋 第${i+1}次查询响应:`, JSON.stringify(queryRes, null, 2));
-
-        const qData = queryRes.data || {};
-        const status = qData.status;
-        // status定义: 0-处理中, 1-成功, -1-失败, 2-过期
-
-        if (status === 1) {
-          console.log(`✅ [即梦API] 第 ${i + 1} 次轮询：生成成功！`);
-
-          // 解析图片地址：有时在 resp_data 字段里，需要二次解析
-          let finalUrl = qData.image_url;
-
-          if (!finalUrl && qData.resp_data) {
-            try {
-              // resp_data 可能是 JSON 字符串
-              const parsed = typeof qData.resp_data === 'string'
-                ? JSON.parse(qData.resp_data)
-                : qData.resp_data;
-              if (parsed.image_urls && parsed.image_urls.length > 0) {
-                finalUrl = parsed.image_urls[0];
-              }
-            } catch (e) {
-              console.warn("解析 resp_data 出错", e);
-            }
-          }
-
-          if (finalUrl) {
-            console.log('🎉 成功获取图片URL:', finalUrl);
-            return finalUrl;
-          }
-
-          // 如果状态成功但没找到图，打印出来调试
-          console.error("生成成功但未找到URL字段:", JSON.stringify(qData));
-          throw new Error("生成成功但无法提取图片URL");
-
-        } else if (status === -1 || status === 2) {
-          throw new Error(`任务失败或过期 (Status: ${status})`);
-        }
-
-        console.log(`... 第 ${i + 1} 次检查: 处理中 (status: ${status})`);
-      }
-      throw new Error("生成超时 (60秒)");
-    }
-
-    // 如果既没 task_id 也没 image_urls
-    console.error("异常响应:", JSON.stringify(submitRes));
-    throw new Error("API响应格式异常");
-
-  } catch (error) {
-    console.error('❌ 火山引擎API调用失败:', error);
-    throw error;
-  }
 }

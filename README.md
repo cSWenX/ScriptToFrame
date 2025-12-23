@@ -42,11 +42,61 @@ VOLCENGINE_SECRET_ACCESS_KEY=你的火山引擎密钥
 ANTHROPIC_API_KEY=你的Claude API密钥
 ```
 
-### 启动命令
+### 快速启动 🚀
+
+我们提供了多种启动方式，推荐使用一键启动脚本：
+
+#### 方法1: 一键启动 (推荐)
 ```bash
-npm install
-npm run dev
+# Linux/macOS
+./start.sh
+
+# Windows
+start.bat
 ```
+
+#### 方法2: npm scripts
+```bash
+# 启动所有服务 (前端+后端)
+npm run start:all
+
+# 仅启动前端
+npm run dev
+
+# 仅启动后端
+npm run backend
+```
+
+#### 方法3: 手动启动
+```bash
+# 安装依赖
+npm install
+
+# 启动前端 (端口3000)
+npm run dev
+
+# 在新终端启动后端 (端口8081)
+cd python-backend
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8081 --reload
+```
+
+### 停止服务
+```bash
+# Linux/macOS
+./stop.sh
+
+# npm 方式
+npm run stop:all
+```
+
+### 访问地址
+- 前端应用: http://localhost:3000
+- 后端API: http://localhost:8081
+- API文档: http://localhost:8081/docs
+
+详细说明请查看 [启动指南](STARTUP_GUIDE.md)
 
 ## API集成说明
 

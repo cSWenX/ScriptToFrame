@@ -7,7 +7,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start:all": "./start.sh",
+    "stop:all": "./stop.sh",
+    "logs": "./logs.sh",
+    "logs:backend": "tail -f logs/backend.log",
+    "logs:frontend": "tail -f logs/frontend.log",
+    "logs:all": "tail -f logs/combined.log",
+    "backend": "cd python-backend && source venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8081 --reload",
+    "frontend": "next dev"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",

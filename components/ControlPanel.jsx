@@ -8,6 +8,9 @@ const ControlPanel = ({
   onAnalyzeScript,
   onGenerateFirstFrame,
   onGenerateAllFrames,
+  onStopAnalysis,
+  onStopFirstFrame,
+  onStopAllFrames,
   isAnalyzing,
   isGeneratingFirst,
   isGeneratingAll,
@@ -215,23 +218,30 @@ const ControlPanel = ({
 
         {/* AI分析按钮 */}
         <div className="pt-4 border-t border-cyan-500/30">
-          <button
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className="cyber-button cyber-button-primary w-full mb-4"
-          >
-            {isAnalyzing ? (
+          {isAnalyzing ? (
+            // 分析进行中时显示停止按钮
+            <button
+              onClick={onStopAnalysis}
+              className="cyber-button cyber-button-warning w-full mb-4"
+            >
               <div className="flex items-center gap-2">
-                <div className="cyber-spinner"></div>
-                <span>AI分析中...</span>
+                <span>⏹️</span>
+                <span>停止分析</span>
               </div>
-            ) : (
+            </button>
+          ) : (
+            // 正常情况下显示分析按钮
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="cyber-button cyber-button-primary w-full mb-4"
+            >
               <div className="flex items-center gap-2">
                 <span>🧠</span>
                 <span>AI智能分析</span>
               </div>
-            )}
-          </button>
+            </button>
+          )}
 
           {analysisResult && (
             <div className="text-xs text-cyan-300/80 mb-4 p-3 bg-cyan-500/10 rounded border border-cyan-500/30 backdrop-blur-sm">
@@ -251,41 +261,55 @@ const ControlPanel = ({
 
         {/* 生成按钮区域 */}
         <div className="space-y-3 pb-4">
-          <button
-            onClick={handleGenerateFirst}
-            disabled={isGeneratingFirst || !analysisResult}
-            className="cyber-button cyber-button-success w-full"
-          >
-            {isGeneratingFirst ? (
+          {isGeneratingFirst ? (
+            // 生成第一张图进行中时显示停止按钮
+            <button
+              onClick={onStopFirstFrame}
+              className="cyber-button cyber-button-warning w-full"
+            >
               <div className="flex items-center gap-2">
-                <div className="cyber-spinner"></div>
-                <span>生成首帧中...</span>
+                <span>⏹️</span>
+                <span>停止生成</span>
               </div>
-            ) : (
+            </button>
+          ) : (
+            // 正常情况下显示生成第一张图按钮
+            <button
+              onClick={handleGenerateFirst}
+              disabled={isGeneratingFirst || !analysisResult}
+              className="cyber-button cyber-button-success w-full"
+            >
               <div className="flex items-center gap-2">
                 <span>🎬</span>
                 <span>生成第一张图</span>
               </div>
-            )}
-          </button>
+            </button>
+          )}
 
-          <button
-            onClick={handleGenerateAll}
-            disabled={isGeneratingAll || !analysisResult}
-            className="cyber-button cyber-button-danger w-full"
-          >
-            {isGeneratingAll ? (
+          {isGeneratingAll ? (
+            // 批量生成进行中时显示停止按钮
+            <button
+              onClick={onStopAllFrames}
+              className="cyber-button cyber-button-warning w-full"
+            >
               <div className="flex items-center gap-2">
-                <div className="cyber-spinner"></div>
-                <span>批量生成中...</span>
+                <span>⏹️</span>
+                <span>停止生成</span>
               </div>
-            ) : (
+            </button>
+          ) : (
+            // 正常情况下显示批量生成按钮
+            <button
+              onClick={handleGenerateAll}
+              disabled={isGeneratingAll || !analysisResult}
+              className="cyber-button cyber-button-danger w-full"
+            >
               <div className="flex items-center gap-2">
                 <span>🚀</span>
                 <span>生成所有分镜</span>
               </div>
-            )}
-          </button>
+            </button>
+          )}
         </div>
 
         {/* 提示信息 */}

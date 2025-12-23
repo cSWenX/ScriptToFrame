@@ -1,0 +1,11 @@
+# 火山引擎Python后端依赖
+fastapi==0.104.1
+uvicorn==0.24.0
+python-dotenv==1.0.0
+requests==2.31.0
+
+# 火山引擎官方SDK
+volcengine
+
+# 跨域支持
+python-multipart==0.0.6
