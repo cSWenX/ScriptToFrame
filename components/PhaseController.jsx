@@ -204,9 +204,9 @@ const GlobalSettings = ({ style_preset, settings, onStyleChange, onSettingsChang
         {/* 风格选择 */}
         <div>
           <label className="text-xs font-bold text-gray-600 mb-1.5 block">
-            绘本风格
+            绘本风格 <span className="text-gray-400 font-normal">({STYLE_LIST.length}种)</span>
           </label>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto storybook-scrollbar pr-1">
             {STYLE_LIST.map((style) => (
               <button
                 key={style.id}
@@ -220,7 +220,7 @@ const GlobalSettings = ({ style_preset, settings, onStyleChange, onSettingsChang
                   }
                   ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
                 `}
-                title={style.description}
+                title={`${style.description}\n适合：${style.suitable}`}
               >
                 <div className="flex items-center gap-1">
                   <span className="text-sm">{style.icon}</span>

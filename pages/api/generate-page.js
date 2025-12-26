@@ -1,7 +1,7 @@
 /**
  * 绘本页面插图生成API
  * 代理请求到Python后端（火山引擎即梦SDK）
- * 拼接风格前缀 + 内容提示词 + 角色引用
+ * 拼接内容提示词 + 风格后缀 + 角色引用
  */
 
 import { generatePagePrompt } from '../../config/styles';
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     console.log(`🎨 风格: ${styleId}, 画幅: ${aspectRatio}, 分辨率: ${resolution}`);
     console.log(`👥 参考角色数: ${characters.length}`);
 
-    // 生成完整提示词（风格前缀 + 内容 + 角色引用）
+    // 生成完整提示词（内容 + 风格后缀 + 角色引用）
     const fullPrompt = generatePagePrompt(styleId, jimengPrompt, characters);
     console.log(`📝 完整提示词: ${fullPrompt.substring(0, 150)}...`);
 
