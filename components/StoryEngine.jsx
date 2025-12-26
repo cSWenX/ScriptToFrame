@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useProject } from '../contexts/ProjectContext';
 
 /**
- * 故事引擎组件 (Story Engine) v2
+ * 故事引擎组件 (Story Engine) v3
  * 左栏 30% 宽度
- * 双Tab: 故事原文 / AI脚本（画面+对白+提示词）
+ * 三Tab: 故事原文 / AI脚本（分镜画面） / 语音脚本（可编辑配音文本）
  */
 const StoryEngine = () => {
   const { state, actions } = useProject();
@@ -32,9 +32,9 @@ const StoryEngine = () => {
         <button
           onClick={() => actions.setLeftTab('input')}
           className={`
-            flex-1 py-3 px-4 text-sm font-bold
+            flex-1 py-2 px-2 text-xs font-bold
             transition-all duration-200
-            flex items-center justify-center gap-2
+            flex items-center justify-center gap-1
             ${activeLeftTab === 'input'
               ? 'bg-white text-orange-600 border-b-4 border-orange-400 -mb-[3px]'
               : 'text-gray-500 hover:text-orange-500 hover:bg-yellow-50'
@@ -48,9 +48,9 @@ const StoryEngine = () => {
         <button
           onClick={() => actions.setLeftTab('script')}
           className={`
-            flex-1 py-3 px-4 text-sm font-bold
+            flex-1 py-2 px-2 text-xs font-bold
             transition-all duration-200
-            flex items-center justify-center gap-2
+            flex items-center justify-center gap-1
             ${activeLeftTab === 'script'
               ? 'bg-white text-orange-600 border-b-4 border-orange-400 -mb-[3px]'
               : 'text-gray-500 hover:text-orange-500 hover:bg-yellow-50'
@@ -60,13 +60,31 @@ const StoryEngine = () => {
           style={{ fontFamily: "'Fredoka', sans-serif" }}
           disabled={pages.length === 0}
         >
-          <span>📜</span>
-          <span>AI脚本</span>
+          <span>🎬</span>
+          <span>分镜脚本</span>
           {pages.length > 0 && (
-            <span className="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded-full">
-              {pages.length}页
+            <span className="bg-green-100 text-green-600 text-xs px-1.5 py-0.5 rounded-full">
+              {pages.length}
             </span>
           )}
+        </button>
+        <button
+          onClick={() => actions.setLeftTab('voicescript')}
+          className={`
+            flex-1 py-2 px-2 text-xs font-bold
+            transition-all duration-200
+            flex items-center justify-center gap-1
+            ${activeLeftTab === 'voicescript'
+              ? 'bg-white text-orange-600 border-b-4 border-orange-400 -mb-[3px]'
+              : 'text-gray-500 hover:text-orange-500 hover:bg-yellow-50'
+            }
+            ${pages.length === 0 ? 'opacity-50' : ''}
+          `}
+          style={{ fontFamily: "'Fredoka', sans-serif" }}
+          disabled={pages.length === 0}
+        >
+          <span>🎤</span>
+          <span>语音脚本</span>
         </button>
       </div>
 
@@ -79,8 +97,10 @@ const StoryEngine = () => {
             isValid={isValid}
             onChange={handleStoryChange}
           />
-        ) : (
+        ) : activeLeftTab === 'script' ? (
           <ScriptDisplayTab pages={pages} />
+        ) : (
+          <VoiceScriptTab pages={pages} />
         )}
       </div>
     </div>
@@ -138,16 +158,17 @@ const StoryInputTab = ({ rawStory, wordCount, isValid, onChange }) => (
 );
 
 /**
- * AI脚本展示Tab
+ * 分镜脚本展示Tab（显示画面提示词和资产引用）
  */
 const ScriptDisplayTab = ({ pages }) => {
-  const { actions } = useProject();
+  const { state, actions } = useProject();
+  const { project } = state;
 
   if (pages.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-4">
-        <span className="text-6xl mb-4">📜</span>
-        <p className="text-gray-500 font-medium">还没有生成AI脚本</p>
+        <span className="text-6xl mb-4">🎬</span>
+        <p className="text-gray-500 font-medium">还没有生成分镜脚本</p>
         <p className="text-gray-400 text-sm mt-2">
           请先输入故事并点击"开始AI分析"
         </p>
@@ -169,10 +190,10 @@ const ScriptDisplayTab = ({ pages }) => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-bold text-green-600 text-sm" style={{ fontFamily: "'Fredoka', sans-serif" }}>
-              ✨ AI脚本生成完成
+              🎬 分镜脚本
             </h3>
             <p className="text-xs text-green-500 mt-0.5">
-              共 {pages.length} 页分镜
+              共 {pages.length} 页 · {project.story_name || '未命名'}
             </p>
           </div>
           <button
@@ -187,7 +208,65 @@ const ScriptDisplayTab = ({ pages }) => {
       {/* 脚本列表 */}
       <div className="flex-1 overflow-y-auto storybook-scrollbar p-3 space-y-3">
         {pages.map((page, index) => (
-          <ScriptPageCard
+          <StoryboardCard
+            key={page.page_index || index}
+            page={page}
+            pageIndex={page.page_index || index + 1}
+            assets={project.assets}
+            onUpdate={(updates) => {
+              actions.updatePage({ page_index: page.page_index, ...updates });
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * 语音脚本Tab（可编辑配音文本）
+ */
+const VoiceScriptTab = ({ pages }) => {
+  const { actions } = useProject();
+
+  if (pages.length === 0) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center text-center p-4">
+        <span className="text-6xl mb-4">🎤</span>
+        <p className="text-gray-500 font-medium">还没有生成语音脚本</p>
+        <p className="text-gray-400 text-sm mt-2">
+          请先完成AI分析生成分镜脚本
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* 头部信息 */}
+      <div className="p-3 bg-purple-50 border-b border-purple-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-purple-600 text-sm" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+              🎤 语音脚本
+            </h3>
+            <p className="text-xs text-purple-500 mt-0.5">
+              用于TTS配音 · 支持编辑
+            </p>
+          </div>
+          <button
+            onClick={() => actions.setLeftTab('script')}
+            className="text-xs text-purple-600 hover:text-purple-700 underline"
+          >
+            查看分镜
+          </button>
+        </div>
+      </div>
+
+      {/* 语音脚本列表 */}
+      <div className="flex-1 overflow-y-auto storybook-scrollbar p-3 space-y-3">
+        {pages.map((page, index) => (
+          <VoiceScriptCard
             key={page.page_index || index}
             page={page}
             pageIndex={page.page_index || index + 1}
@@ -202,20 +281,28 @@ const ScriptDisplayTab = ({ pages }) => {
 };
 
 /**
- * 脚本页面卡片组件
+ * 分镜卡片组件（显示jimeng_prompt和asset_refs）
  */
-const ScriptPageCard = ({ page, pageIndex, onUpdate }) => {
+const StoryboardCard = ({ page, pageIndex, assets, onUpdate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    scene_description: page.scene_description || '',
-    jimeng_prompt: page.jimeng_prompt || ''
-  });
+  const [editPrompt, setEditPrompt] = useState(page.jimeng_prompt || '');
 
   const handleSave = () => {
-    onUpdate(editData);
+    onUpdate({ jimeng_prompt: editPrompt });
     setIsEditing(false);
   };
+
+  // 获取引用的资产名称
+  const getAssetNames = () => {
+    if (!page.asset_refs || page.asset_refs.length === 0) return [];
+    return page.asset_refs.map(refId => {
+      const asset = assets.find(a => a.id === refId);
+      return asset ? asset.name : refId;
+    });
+  };
+
+  const assetNames = getAssetNames();
 
   return (
     <div className="bg-white rounded-xl border-2 border-yellow-200 overflow-hidden hover:border-orange-300 transition-colors">
@@ -229,10 +316,15 @@ const ScriptPageCard = ({ page, pageIndex, onUpdate }) => {
             {pageIndex}
           </span>
           <span className="text-sm font-bold text-orange-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
-            第 {pageIndex} 页
+            {page.scene_id || `S-${String(pageIndex).padStart(2, '0')}`}
           </span>
         </div>
         <div className="flex items-center gap-2">
+          {assetNames.length > 0 && (
+            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              {assetNames.length} 资产
+            </span>
+          )}
           {!isEditing && (
             <button
               onClick={(e) => {
@@ -242,7 +334,7 @@ const ScriptPageCard = ({ page, pageIndex, onUpdate }) => {
               }}
               className="text-xs text-blue-500 hover:text-blue-600"
             >
-              ✏️ 编辑
+              ✏️
             </button>
           )}
           <span className="text-gray-400">{isExpanded ? '▲' : '▼'}</span>
@@ -252,54 +344,37 @@ const ScriptPageCard = ({ page, pageIndex, onUpdate }) => {
       {/* 展开的内容 */}
       {isExpanded && (
         <div className="p-3 space-y-3">
-          {/* 画面描述 */}
-          <div>
-            <label className="text-xs font-bold text-purple-600 flex items-center gap-1 mb-1">
-              <span>🎬</span> 画面描述
-            </label>
-            {isEditing ? (
-              <textarea
-                value={editData.scene_description}
-                onChange={(e) => setEditData({ ...editData, scene_description: e.target.value })}
-                className="w-full p-2 text-xs border-2 border-purple-200 rounded-lg focus:border-purple-400 focus:outline-none resize-none"
-                rows={3}
-              />
-            ) : (
-              <p className="text-xs text-gray-700 bg-purple-50 p-2 rounded-lg">
-                {page.scene_description || '暂无画面描述'}
-              </p>
-            )}
-          </div>
-
-          {/* 角色对白 */}
-          <div>
-            <label className="text-xs font-bold text-blue-600 flex items-center gap-1 mb-1">
-              <span>💬</span> 角色对白
-            </label>
-            <div className="space-y-1">
-              {(page.dialogues || []).map((dialogue, i) => (
-                <div key={i} className="text-xs bg-blue-50 p-2 rounded-lg">
-                  <span className="font-bold text-blue-700">{dialogue.role}：</span>
-                  <span className="text-gray-700">{dialogue.text}</span>
-                </div>
-              ))}
-              {(!page.dialogues || page.dialogues.length === 0) && (
-                <p className="text-xs text-gray-400 bg-gray-50 p-2 rounded-lg">暂无对白</p>
-              )}
+          {/* 引用资产 */}
+          {assetNames.length > 0 && (
+            <div>
+              <label className="text-xs font-bold text-purple-600 flex items-center gap-1 mb-1">
+                <span>🎭</span> 引用资产
+              </label>
+              <div className="flex flex-wrap gap-1">
+                {page.asset_refs.map((refId, i) => (
+                  <span
+                    key={refId}
+                    className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full"
+                    title={refId}
+                  >
+                    图{i + 1}: {assetNames[i]}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 即梦提示词 */}
           <div>
             <label className="text-xs font-bold text-green-600 flex items-center gap-1 mb-1">
-              <span>🎨</span> 即梦提示词
+              <span>🎨</span> 画面提示词
             </label>
             {isEditing ? (
               <textarea
-                value={editData.jimeng_prompt}
-                onChange={(e) => setEditData({ ...editData, jimeng_prompt: e.target.value })}
+                value={editPrompt}
+                onChange={(e) => setEditPrompt(e.target.value)}
                 className="w-full p-2 text-xs border-2 border-green-200 rounded-lg focus:border-green-400 focus:outline-none resize-none font-mono"
-                rows={4}
+                rows={5}
               />
             ) : (
               <p className="text-xs text-gray-600 bg-green-50 p-2 rounded-lg font-mono whitespace-pre-wrap">
@@ -319,10 +394,179 @@ const ScriptPageCard = ({ page, pageIndex, onUpdate }) => {
               </button>
               <button
                 onClick={() => {
-                  setEditData({
-                    scene_description: page.scene_description || '',
-                    jimeng_prompt: page.jimeng_prompt || ''
-                  });
+                  setEditPrompt(page.jimeng_prompt || '');
+                  setIsEditing(false);
+                }}
+                className="flex-1 py-2 bg-gray-200 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-300"
+              >
+                取消
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 折叠状态的预览 */}
+      {!isExpanded && (
+        <div className="px-3 py-2">
+          <p className="text-xs text-gray-600 line-clamp-2 font-mono">
+            {page.jimeng_prompt || '暂无提示词'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
+ * 语音脚本卡片组件（可编辑voice_script和tts_text）
+ */
+const VoiceScriptCard = ({ page, pageIndex, onUpdate }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editVoiceScript, setEditVoiceScript] = useState(page.voice_script || []);
+  const [editTtsText, setEditTtsText] = useState(page.tts_text || '');
+
+  const handleSave = () => {
+    onUpdate({
+      voice_script: editVoiceScript,
+      tts_text: editTtsText
+    });
+    setIsEditing(false);
+  };
+
+  const updateVoiceScriptItem = (index, field, value) => {
+    const newScript = [...editVoiceScript];
+    newScript[index] = { ...newScript[index], [field]: value };
+    setEditVoiceScript(newScript);
+  };
+
+  return (
+    <div className="bg-white rounded-xl border-2 border-purple-200 overflow-hidden hover:border-purple-300 transition-colors">
+      {/* 页面头部 */}
+      <div
+        className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-center gap-2">
+          <span className="w-6 h-6 bg-purple-400 text-white rounded-full flex items-center justify-center text-xs font-bold">
+            {pageIndex}
+          </span>
+          <span className="text-sm font-bold text-purple-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            第 {pageIndex} 页配音
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {(page.voice_script || []).length > 0 && (
+            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              {page.voice_script.length} 句
+            </span>
+          )}
+          {!isEditing && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+                setIsExpanded(true);
+              }}
+              className="text-xs text-blue-500 hover:text-blue-600"
+            >
+              ✏️
+            </button>
+          )}
+          <span className="text-gray-400">{isExpanded ? '▲' : '▼'}</span>
+        </div>
+      </div>
+
+      {/* 展开的内容 */}
+      {isExpanded && (
+        <div className="p-3 space-y-3">
+          {/* 语音脚本列表 */}
+          <div>
+            <label className="text-xs font-bold text-blue-600 flex items-center gap-1 mb-2">
+              <span>💬</span> 语音脚本
+            </label>
+            <div className="space-y-2">
+              {(isEditing ? editVoiceScript : page.voice_script || []).map((item, i) => (
+                <div key={i} className="bg-blue-50 p-2 rounded-lg">
+                  {isEditing ? (
+                    <div className="space-y-1">
+                      <div className="flex gap-2">
+                        <input
+                          value={item.role}
+                          onChange={(e) => updateVoiceScriptItem(i, 'role', e.target.value)}
+                          className="flex-1 text-xs p-1 border border-blue-200 rounded"
+                          placeholder="角色"
+                        />
+                        <input
+                          value={item.emotion}
+                          onChange={(e) => updateVoiceScriptItem(i, 'emotion', e.target.value)}
+                          className="w-20 text-xs p-1 border border-blue-200 rounded"
+                          placeholder="情绪"
+                        />
+                      </div>
+                      <textarea
+                        value={item.text}
+                        onChange={(e) => updateVoiceScriptItem(i, 'text', e.target.value)}
+                        className="w-full text-xs p-1 border border-blue-200 rounded resize-none"
+                        rows={2}
+                        placeholder="台词"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-bold text-blue-700 text-xs">{item.role}</span>
+                        {item.emotion && (
+                          <span className="text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded">
+                            [{item.emotion}]
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-700">{item.text}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {(!page.voice_script || page.voice_script.length === 0) && !isEditing && (
+                <p className="text-xs text-gray-400 bg-gray-50 p-2 rounded-lg">暂无语音脚本</p>
+              )}
+            </div>
+          </div>
+
+          {/* TTS纯文本 */}
+          <div>
+            <label className="text-xs font-bold text-green-600 flex items-center gap-1 mb-1">
+              <span>📝</span> TTS配音文本
+            </label>
+            {isEditing ? (
+              <textarea
+                value={editTtsText}
+                onChange={(e) => setEditTtsText(e.target.value)}
+                className="w-full p-2 text-xs border-2 border-green-200 rounded-lg focus:border-green-400 focus:outline-none resize-none"
+                rows={3}
+                placeholder="TTS配音纯文本..."
+              />
+            ) : (
+              <p className="text-xs text-gray-600 bg-green-50 p-2 rounded-lg">
+                {page.tts_text || '暂无TTS文本'}
+              </p>
+            )}
+          </div>
+
+          {/* 编辑模式按钮 */}
+          {isEditing && (
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={handleSave}
+                className="flex-1 py-2 bg-green-500 text-white text-xs font-bold rounded-lg hover:bg-green-600"
+              >
+                ✅ 保存
+              </button>
+              <button
+                onClick={() => {
+                  setEditVoiceScript(page.voice_script || []);
+                  setEditTtsText(page.tts_text || '');
                   setIsEditing(false);
                 }}
                 className="flex-1 py-2 bg-gray-200 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-300"
@@ -338,7 +582,7 @@ const ScriptPageCard = ({ page, pageIndex, onUpdate }) => {
       {!isExpanded && (
         <div className="px-3 py-2">
           <p className="text-xs text-gray-600 line-clamp-2">
-            {page.scene_description || '暂无画面描述'}
+            {page.tts_text || '暂无TTS文本'}
           </p>
         </div>
       )}

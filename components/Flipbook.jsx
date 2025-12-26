@@ -53,11 +53,11 @@ const ImagePageContent = ({ page, pageNumber }) => {
   }
 
   return (
-    <div className="w-full h-full relative bg-stone-50">
+    <div className="w-full h-full relative bg-stone-50 flex items-center justify-center">
       <img
         src={page.image_url}
         alt={`第${pageNumber}页`}
-        className="w-full h-full object-cover"
+        className="max-w-full max-h-full object-contain"
         draggable={false}
       />
       {/* 底部页码 */}
@@ -156,9 +156,9 @@ const Flipbook = () => {
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
 
-      // 可用空间（留出顶部和底部控制栏的空间）
-      const availableWidth = windowWidth * 0.85;
-      const availableHeight = windowHeight * 0.60;
+      // 可用空间（留出顶部和底部控制栏的空间，使用更大的可用区域）
+      const availableWidth = windowWidth * 0.90;
+      const availableHeight = windowHeight * 0.75;
 
       // 单页尺寸：根据图片比例计算
       // 单页宽度 = 单页高度 * 图片比例
@@ -169,6 +169,18 @@ const Flipbook = () => {
       if (pageWidth * 2 > availableWidth) {
         pageWidth = availableWidth / 2;
         pageHeight = pageWidth / aspectRatio;
+      }
+
+      // 确保最小尺寸
+      const minWidth = 300;
+      const minHeight = 200;
+      if (pageWidth < minWidth) {
+        pageWidth = minWidth;
+        pageHeight = pageWidth / aspectRatio;
+      }
+      if (pageHeight < minHeight) {
+        pageHeight = minHeight;
+        pageWidth = pageHeight * aspectRatio;
       }
 
       setBookDimensions({
@@ -374,7 +386,7 @@ const Flipbook = () => {
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center bg-gradient-to-b from-stone-100 to-stone-200 overflow-hidden">
+    <div className="h-full flex flex-col items-center justify-between bg-gradient-to-b from-stone-100 to-stone-200 overflow-hidden p-2">
       {/* 隐藏的音频元素 */}
       <audio
         ref={audioRef}
@@ -385,23 +397,23 @@ const Flipbook = () => {
       />
 
       {/* 顶部控制栏 */}
-      <div className="w-full px-6 py-3 flex items-center justify-between z-10">
-        <h2 className="text-lg font-bold text-stone-700 flex items-center gap-2">
+      <div className="w-full px-4 py-2 flex items-center justify-between z-10 flex-shrink-0">
+        <h2 className="text-base font-bold text-stone-700 flex items-center gap-2">
           <span>📖</span>
           {title || '未命名绘本'}
         </h2>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* 自动播放开关 */}
           <label className="flex items-center gap-2 cursor-pointer">
             <span className="text-xs text-stone-500">自动播放</span>
             <div
-              className={`w-10 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${
+              className={`w-9 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${
                 autoPlay ? 'bg-amber-500' : 'bg-stone-300'
               }`}
               onClick={() => setAutoPlay(!autoPlay)}
             >
               <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                autoPlay ? 'translate-x-5' : 'translate-x-0'
+                autoPlay ? 'translate-x-4' : 'translate-x-0'
               }`} />
             </div>
           </label>
@@ -409,7 +421,7 @@ const Flipbook = () => {
           {/* 播放/暂停按钮 */}
           <button
             onClick={toggleAudio}
-            className={`p-2 rounded-full transition-all ${
+            className={`p-1.5 rounded-full transition-all ${
               isPlaying
                 ? 'bg-amber-500 text-white animate-pulse'
                 : 'bg-amber-100 text-amber-600 hover:bg-amber-200'
@@ -417,11 +429,11 @@ const Flipbook = () => {
             title={isPlaying ? '暂停' : '播放'}
           >
             {isPlaying ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
               </svg>
             )}
@@ -436,24 +448,24 @@ const Flipbook = () => {
                 setIsPlaying(false);
               }
             }}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-1.5 rounded-full transition-colors ${
               isMuted ? 'bg-stone-300 text-stone-500' : 'bg-amber-100 text-amber-600'
             }`}
             title={isMuted ? '取消静音' : '静音'}
           >
             {isMuted ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
               </svg>
             )}
           </button>
 
-          <span className="text-sm text-stone-500">
+          <span className="text-xs text-stone-500">
             {currentPage} / {totalBookPages - 1}
           </span>
         </div>
@@ -461,7 +473,7 @@ const Flipbook = () => {
 
       {/* 3D 书籍容器 */}
       <div
-        className="relative flex-1 flex items-center justify-center"
+        className="relative flex-1 flex items-center justify-center w-full min-h-0"
         style={{ perspective: '2000px' }}
       >
         <div
@@ -541,29 +553,29 @@ const Flipbook = () => {
       </div>
 
       {/* 底部导航 */}
-      <div className="w-full px-6 py-4 flex items-center justify-center gap-8 z-10">
+      <div className="w-full px-4 py-2 flex items-center justify-center gap-6 z-10 flex-shrink-0">
         <button
           onClick={prevPage}
           disabled={currentPage === 0}
-          className={`p-3 rounded-full transition-all shadow-md active:scale-95 ${
+          className={`p-2 rounded-full transition-all shadow-md active:scale-95 ${
             currentPage === 0
               ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
               : 'bg-white text-amber-600 hover:bg-amber-50 hover:shadow-lg'
           }`}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
         {/* 进度指示器 */}
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {bookPages.map((_, i) => (
             <div
               key={i}
-              className={`h-2 rounded-full transition-all duration-500 ${
-                i === currentPage ? 'w-8 bg-amber-500' :
-                i < currentPage ? 'w-2 bg-amber-300' : 'w-2 bg-stone-300'
+              className={`h-1.5 rounded-full transition-all duration-500 ${
+                i === currentPage ? 'w-6 bg-amber-500' :
+                i < currentPage ? 'w-1.5 bg-amber-300' : 'w-1.5 bg-stone-300'
               }`}
             />
           ))}
@@ -571,18 +583,18 @@ const Flipbook = () => {
 
         <button
           onClick={currentPage === totalBookPages - 1 ? resetBook : nextPage}
-          className={`p-3 rounded-full transition-all shadow-md active:scale-95 ${
+          className={`p-2 rounded-full transition-all shadow-md active:scale-95 ${
             currentPage === totalBookPages - 1
               ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-200'
               : 'bg-white text-amber-600 hover:bg-amber-50 hover:shadow-lg'
           }`}
         >
           {currentPage === totalBookPages - 1 ? (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           )}
@@ -590,8 +602,8 @@ const Flipbook = () => {
       </div>
 
       {/* 键盘提示 */}
-      <p className="text-center text-xs text-stone-500 pb-3">
-        ⌨️ ← → 翻页 | 空格 播放/暂停 | 点击书页翻页
+      <p className="text-center text-xs text-stone-400 pb-1">
+        ⌨️ ← → 翻页 | 空格 播放/暂停
       </p>
     </div>
   );

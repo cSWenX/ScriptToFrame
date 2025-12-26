@@ -9,14 +9,15 @@ import { createContext, useContext, useReducer, useCallback } from 'react';
 const initialProject = {
   id: null,
   title: '未命名绘本',
+  story_name: '', // 故事名称缩写（用于资产命名）
   style_preset: 'watercolor', // 全局画风
   created_at: null,
   updated_at: null,
 
-  // 角色资产
+  // 资产库（角色+背景）
   assets: [],
 
-  // 页面数据
+  // 页面数据（包含分镜和语音脚本）
   pages: [],
 
   // 当前阶段 (1-4)
@@ -24,8 +25,8 @@ const initialProject = {
 
   // 各阶段状态: 'pending' | 'in_progress' | 'completed' | 'locked'
   phaseStatus: {
-    1: 'pending',      // 角色定妆
-    2: 'locked',       // 剧本确认
+    1: 'pending',      // 剧本确认
+    2: 'locked',       // 角色定妆
     3: 'locked',       // 图片生成
     4: 'locked'        // 音频合成
   },
@@ -39,14 +40,18 @@ const initialProject = {
   // 右侧当前激活的 Tab: 'assets' | 'storyboard' | 'flipbook'
   activeRightTab: 'assets',
 
-  // 左侧当前激活的 Tab: 'input' | 'script'
+  // 左侧当前激活的 Tab: 'input' | 'script' | 'voicescript'
   activeLeftTab: 'input',
 
   // 全局设置
   settings: {
     aspectRatio: '16:9',
     resolution: '2k',
-    language: 'zh'
+    language: 'zh',
+    pageCount: 8, // 分镜页数
+    enableSpeechBubble: false, // 是否启用语言气泡
+    bubbleLanguage: 'zh', // 气泡语言: 'zh' | 'en'
+    audioLanguage: 'zh' // 音频语言: 'zh' | 'en'
   }
 };
 
@@ -106,6 +111,7 @@ const ActionTypes = {
   // 阶段操作
   SET_PHASE: 'SET_PHASE',
   UPDATE_PHASE_STATUS: 'UPDATE_PHASE_STATUS',
+  UNLOCK_PHASE: 'UNLOCK_PHASE',
 
   // Tab 操作
   SET_RIGHT_TAB: 'SET_RIGHT_TAB',
@@ -295,6 +301,28 @@ function projectReducer(state, action) {
               ? { [action.payload.phase + 1]: 'pending' }
               : {})
           }
+        }
+      };
+
+    case ActionTypes.UNLOCK_PHASE:
+      // 解锁某个阶段，同时将后续阶段设为锁定
+      const phaseToUnlock = action.payload;
+      const newPhaseStatus = { ...state.project.phaseStatus };
+
+      // 将目标阶段设为 pending
+      newPhaseStatus[phaseToUnlock] = 'pending';
+
+      // 将后续阶段设为 locked
+      for (let i = phaseToUnlock + 1; i <= 4; i++) {
+        newPhaseStatus[i] = 'locked';
+      }
+
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          currentPhase: phaseToUnlock,
+          phaseStatus: newPhaseStatus
         }
       };
 
@@ -522,6 +550,10 @@ export function ProjectProvider({ children }) {
 
     updatePhaseStatus: useCallback((phase, status) => {
       dispatch({ type: ActionTypes.UPDATE_PHASE_STATUS, payload: { phase, status } });
+    }, []),
+
+    unlockPhase: useCallback((phase) => {
+      dispatch({ type: ActionTypes.UNLOCK_PHASE, payload: phase });
     }, []),
 
     // Tab 操作

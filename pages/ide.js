@@ -91,23 +91,25 @@ function IDEWorkspace() {
                   // 清空旧数据
                   actions.clearAssets();
 
-                  // 添加角色资产（已包含三视图提示词）
-                  const characters = result.characters || [];
-                  characters.forEach(char => {
+                  // 添加所有资产（包括角色和背景）
+                  const assets = result.assets || [];
+                  assets.forEach(asset => {
                     actions.addAsset({
-                      id: char.id,
-                      name: char.name,
-                      identity: char.identity,
-                      appearance: char.appearance,
-                      details: char.details,
-                      personality: char.personality,
-                      prompt: char.prompt,  // 三视图提示词
+                      id: asset.id,
+                      type: asset.type,  // 'character' 或 'background'
+                      name: asset.name,
+                      prompt: asset.prompt,
                       image_url: null,
                       locked: false
                     });
                   });
 
-                  // 设置分镜页面
+                  // 保存故事名称
+                  if (result.story_name) {
+                    actions.updateProject({ story_name: result.story_name });
+                  }
+
+                  // 设置分镜页面（包含asset_refs, voice_script, tts_text）
                   const pages = result.pages || [];
                   actions.setPages(pages);
 
@@ -122,7 +124,7 @@ function IDEWorkspace() {
 
                   actions.setProgress({ visible: false });
 
-                  console.log(`✅ [IDE] 分析完成: ${characters.length}个角色, ${pages.length}页`);
+                  console.log(`✅ [IDE] 分析完成: ${assets.length}个资产 (${assets.filter(a => a.type === 'character').length}角色 + ${assets.filter(a => a.type === 'background').length}背景), ${pages.length}页`);
 
                 } else if (data.type === 'error') {
                   throw new Error(data.error);
@@ -259,6 +261,7 @@ function IDEWorkspace() {
 
   /**
    * 阶段3: 生成单页图片
+   * 根据asset_refs顺序传递参考图片，并修改提示词使用图1图2图3
    */
   const handleGeneratePage = useCallback(async (pageIndex) => {
     const page = project.pages.find(p => p.page_index === pageIndex);
@@ -272,21 +275,55 @@ function IDEWorkspace() {
     });
 
     try {
-      // 获取锁定的角色名字（用于提示词拼接，不发送图片数据避免请求过大）
-      const lockedCharacters = project.assets
-        .filter(a => a.locked && a.image_url)
-        .map(a => ({ name: a.name }));  // 只发送名字
+      // 根据asset_refs顺序获取参考图片
+      const assetRefs = page.asset_refs || [];
+      const refImages = [];
+
+      assetRefs.forEach((refId, index) => {
+        const asset = project.assets.find(a => a.id === refId);
+        if (asset && asset.locked && asset.image_url) {
+          refImages.push({
+            index: index + 1,  // 图1, 图2, 图3...
+            id: refId,
+            name: asset.name,
+            type: asset.type,
+            image_url: asset.image_url
+          });
+        }
+      });
+
+      // 修改提示词：将资产ID替换为图1、图2、图3
+      let modifiedPrompt = page.jimeng_prompt || '';
+      assetRefs.forEach((refId, index) => {
+        const asset = project.assets.find(a => a.id === refId);
+        if (asset) {
+          // 替换 "Story-Char-01(小兔子)" 格式为 "图1(小兔子)"
+          const pattern = new RegExp(`${refId}\\s*\\([^)]+\\)`, 'g');
+          modifiedPrompt = modifiedPrompt.replace(pattern, `图${index + 1}(${asset.name})`);
+          // 也替换单独的ID
+          modifiedPrompt = modifiedPrompt.replace(new RegExp(refId, 'g'), `图${index + 1}`);
+        }
+      });
+
+      console.log(`📝 [IDE] 原始提示词: ${page.jimeng_prompt?.substring(0, 100)}...`);
+      console.log(`📝 [IDE] 修改后提示词: ${modifiedPrompt.substring(0, 100)}...`);
+      console.log(`🖼️ [IDE] 参考图片数量: ${refImages.length}`);
 
       const response = await fetch('/api/generate-page', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pageIndex,
-          jimengPrompt: page.jimeng_prompt,
+          jimengPrompt: modifiedPrompt,
           styleId: project.style_preset,
-          characters: lockedCharacters,
+          refImages: refImages,  // 按asset_refs顺序的参考图片
           aspectRatio: project.settings.aspectRatio,
-          resolution: project.settings.resolution
+          resolution: project.settings.resolution,
+          // 语言气泡设置
+          enableSpeechBubble: project.settings.enableSpeechBubble,
+          bubbleLanguage: project.settings.bubbleLanguage,
+          // 如果启用气泡，传递语音脚本用于生成气泡文字
+          voiceScript: project.settings.enableSpeechBubble ? page.voice_script : null
         })
       });
 
@@ -368,6 +405,7 @@ function IDEWorkspace() {
 
   /**
    * 阶段4: 生成所有音频
+   * 根据音频语言设置决定是否翻译
    */
   const handleGenerateAllAudio = useCallback(async () => {
     console.log('🔊 [IDE] 生成音频...');
@@ -381,16 +419,28 @@ function IDEWorkspace() {
     });
 
     try {
+      // 检查是否需要翻译（音频语言不是中文）
+      const audioLanguage = project.settings.audioLanguage || 'zh';
+      const needTranslation = audioLanguage !== 'zh';
+
       for (let i = 0; i < project.pages.length; i++) {
         const page = project.pages[i];
         actions.setProgress({
           value: Math.round((i / project.pages.length) * 100),
-          subtitle: `正在合成第 ${page.page_index} 页配音 (${i + 1}/${project.pages.length})`
+          subtitle: needTranslation
+            ? `正在翻译并合成第 ${page.page_index} 页配音 (${i + 1}/${project.pages.length})`
+            : `正在合成第 ${page.page_index} 页配音 (${i + 1}/${project.pages.length})`
         });
 
-        // 获取页面文本 - 从dialogues拼接（方案C：带角色名）
+        // 优先使用tts_text，其次从voice_script或dialogues拼接
         let text = '';
-        if (page.dialogues && Array.isArray(page.dialogues) && page.dialogues.length > 0) {
+        if (page.tts_text && page.tts_text.trim()) {
+          text = page.tts_text;
+        } else if (page.voice_script && Array.isArray(page.voice_script) && page.voice_script.length > 0) {
+          text = page.voice_script
+            .map(v => v.role === '旁白' ? v.text : `${v.role}说：${v.text}`)
+            .join(' ');
+        } else if (page.dialogues && Array.isArray(page.dialogues) && page.dialogues.length > 0) {
           text = page.dialogues
             .map(d => d.role === '旁白' ? d.text : `${d.role}说：${d.text}`)
             .join(' ');
@@ -404,18 +454,44 @@ function IDEWorkspace() {
           continue;
         }
 
-        console.log(`📝 [IDE] 第 ${page.page_index} 页配音文本: ${text.substring(0, 50)}...`);
+        // 如果需要翻译，调用翻译API
+        let finalText = text;
+        if (needTranslation) {
+          try {
+            console.log(`🌍 [IDE] 翻译第 ${page.page_index} 页文本到 ${audioLanguage}...`);
+            const translateResponse = await fetch('/api/translate-text', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                text: text,
+                targetLanguage: audioLanguage
+              })
+            });
+            const translateResult = await translateResponse.json();
+            if (translateResult.success) {
+              finalText = translateResult.data.translatedText;
+              console.log(`✅ [IDE] 翻译完成: ${finalText.substring(0, 50)}...`);
+            } else {
+              console.warn(`⚠️ [IDE] 翻译失败，使用原文: ${translateResult.error}`);
+            }
+          } catch (e) {
+            console.warn(`⚠️ [IDE] 翻译API调用失败，使用原文: ${e.message}`);
+          }
+        }
+
+        console.log(`📝 [IDE] 第 ${page.page_index} 页配音文本: ${finalText.substring(0, 50)}...`);
 
         // 调用Python后端TTS API
         const response = await fetch('http://localhost:8081/api/generate-audio', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: text,
+            text: finalText,
             page_index: page.page_index,
             speaker_id: 'child',
             speed_factor: '1.0',
-            pitch_factor: '1.0'
+            pitch_factor: '1.0',
+            language: audioLanguage
           })
         });
 
@@ -451,7 +527,7 @@ function IDEWorkspace() {
     } finally {
       setIsGeneratingAudio(false);
     }
-  }, [project.pages, actions]);
+  }, [project.pages, project.settings.audioLanguage, actions]);
 
   /**
    * 局部修图

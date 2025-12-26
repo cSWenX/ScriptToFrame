@@ -102,7 +102,24 @@ const PhaseController = ({
       status: phaseStatus[3],
       locked: !isPhase2Complete,
       targetTab: 'storyboard',
-      badge: pages.length > 0 ? `${pages.filter(p => p.image_url).length}/${pages.length}` : null
+      badge: pages.length > 0 ? `${pages.filter(p => p.image_url).length}/${pages.length}` : null,
+      // 额外设置：语言气泡
+      extraSettings: {
+        enableSpeechBubble: settings.enableSpeechBubble,
+        bubbleLanguage: settings.bubbleLanguage,
+        onToggleSpeechBubble: (enabled) => {
+          actions.updateSettings({ enableSpeechBubble: enabled });
+          // 如果关闭气泡，重置语言
+          if (!enabled) {
+            actions.updateSettings({ bubbleLanguage: 'zh' });
+          }
+        },
+        onLanguageChange: (lang) => {
+          actions.updateSettings({ bubbleLanguage: lang });
+          // 同步更新音频语言（作为默认值）
+          actions.updateSettings({ audioLanguage: lang });
+        }
+      }
     },
     {
       id: 4,
@@ -118,7 +135,14 @@ const PhaseController = ({
       },
       status: phaseStatus[4],
       locked: !isPhase3Complete,
-      targetTab: 'flipbook'
+      targetTab: 'flipbook',
+      // 音频语言设置
+      audioSettings: {
+        audioLanguage: settings.audioLanguage,
+        bubbleLanguage: settings.bubbleLanguage, // 用于显示默认值来源
+        enableSpeechBubble: settings.enableSpeechBubble,
+        onLanguageChange: (lang) => actions.updateSettings({ audioLanguage: lang })
+      }
     }
   ];
 
@@ -131,6 +155,13 @@ const PhaseController = ({
       } else {
         actions.setRightTab(phase.targetTab);
       }
+    }
+  };
+
+  // 解锁阶段处理
+  const handleUnlockPhase = (phaseId) => {
+    if (confirm(`确定要解锁"${phases.find(p => p.id === phaseId)?.title}"吗？\n\n解锁后，该阶段及之后的阶段都需要重新操作。`)) {
+      actions.unlockPhase(phaseId);
     }
   };
 
@@ -166,6 +197,7 @@ const PhaseController = ({
               phase={phase}
               isActive={currentPhase === phase.id}
               onClick={() => handlePhaseClick(phase)}
+              onUnlock={handleUnlockPhase}
             />
             {/* 连接线 */}
             {index < phases.length - 1 && (
@@ -271,7 +303,7 @@ const GlobalSettings = ({ style_preset, settings, onStyleChange, onSettingsChang
 /**
  * 阶段卡片组件
  */
-const PhaseCard = ({ phase, isActive, onClick }) => {
+const PhaseCard = ({ phase, isActive, onClick, onUnlock }) => {
   const getStatusStyle = () => {
     if (phase.locked) {
       return {
@@ -342,11 +374,161 @@ const PhaseCard = ({ phase, isActive, onClick }) => {
           </div>
         </div>
 
-        {/* 状态图标 */}
-        {style.statusIcon && (
-          <span className="text-base">{style.statusIcon}</span>
-        )}
+        {/* 状态图标或解锁按钮 */}
+        <div className="flex items-center gap-1">
+          {phase.status === 'completed' && onUnlock && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onUnlock(phase.id);
+              }}
+              className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors"
+              title="解锁此步骤重新操作"
+            >
+              🔓 解锁
+            </button>
+          )}
+          {style.statusIcon && !onUnlock && (
+            <span className="text-base">{style.statusIcon}</span>
+          )}
+          {style.statusIcon && onUnlock && phase.status !== 'completed' && (
+            <span className="text-base">{style.statusIcon}</span>
+          )}
+        </div>
       </div>
+
+      {/* 额外设置：语言气泡（阶段3专用） */}
+      {phase.extraSettings && !phase.locked && (
+        <div className="px-3 pb-2" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-blue-50 rounded-lg p-2 space-y-2">
+            {/* 语言气泡开关 */}
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-blue-600 flex items-center gap-1">
+                <span>💬</span>
+                语言气泡
+              </label>
+              <button
+                onClick={() => phase.extraSettings.onToggleSpeechBubble(!phase.extraSettings.enableSpeechBubble)}
+                className={`
+                  relative w-10 h-5 rounded-full transition-colors duration-200
+                  ${phase.extraSettings.enableSpeechBubble ? 'bg-blue-500' : 'bg-gray-300'}
+                `}
+              >
+                <span
+                  className={`
+                    absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200
+                    ${phase.extraSettings.enableSpeechBubble ? 'translate-x-5' : 'translate-x-0.5'}
+                  `}
+                />
+              </button>
+            </div>
+
+            {/* 语言选择 */}
+            <div className="flex items-center justify-between">
+              <label className={`text-xs font-bold flex items-center gap-1 ${
+                phase.extraSettings.enableSpeechBubble ? 'text-blue-600' : 'text-gray-400'
+              }`}>
+                <span>🌍</span>
+                气泡语言
+              </label>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => phase.extraSettings.onLanguageChange('zh')}
+                  disabled={!phase.extraSettings.enableSpeechBubble}
+                  className={`
+                    px-2 py-1 rounded text-xs font-bold transition-colors
+                    ${!phase.extraSettings.enableSpeechBubble
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : phase.extraSettings.bubbleLanguage === 'zh'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }
+                  `}
+                >
+                  中文
+                </button>
+                <button
+                  onClick={() => phase.extraSettings.onLanguageChange('en')}
+                  disabled={!phase.extraSettings.enableSpeechBubble}
+                  className={`
+                    px-2 py-1 rounded text-xs font-bold transition-colors
+                    ${!phase.extraSettings.enableSpeechBubble
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : phase.extraSettings.bubbleLanguage === 'en'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }
+                  `}
+                >
+                  English
+                </button>
+              </div>
+            </div>
+
+            {/* 提示信息 */}
+            <p className="text-xs text-blue-500">
+              {phase.extraSettings.enableSpeechBubble
+                ? `✅ 图片将包含${phase.extraSettings.bubbleLanguage === 'zh' ? '中文' : '英文'}对话气泡`
+                : '关闭后图片不包含对话气泡'
+              }
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 音频语言设置（阶段4专用） */}
+      {phase.audioSettings && !phase.locked && (
+        <div className="px-3 pb-2" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-purple-50 rounded-lg p-2 space-y-2">
+            {/* 音频语言选择 */}
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-purple-600 flex items-center gap-1">
+                <span>🎙️</span>
+                配音语言
+              </label>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => phase.audioSettings.onLanguageChange('zh')}
+                  className={`
+                    px-2 py-1 rounded text-xs font-bold transition-colors
+                    ${phase.audioSettings.audioLanguage === 'zh'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }
+                  `}
+                >
+                  中文
+                </button>
+                <button
+                  onClick={() => phase.audioSettings.onLanguageChange('en')}
+                  className={`
+                    px-2 py-1 rounded text-xs font-bold transition-colors
+                    ${phase.audioSettings.audioLanguage === 'en'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }
+                  `}
+                >
+                  English
+                </button>
+              </div>
+            </div>
+
+            {/* 提示信息 */}
+            <p className="text-xs text-purple-500">
+              {phase.audioSettings.audioLanguage === 'zh'
+                ? '✅ 将生成中文配音'
+                : '✅ 将翻译为英文后生成配音'
+              }
+              {phase.audioSettings.enableSpeechBubble && phase.audioSettings.bubbleLanguage !== phase.audioSettings.audioLanguage && (
+                <span className="text-orange-500 ml-1">
+                  ⚠️ 与气泡语言不一致
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* 操作按钮 */}
       {phase.action && !phase.locked && phase.status !== 'completed' && (
