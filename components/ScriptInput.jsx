@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 /**
- * 剧本输入组件 - 未来科技风格
+ * 剧本输入组件 - 儿童绘本风格
  * 功能: 大文本框、格式验证、实时字数统计
  */
 const ScriptInput = ({ value, onChange, onValidate }) => {
@@ -23,13 +23,13 @@ const ScriptInput = ({ value, onChange, onValidate }) => {
 
     if (!hasContent) {
       valid = false;
-      message = '请输入剧本内容';
+      message = '请输入故事内容';
     } else if (!minLength) {
       valid = false;
-      message = '剧本内容过短，建议至少20个字符';
+      message = '故事内容过短，建议至少20个字符';
     } else {
       valid = true;
-      message = '剧本内容已输入，可以进行AI分析';
+      message = '故事内容已准备好，可以开始创作绘本啦！';
     }
 
     setIsValid(valid);
@@ -43,67 +43,75 @@ const ScriptInput = ({ value, onChange, onValidate }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="cyber-card-header">
+      {/* 标题栏 - 儿童绘本风格 */}
+      <div className="storybook-card-header">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
-          <h2 className="text-lg font-semibold text-cyan-300 neon-text">剧本输入</h2>
+          <span className="text-2xl">📝</span>
+          <h2 className="text-lg font-bold text-orange-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            故事创作
+          </h2>
         </div>
         <div className="flex justify-between items-center mt-3">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-cyan-400/80 font-['Rajdhani']">
-              字数: <span className="text-cyan-300 font-bold">{wordCount}</span>
+            <span className="text-sm text-orange-500 font-medium" style={{ fontFamily: "'Nunito', sans-serif" }}>
+              📊 字数: <span className="text-blue-500 font-bold">{wordCount}</span>
             </span>
-            <div className={`status-indicator ${isValid ? 'status-success' : 'status-warning'}`}></div>
+            <div className={`status-dot ${isValid ? 'status-dot-success' : 'status-dot-warning'}`}></div>
           </div>
-          <div className={`text-sm font-['Rajdhani'] ${isValid ? 'text-green-400' : 'text-yellow-400'}`}>
-            {isValid ? '✓' : '⚠'} {validationMessage}
+          <div
+            className={`text-sm font-medium ${isValid ? 'text-green-500' : 'text-amber-500'}`}
+            style={{ fontFamily: "'Nunito', sans-serif" }}
+          >
+            {isValid ? '✅' : '⚠️'} {validationMessage}
           </div>
         </div>
       </div>
 
-      <div className="cyber-card-body flex-1 flex flex-col">
+      {/* 内容区域 */}
+      <div className="storybook-card-body flex-1 flex flex-col">
         <textarea
-          className={`cyber-textarea flex-1 min-h-[500px] cyber-scrollbar ${!isValid ? 'border-yellow-500/50' : ''}`}
+          className={`storybook-textarea flex-1 min-h-[500px] storybook-scrollbar ${!isValid ? 'border-amber-400' : ''}`}
           value={value}
           onChange={handleChange}
-          placeholder={`请输入漫剧剧本内容，AI会智能解析剧本并生成分镜图。
+          placeholder={`✨ 在这里写下你的故事，AI会帮你把它变成美丽的绘本！
 
-支持多种格式：
-• 标准剧本格式
+🎨 支持多种写法：
+• 童话故事格式
 • 小说段落
-• 对话形式
+• 角色对话
 • 场景描述
 
-示例1（对话型）：
-小明：我有话要对你说...
-小红：什么事？
+📖 示例1（对话型）：
+小兔子：我想去森林里探险！
+小熊：好呀，我们一起去吧！
 
-示例2（叙述型）：
-在咖啡厅里，小明紧张地看着小红。他深呼吸后说："我喜欢你很久了！"小红脸红，低声回答："我也是..."
+📖 示例2（叙述型）：
+在一个阳光明媚的早晨，小兔子蹦蹦跳跳地来到了小熊家门口。"我们去森林里玩吧！"小兔子开心地说。
 
-AI会自动识别角色、对话、动作和场景信息。`}
+🌟 AI会自动识别角色、对话、动作和场景，为你创作精美的绘本插图！`}
         />
 
-        <div className="mt-4 text-xs text-cyan-400/70 font-['Rajdhani']">
-          <p className="mb-2 text-cyan-300 font-semibold">
-            <span className="text-cyan-400">►</span> 使用说明：
+        {/* 使用说明 - 可爱风格 */}
+        <div className="mt-4 p-4 bg-blue-50 rounded-2xl border-2 border-blue-200">
+          <p className="mb-3 text-blue-600 font-bold flex items-center gap-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            <span className="text-xl">💡</span> 创作小贴士：
           </p>
-          <ul className="list-none space-y-1 ml-4">
+          <ul className="space-y-2 text-sm text-gray-600" style={{ fontFamily: "'Nunito', sans-serif" }}>
             <li className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">●</span>
-              AI可识别多种剧本格式，无需严格按照特定格式
+              <span className="text-green-500 font-bold">🌿</span>
+              AI可以理解各种写法，不用担心格式问题
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-blue-400 mt-0.5">●</span>
-              建议包含角色名称、对话内容、场景描述
+              <span className="text-blue-500 font-bold">🐰</span>
+              写上角色名字，让故事更生动
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-purple-400 mt-0.5">●</span>
-              动作和表情描述有助于生成更准确的分镜图
+              <span className="text-purple-500 font-bold">✨</span>
+              描述角色的表情和动作，画面会更精彩
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-0.5">●</span>
-              内容越详细，生成的分镜图效果越好
+              <span className="text-orange-500 font-bold">🌈</span>
+              故事越详细，绘本插图越漂亮
             </li>
           </ul>
         </div>

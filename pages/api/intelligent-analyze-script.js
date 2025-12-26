@@ -1,135 +1,95 @@
 /**
- * 智能剧本分析API - 替换原有的mock-analyze-script
- * 执行4步Claude工作流：故事切分 → 关键帧提取 → 提示词生成 → 结果整合
+ * 智能剧本分析API v2
+ * 单步AI分析：同时生成分镜脚本 + 提取角色
  */
 
-// 使用代理API，不能用官方SDK
+import { STYLE_CONFIG } from '../../config/styles';
 
-// 第一步：故事切分的提示词
-const STEP1_PROMPT_TEMPLATE = `# Role: 资深编辑与分镜师
+// 分镜脚本生成提示词（去风格化版本）
+const STORYBOARD_PROMPT_TEMPLATE = `# Role: AI 绘本导演与分镜统筹 (Story & Layout Master)
 
-# Task:
-请阅读我提供的【故事文本】，并将其切分为【Target_Number】个部分。
-切分后的每一部分将用于生成单张关键分镜，因此需要保证每一段的文字量适中，且包含明确的画面信息。
+## Task
+请阅读我提供的故事，将其改编为一份**逐页拆解的绘本分镜脚本**。
+你需要同时扮演两个角色：
+1.  **编剧**: 编写生动、有画面感的故事描述和角色对白（用于后期配音）。
+2.  **排版师**: 为即梦 (Jimeng) 编写包含**精确构图、角色位置、气泡台词**的绘画提示词。
 
-# Inputs:
-1. 故事文本: {SCRIPT_CONTENT}
-2. 切分份数 (Target_Number): {SCENE_COUNT}
+## Process (执行步骤)
+1.  **Step 1: 建立角色名册 (Character Roster)**
+    * 通读全文，识别所有出场角色。
+    * 对群体角色进行拆分（如：蝌蚪老大、老二、老三），并定义其简要特征。
+    * **在脚本最前方列出这份名单**。
+2.  **Step 2: 逐页编写分镜 (Page-by-Page)**
+    * **上层（剧本层）**: 保留故事的原汁原味。将心理描写转化为有声对白。
+    * **下层（指令层）**: 将上层的画面转化为冷冰冰的、精确的视觉指令。
 
-# Important Rules:
-1. 必须严格按照要求的份数进行切分，确保生成**准确的{SCENE_COUNT}份**内容
-2. 保持故事原汁原味，不要删减细节，只是进行物理切分
-3. 确保切分点落在情节转折或动作变换的自然停顿处
-4. 每一份都必须包含完整的画面信息，适合生成分镜图
-5. 如果故事较短，可以按照时间顺序、地点变化、人物动作等进行合理切分
+## Constraints (核心约束)
+1.  **故事味 (Story Flavor)**: [画面] 和 [对白] 部分必须生动、口语化，适合朗读。
+2.  **排版强制 (Layout Enforcement)**:
+    * **数量**: 提示词中必须写明"画面中有[数字]个角色"。
+    * **位置**: 必须写明"[角色名]位于画面[左/右/中/角落]"。
+    * **气泡**: 必须包含"从[角色名]嘴边冒出气泡，气泡内清晰地写着中文文本：'[台词]'"。
+3.  **去风格化 (No Style)**: 即梦提示词中**严禁**出现风格修饰词（如：吉卜力、水彩、3D等），仅描述内容。
+4.  **页数控制**: 将故事拆分为 {PAGE_COUNT} 页。
 
-# Output Format:
-请严格按照以下格式输出每一份，确保输出{SCENE_COUNT}份：
+## Output Format (输出格式 - JSON)
+请严格按照以下JSON格式输出，确保可以被JSON.parse解析：
 
----
-## 第1份
-**完整剧情原文**: [这里必须放入切分出来的原始故事文本，不要概括]
-**核心视觉点**: [用一句话提炼这段文字最核心的画面内容]
----
-## 第2份
-**完整剧情原文**: [这里必须放入切分出来的原始故事文本，不要概括]
-**核心视觉点**: [用一句话提炼这段文字最核心的画面内容]
----
-[继续输出到第{SCENE_COUNT}份]
-
-记住：必须输出准确的{SCENE_COUNT}份内容！`;
-
-// 第二步：关键帧提取的提示词
-const STEP2_PROMPT_TEMPLATE = `# Role: 视觉导演
-
-# Task:
-基于上一步切分的每一份【完整剧情原文】，将其转化为具体的画面视觉描述。
-
-# Logic Rules (关键):
-1. 对于 **第1份 到 第{LAST_SCENE_INDEX}份**：
-   - 只提炼 **1个"开始帧"**。这个画面代表该段剧情开始时的状态。
-2. 对于 **最后一份 (第{SCENE_COUNT}份)**：
-   - 提炼 **1个"开始帧"**。
-   - 额外提炼 **1个"结束帧"**（作为整个故事的落幅/结局）。
-
-# Requirement:
-描述必须包含：
-- **主体**: 角色是谁，在做什么动作。
-- **环境**: 背景细节，天气，时间。
-- **氛围**: 光影颜色，情绪基调。
-
-# Input (上一步的切分结果):
-{SEGMENTED_STORY}
-
-# Output Format:
----
-## 第X份
-**帧类型**: [开始帧 / 结束帧]
-**画面描述**: (例如：暴雨夜，林默站在霓虹闪烁的巷口，风衣被风吹起，右手按在刀柄上，眼神冷冽)
----`;
-
-// 第三步：即梦提示词生成
-const STEP3_PROMPT_TEMPLATE = `# Role: AI绘图提示词专家 (即梦/Jimeng 专项优化)
-
-# Setup (角色一致性):
-在生成提示词之前，请先帮我建立主要角色的【特征词库】。
-对于故事中的主角，请固定以下格式：
-- [角色名]: (具体的发型, 发色, 瞳色, 服装细节, 特殊配饰)
-*请确保在每一条包含该角色的提示词中，都完整包含这些特征词。*
-
-# Style & Quality (画风设置):
-每一条提示词必须包含以下前缀：
-(Masterpiece, top quality, highly detailed, 8k resolution, cinematic lighting, dynamic composition) + {STYLE_SETTING}
-
-# Task:
-将第二步得到的每一个"画面描述"转化为即梦可用的提示词。
-
-# Input (上一步的关键帧结果):
-{EXTRACTED_FRAMES}
-
-# Output Format:
-请严格按以下格式输出：
-
----
-### [序号] 第X份-[帧类型]
-**中文辅助描述**: [简短的中文画面说明，方便我确认]
-**Jimeng Prompt**: [画风修饰词], [角色特征词], [动作与具体场景描述], [环境与光影], [镜头语言: 如 close-up, wide angle, depth of field] --ar 16:9
----`;
-
-// 调用DeepSeek API的通用函数
-async function callDeepSeek(prompt, stepName, requestId) {
-  try {
-    console.log(`🤖 [智能分析-${requestId}] 执行${stepName}...`);
-    console.log(`📤 [智能分析-${requestId}] DeepSeek请求参数:`, {
-      url: process.env.DEEPSEEK_BASE_URL + '/chat/completions',
-      model: 'deepseek-chat',
-      max_tokens: 4000,
-      temperature: 0.7,
-      promptLength: prompt.length,
-      stepName: stepName,
-      timestamp: new Date().toISOString()
-    });
-
-    const requestData = {
-      model: 'deepseek-chat',
-      messages: [
+\`\`\`json
+{
+  "characters": [
+    {
+      "name": "角色名",
+      "identity": "角色身份（如：小兔子、老奶奶）",
+      "appearance": "外貌描述（发型、发色、眼睛、体型等）",
+      "details": "服装和配饰细节",
+      "personality": "性格特点"
+    }
+  ],
+  "pages": [
+    {
+      "page_index": 1,
+      "scene_description": "画面描述（生动的语言，包含动作和环境）",
+      "dialogues": [
         {
-          role: 'user',
-          content: prompt
+          "role": "说话角色名或旁白",
+          "text": "台词内容"
         }
       ],
-      max_tokens: 4000,
-      temperature: 0.7
-    };
+      "jimeng_prompt": "构图：[景别]。布局：画面中有[数字]个角色。[角色名]位于画面[位置]。动作：[动作描述]。气泡：从[角色名]嘴边冒出白色对话气泡，气泡内写着中文：'[台词]'。环境：[背景描述]。"
+    }
+  ]
+}
+\`\`\`
 
-    console.log(`🔗 [智能分析-${requestId}] 发送请求到DeepSeek API...`);
+## Input Story
+以下是我的故事原文：
+{STORY_CONTENT}`;
 
-    // 创建AbortController用于超时控制
+// 角色三视图提示词生成（根据风格）
+function generateCharacterPromptByStyle(styleId, character) {
+  const styleConfig = STYLE_CONFIG[styleId];
+  if (!styleConfig) {
+    console.warn(`未找到风格配置: ${styleId}, 使用默认 watercolor`);
+    return generateCharacterPromptByStyle('watercolor', character);
+  }
+
+  return styleConfig.characterPromptTemplate
+    .replace('{CHARACTER_IDENTITY}', character.identity || character.name)
+    .replace('{APPEARANCE_DESC}', character.appearance || '')
+    .replace('{DETAIL_DESC}', character.details || '');
+}
+
+// 调用DeepSeek API
+async function callDeepSeek(prompt, requestId) {
+  try {
+    console.log(`🤖 [智能分析-${requestId}] 调用DeepSeek API...`);
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
-      console.warn(`⏰ [智能分析-${requestId}] ${stepName}超时，中断请求 (60秒)`);
+      console.warn(`⏰ [智能分析-${requestId}] 请求超时，中断 (90秒)`);
       controller.abort();
-    }, 60000); // 设置60秒超时
+    }, 90000);
 
     const startTime = Date.now();
     const response = await fetch(process.env.DEEPSEEK_BASE_URL + '/chat/completions', {
@@ -138,335 +98,220 @@ async function callDeepSeek(prompt, stepName, requestId) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
       },
-      body: JSON.stringify(requestData),
-      signal: controller.signal // 添加超时控制
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 8000,
+        temperature: 0.7
+      }),
+      signal: controller.signal
     });
 
     clearTimeout(timeoutId);
     const responseTime = Date.now() - startTime;
 
-    console.log(`📥 [智能分析-${requestId}] DeepSeek响应:`, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: {
-        'content-type': response.headers.get('content-type'),
-        'content-length': response.headers.get('content-length')
-      },
-      stepName: stepName,
-      responseTime: `${responseTime}ms`
-    });
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ [智能分析-${requestId}] DeepSeek API错误:`, {
-        status: response.status,
-        statusText: response.statusText,
-        errorText: errorText.substring(0, 500),
-        stepName: stepName
-      });
-      throw new Error(`${stepName}失败: HTTP ${response.status} - ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
     }
 
     const result = await response.json();
+    const content = result.choices?.[0]?.message?.content;
 
-    console.log(`📊 [智能分析-${requestId}] DeepSeek响应数据:`, {
-      hasChoices: !!result.choices,
-      choicesLength: result.choices ? result.choices.length : 0,
-      hasContent: !!(result.choices && result.choices[0] && result.choices[0].message && result.choices[0].message.content),
-      contentLength: (result.choices && result.choices[0] && result.choices[0].message && result.choices[0].message.content) ? result.choices[0].message.content.length : 0,
-      usage: result.usage || 'no usage info',
-      stepName: stepName,
-      responseTime: `${responseTime}ms`
-    });
-
-    if (!result.choices || !result.choices[0] || !result.choices[0].message || !result.choices[0].message.content) {
-      console.error(`❌ [智能分析-${requestId}] DeepSeek响应格式错误:`, {
-        result: result,
-        stepName: stepName
-      });
-      throw new Error(`${stepName}失败: API返回格式错误`);
+    if (!content) {
+      throw new Error('API返回内容为空');
     }
 
-    const content = result.choices[0].message.content;
-    console.log(`✅ [智能分析-${requestId}] ${stepName}成功，内容长度: ${content.length}, 耗时: ${responseTime}ms`);
-
+    console.log(`✅ [智能分析-${requestId}] DeepSeek响应成功，耗时: ${responseTime}ms，内容长度: ${content.length}`);
     return content;
 
   } catch (error) {
-    console.error(`💥 [智能分析-${requestId}] ${stepName}异常:`, {
-      message: error.message,
-      name: error.name,
-      stack: error.stack?.split('\n')[0],
-      stepName: stepName,
-      timestamp: new Date().toISOString()
-    });
-
-    // 根据错误类型提供更具体的错误信息
+    console.error(`❌ [智能分析-${requestId}] DeepSeek调用失败:`, error.message);
     if (error.name === 'AbortError') {
-      throw new Error(`${stepName}失败: 请求超时（60秒），可能是网络问题或API响应过慢`);
-    } else if (error.message.includes('fetch')) {
-      throw new Error(`${stepName}失败: 网络连接错误 - ${error.message}`);
-    } else if (error.message.includes('terminated')) {
-      throw new Error(`${stepName}失败: 连接被终止，可能是API服务器问题`);
-    } else {
-      throw new Error(`${stepName}失败: ${error.message}`);
+      throw new Error('请求超时（90秒），请稍后重试');
     }
+    throw error;
   }
 }
 
-// 解析第三步的结果，提取提示词和中文描述
-function parseStep3Results(claudeResponse) {
-  console.log('🔍 解析第3步结果，内容长度:', claudeResponse.length);
-  console.log('🔍 前500字符预览:', claudeResponse.substring(0, 500));
+// 解析AI返回的JSON结果
+function parseAIResponse(responseText, styleId) {
+  console.log('🔍 解析AI响应，内容长度:', responseText.length);
 
-  const frames = [];
+  // 尝试提取JSON部分
+  let jsonStr = responseText;
 
-  // 尝试多种分割方式
-  const sections = claudeResponse.split('---').filter(section => section.trim());
+  // 移除markdown代码块标记
+  const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+  if (jsonMatch) {
+    jsonStr = jsonMatch[1];
+  } else {
+    // 尝试找到JSON对象
+    const startIndex = responseText.indexOf('{');
+    const endIndex = responseText.lastIndexOf('}');
+    if (startIndex !== -1 && endIndex !== -1) {
+      jsonStr = responseText.substring(startIndex, endIndex + 1);
+    }
+  }
 
-  console.log('📊 分割后的部分数量:', sections.length);
+  try {
+    const data = JSON.parse(jsonStr);
 
-  sections.forEach((section, index) => {
-    const trimmedSection = section.trim();
-    console.log(`📝 处理第${index + 1}部分:`, trimmedSection.substring(0, 200) + '...');
+    // 处理角色数据，添加三视图提示词
+    const characters = (data.characters || []).map((char, index) => ({
+      id: `char_${Date.now()}_${index}`,
+      name: char.name,
+      identity: char.identity || char.name,
+      appearance: char.appearance || '',
+      details: char.details || '',
+      personality: char.personality || '',
+      // 根据风格生成三视图提示词
+      prompt: generateCharacterPromptByStyle(styleId, char),
+      image_url: null,
+      locked: false
+    }));
 
-    // 更灵活的匹配模式
-    const chineseMatch = trimmedSection.match(/\*\*中文辅助描述\*\*[:：]\s*([^\n]+)/);
-    const promptMatch = trimmedSection.match(/\*\*Jimeng Prompt\*\*[:：]\s*([^\n]+)/);
+    // 处理页面数据
+    const pages = (data.pages || []).map((page, index) => ({
+      page_index: page.page_index || index + 1,
+      scene_description: page.scene_description || '',
+      dialogues: page.dialogues || [],
+      jimeng_prompt: page.jimeng_prompt || '',
+      image_url: null,
+      audio_url: null,
+      status: 'pending'
+    }));
 
-    // 匹配标题中的序号和类型信息
-    const titleMatch = trimmedSection.match(/###\s*\[?\d*\]?\s*第(\d+)份[-—]?(开始帧|结束帧)/);
+    console.log(`✅ 解析成功: ${characters.length}个角色, ${pages.length}页`);
+    return { characters, pages };
 
-    console.log('🔎 匹配结果:', {
-      sectionIndex: index,
-      hasChineseMatch: !!chineseMatch,
-      hasPromptMatch: !!promptMatch,
-      hasTitleMatch: !!titleMatch,
-      chineseText: chineseMatch ? chineseMatch[1] : null,
-      promptText: promptMatch ? promptMatch[1]?.substring(0, 100) + '...' : null
+  } catch (error) {
+    console.error('❌ JSON解析失败:', error.message);
+    console.log('原始内容:', jsonStr.substring(0, 500));
+    throw new Error('AI返回格式解析失败，请重试');
+  }
+}
+
+// SSE流式响应处理
+async function handleStreamingAnalysis(req, res, requestId, story, pageCount, styleId) {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const sendProgress = (progress, message) => {
+    res.write(`data: ${JSON.stringify({ type: 'progress', progress, message })}\n\n`);
+    res.flush?.();
+  };
+
+  try {
+    sendProgress(0, '开始分析故事...');
+
+    // 构建提示词
+    const prompt = STORYBOARD_PROMPT_TEMPLATE
+      .replace('{PAGE_COUNT}', pageCount.toString())
+      .replace('{STORY_CONTENT}', story);
+
+    sendProgress(10, 'AI正在阅读故事...');
+
+    // 调用AI
+    const aiResponse = await callDeepSeek(prompt, requestId);
+
+    sendProgress(70, '解析分镜脚本...');
+
+    // 解析结果
+    const { characters, pages } = parseAIResponse(aiResponse, styleId);
+
+    sendProgress(90, '生成角色提示词...');
+
+    // 发送完成结果
+    res.write(`data: ${JSON.stringify({
+      type: 'complete',
+      data: {
+        characters,
+        pages,
+        storyboard_frames: pages, // 兼容旧格式
+        style: styleId,
+        analysisComplete: true
+      }
+    })}\n\n`);
+    res.flush?.();
+
+    sendProgress(100, '分析完成');
+
+    console.log(`✅ [智能分析-${requestId}] 流式分析完成`);
+    res.end();
+
+  } catch (error) {
+    console.error(`❌ [智能分析-${requestId}] 分析失败:`, error.message);
+    res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+    res.flush?.();
+    res.end();
+  }
+}
+
+// 传统JSON响应处理
+async function handleTraditionalAnalysis(req, res, requestId, story, pageCount, styleId) {
+  try {
+    const prompt = STORYBOARD_PROMPT_TEMPLATE
+      .replace('{PAGE_COUNT}', pageCount.toString())
+      .replace('{STORY_CONTENT}', story);
+
+    const aiResponse = await callDeepSeek(prompt, requestId);
+    const { characters, pages } = parseAIResponse(aiResponse, styleId);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        characters,
+        pages,
+        storyboard_frames: pages,
+        style: styleId,
+        analysisComplete: true
+      }
     });
 
-    if (chineseMatch && promptMatch) {
-      const sceneIndex = titleMatch ? parseInt(titleMatch[1]) : index + 1;
-      const frameType = titleMatch ? titleMatch[2] : '开始帧';
-
-      const frame = {
-        sequence: index + 1,
-        sceneIndex: sceneIndex,
-        frameType: frameType,
-        chineseDescription: chineseMatch[1].trim(),
-        jimengPrompt: promptMatch[1].trim(),
-        imageUrl: null,
-        isGenerating: false,
-        error: null
-      };
-
-      console.log('✅ 成功解析帧:', {
-        sequence: frame.sequence,
-        sceneIndex: frame.sceneIndex,
-        frameType: frame.frameType,
-        descLength: frame.chineseDescription.length,
-        promptLength: frame.jimengPrompt.length
-      });
-
-      frames.push(frame);
-    } else {
-      console.log('❌ 该部分匹配失败，跳过');
-    }
-  });
-
-  console.log(`🎯 最终解析结果: 共${frames.length}个有效帧`);
-  return frames;
+  } catch (error) {
+    console.error(`❌ [智能分析-${requestId}] 分析失败:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 }
 
 export default async function handler(req, res) {
   const requestId = Date.now();
 
-  console.log(`🎭 [智能分析-${requestId}] 收到智能分析请求:`, {
-    method: req.method,
-    timestamp: new Date().toISOString(),
-    userAgent: req.headers['user-agent']?.substring(0, 50),
-    contentLength: req.headers['content-length']
-  });
+  console.log(`🎭 [智能分析-${requestId}] 收到请求`);
 
   if (req.method !== 'POST') {
-    console.error(`❌ [智能分析-${requestId}] 错误方法:`, req.method);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
   try {
-    console.log(`📋 [智能分析-${requestId}] 解析请求体:`, {
-      bodyKeys: req.body ? Object.keys(req.body) : []
-    });
+    const { script, sceneCount = 8, style = 'watercolor' } = req.body;
 
-    const { script, sceneCount, style, genre } = req.body;
-
-    console.log(`📝 [智能分析-${requestId}] 提取的参数:`, {
-      scriptLength: script ? script.length : 0,
-      sceneCount: sceneCount,
-      style: style,
-      genre: genre,
-      hasScript: !!script,
-      hasSceneCount: !!sceneCount
-    });
-
-    if (!script || !sceneCount) {
-      console.error(`❌ [智能分析-${requestId}] 缺少必要参数:`, {
-        hasScript: !!script,
-        hasSceneCount: !!sceneCount
-      });
+    if (!script || script.trim().length < 50) {
       return res.status(400).json({
         success: false,
-        error: '缺少必要参数: script, sceneCount'
+        error: '故事内容太短，请至少输入50个字符'
       });
     }
 
-    console.log('🎭 开始智能剧本分析:', {
-      scriptLength: script.length,
-      sceneCount,
-      style,
-      genre
-    });
+    const { stream } = req.query;
 
-    // 第一步：故事切分
-    console.log(`🤖 [智能分析-${requestId}] 执行第1步: 故事切分...`);
-    const step1Prompt = STEP1_PROMPT_TEMPLATE
-      .replace('{SCRIPT_CONTENT}', script)
-      .replace('{SCENE_COUNT}', sceneCount.toString());
-
-    console.log(`📤 [智能分析-${requestId}] Step1 提示词长度: ${step1Prompt.length}`);
-
-    const segmentedStory = await callDeepSeek(step1Prompt, '第1步: 故事切分', requestId);
-
-    console.log(`📥 [智能分析-${requestId}] Step1 结果长度: ${segmentedStory.length}`);
-
-    // 第二步：关键帧提取
-    console.log(`🤖 [智能分析-${requestId}] 执行第2步: 关键帧提取...`);
-    const step2Prompt = STEP2_PROMPT_TEMPLATE
-      .replace('{LAST_SCENE_INDEX}', (sceneCount - 1).toString())
-      .replace('{SCENE_COUNT}', sceneCount.toString())
-      .replace('{SEGMENTED_STORY}', segmentedStory);
-
-    console.log(`📤 [智能分析-${requestId}] Step2 提示词长度: ${step2Prompt.length}`);
-
-    const extractedFrames = await callDeepSeek(step2Prompt, '第2步: 关键帧提取', requestId);
-
-    console.log(`📥 [智能分析-${requestId}] Step2 结果长度: ${extractedFrames.length}`);
-
-    // 第三步：提示词生成
-    console.log(`🤖 [智能分析-${requestId}] 执行第3步: 提示词生成...`);
-    const styleMapping = {
-      'anime': 'anime style',
-      'realistic': 'photorealistic style',
-      'cyberpunk': 'cyberpunk style',
-      'traditional': 'traditional chinese painting style'
-    };
-
-    console.log(`🎨 [智能分析-${requestId}] 样式映射:`, {
-      inputStyle: style,
-      mappedStyle: styleMapping[style] || style
-    });
-
-    const step3Prompt = STEP3_PROMPT_TEMPLATE
-      .replace('{STYLE_SETTING}', styleMapping[style] || style)
-      .replace('{EXTRACTED_FRAMES}', extractedFrames);
-
-    console.log(`📤 [智能分析-${requestId}] Step3 提示词长度: ${step3Prompt.length}`);
-
-    const promptResults = await callDeepSeek(step3Prompt, '第3步: 提示词生成', requestId);
-
-    console.log(`📥 [智能分析-${requestId}] Step3 结果长度: ${promptResults.length}`);
-
-    // 第四步：解析结果
-    console.log(`🤖 [智能分析-${requestId}] 执行第4步: 结果解析...`);
-    const frames = parseStep3Results(promptResults);
-
-    console.log(`📊 [智能分析-${requestId}] Step4 解析结果:`, {
-      totalFrames: frames.length,
-      framesInfo: frames.map(frame => ({
-        sequence: frame.sequence,
-        sceneIndex: frame.sceneIndex,
-        frameType: frame.frameType,
-        hasChineseDescription: !!frame.chineseDescription,
-        hasJimengPrompt: !!frame.jimengPrompt,
-        chineseDescLength: frame.chineseDescription ? frame.chineseDescription.length : 0,
-        jimengPromptLength: frame.jimengPrompt ? frame.jimengPrompt.length : 0
-      }))
-    });
-
-    if (frames.length === 0) {
-      console.error(`❌ [智能分析-${requestId}] Step4 解析失败: 未能提取到有效的提示词`, {
-        promptResultsLength: promptResults.length,
-        promptResultsPreview: promptResults.substring(0, 200) + '...'
-      });
-      throw new Error('第4步: 结果解析失败，未能提取到有效的提示词');
+    if (stream === 'true') {
+      return await handleStreamingAnalysis(req, res, requestId, script, sceneCount, style);
+    } else {
+      return await handleTraditionalAnalysis(req, res, requestId, script, sceneCount, style);
     }
-
-    console.log(`✅ [智能分析-${requestId}] 智能分析完成，生成${frames.length}个关键帧`);
-
-    // 构造返回结果
-    const result = {
-      success: true,
-      data: {
-        script_analysis: {
-          sceneCount: sceneCount,
-          frameCount: frames.length,
-          genre_detected: genre,
-          segmented_story: segmentedStory,
-          extracted_frames: extractedFrames
-        },
-        storyboard_frames: frames,
-        recommendedStyle: style,
-        recommendedGenre: genre,
-        intelligentAnalysisComplete: true
-      }
-    };
-
-    console.log(`📤 [智能分析-${requestId}] 构造返回结果:`, {
-      success: result.success,
-      dataKeys: Object.keys(result.data),
-      scriptAnalysisKeys: Object.keys(result.data.script_analysis),
-      storyboardFramesLength: result.data.storyboard_frames.length,
-      intelligentAnalysisComplete: result.data.intelligentAnalysisComplete,
-      resultSize: JSON.stringify(result).length
-    });
-
-    console.log(`✅ [智能分析-${requestId}] 智能分析响应发送完成`);
-    res.status(200).json(result);
 
   } catch (error) {
-    console.error(`❌ [智能分析-${requestId}] 智能剧本分析失败:`, {
-      message: error.message,
-      name: error.name,
-      stack: error.stack?.split('\n')[0],
-      timestamp: new Date().toISOString()
-    });
-
-    // 判断是哪一步失败
-    let stepInfo = '';
-    if (error.message.includes('第1步')) stepInfo = '第1步 故事切分';
-    else if (error.message.includes('第2步')) stepInfo = '第2步 关键帧提取';
-    else if (error.message.includes('第3步')) stepInfo = '第3步 提示词生成';
-    else if (error.message.includes('第4步')) stepInfo = '第4步 结果解析';
-    else stepInfo = '未知步骤';
-
-    console.error(`❌ [智能分析-${requestId}] 失败步骤: ${stepInfo}`, {
-      errorMessage: error.message,
-      failedStep: stepInfo
-    });
-
-    const errorResponse = {
+    console.error(`❌ [智能分析-${requestId}] 请求处理失败:`, error.message);
+    res.status(500).json({
       success: false,
-      error: `智能分析失败 - ${stepInfo}: ${error.message}`,
-      failedStep: stepInfo
-    };
-
-    console.log(`📤 [智能分析-${requestId}] 错误响应发送:`, {
-      success: errorResponse.success,
-      errorLength: errorResponse.error.length,
-      failedStep: errorResponse.failedStep
+      error: error.message
     });
-
-    res.status(500).json(errorResponse);
   }
 }

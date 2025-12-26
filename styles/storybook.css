@@ -1,0 +1,764 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🎨 儿童绘本风格全局样式 */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #FEF9E7 0%, #FFFBEB 50%, #FEF3C7 100%);
+  background-attachment: fixed;
+  color: #5D4E37;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* 柔和的装饰背景 - 波点图案 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 2px 2px, rgba(251, 146, 60, 0.15) 2px, transparent 0);
+  background-size: 40px 40px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 🎯 标题字体 - 圆润可爱 */
+.storybook-title {
+  font-family: 'Fredoka', 'Comic Sans MS', cursive;
+  font-weight: 600;
+  color: #F97316;
+  text-shadow: 2px 2px 0px rgba(251, 146, 60, 0.3);
+}
+
+.storybook-subtitle {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500;
+  color: #78716C;
+}
+
+/* 🎨 儿童绘本面板 */
+.storybook-panel {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFBF5 100%);
+  border: 3px solid #FBBF24;
+  border-radius: 24px;
+  box-shadow:
+    0 4px 6px rgba(251, 191, 36, 0.1),
+    0 10px 40px rgba(251, 146, 60, 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.storybook-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 🍬 糖果风格按钮 - 基础样式 */
+.candy-button {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 14px 28px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  position: relative;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* 橙色糖果按钮 */
+.candy-button-orange {
+  background: linear-gradient(180deg, #FB923C 0%, #F97316 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #C2410C,
+    0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+.candy-button-orange:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 #C2410C,
+    0 10px 30px rgba(249, 115, 22, 0.5);
+}
+
+.candy-button-orange:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #C2410C,
+    0 4px 15px rgba(249, 115, 22, 0.3);
+}
+
+/* 蓝色糖果按钮 */
+.candy-button-blue {
+  background: linear-gradient(180deg, #60A5FA 0%, #3B82F6 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #1D4ED8,
+    0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.candy-button-blue:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 #1D4ED8,
+    0 10px 30px rgba(59, 130, 246, 0.5);
+}
+
+.candy-button-blue:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #1D4ED8,
+    0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* 绿色糖果按钮 */
+.candy-button-green {
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #15803D,
+    0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.candy-button-green:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 #15803D,
+    0 10px 30px rgba(34, 197, 94, 0.5);
+}
+
+.candy-button-green:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #15803D,
+    0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+/* 粉色糖果按钮 */
+.candy-button-pink {
+  background: linear-gradient(180deg, #F472B6 0%, #EC4899 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #BE185D,
+    0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.candy-button-pink:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 #BE185D,
+    0 10px 30px rgba(236, 72, 153, 0.5);
+}
+
+.candy-button-pink:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #BE185D,
+    0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+/* 紫色糖果按钮 */
+.candy-button-purple {
+  background: linear-gradient(180deg, #A78BFA 0%, #8B5CF6 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #6D28D9,
+    0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.candy-button-purple:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 #6D28D9,
+    0 10px 30px rgba(139, 92, 246, 0.5);
+}
+
+.candy-button-purple:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 #6D28D9,
+    0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* 灰色/禁用糖果按钮 */
+.candy-button-gray {
+  background: linear-gradient(180deg, #D1D5DB 0%, #9CA3AF 100%);
+  color: white;
+  box-shadow:
+    0 4px 0 #6B7280,
+    0 6px 20px rgba(156, 163, 175, 0.4);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 🎀 柔和输入框 */
+.storybook-input {
+  background: #FFFFFF;
+  border: 3px solid #FCD34D;
+  border-radius: 16px;
+  color: #5D4E37;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 14px 18px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.storybook-input::placeholder {
+  color: #A8A29E;
+  font-weight: 400;
+}
+
+.storybook-input:focus {
+  outline: none;
+  border-color: #F97316;
+  box-shadow:
+    0 0 0 4px rgba(249, 115, 22, 0.15),
+    0 4px 12px rgba(249, 115, 22, 0.1);
+}
+
+/* 🎀 柔和文本域 */
+.storybook-textarea {
+  background: #FFFFFF;
+  border: 3px solid #FCD34D;
+  border-radius: 16px;
+  color: #5D4E37;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 16px 18px;
+  width: 100%;
+  min-height: 200px;
+  resize: vertical;
+  transition: all 0.3s ease;
+  line-height: 1.6;
+}
+
+.storybook-textarea:focus {
+  outline: none;
+  border-color: #F97316;
+  box-shadow:
+    0 0 0 4px rgba(249, 115, 22, 0.15),
+    0 4px 12px rgba(249, 115, 22, 0.1);
+}
+
+/* 🎀 柔和选择框 */
+.storybook-select {
+  background: #FFFFFF;
+  border: 3px solid #FCD34D;
+  border-radius: 16px;
+  color: #5D4E37;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 14px 18px;
+  width: 100%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23F97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 45px;
+}
+
+.storybook-select:focus {
+  outline: none;
+  border-color: #F97316;
+  box-shadow:
+    0 0 0 4px rgba(249, 115, 22, 0.15),
+    0 4px 12px rgba(249, 115, 22, 0.1);
+}
+
+/* 🌈 可爱滑块 */
+.storybook-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, #FEF3C7, #FBBF24, #F97316);
+  outline: none;
+}
+
+.storybook-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FEF3C7 100%);
+  box-shadow:
+    0 2px 8px rgba(249, 115, 22, 0.4),
+    0 0 0 4px #F97316;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.storybook-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 4px 12px rgba(249, 115, 22, 0.5),
+    0 0 0 4px #F97316;
+}
+
+.storybook-slider::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FEF3C7 100%);
+  box-shadow:
+    0 2px 8px rgba(249, 115, 22, 0.4),
+    0 0 0 4px #F97316;
+  cursor: pointer;
+  border: none;
+}
+
+/* 🎴 儿童绘本卡片 */
+.storybook-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFBF5 100%);
+  border: 3px solid #FBBF24;
+  border-radius: 24px;
+  box-shadow:
+    0 4px 6px rgba(251, 191, 36, 0.1),
+    0 8px 30px rgba(251, 146, 60, 0.12);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.storybook-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 8px 12px rgba(251, 191, 36, 0.15),
+    0 16px 40px rgba(251, 146, 60, 0.2);
+  border-color: #F97316;
+}
+
+.storybook-card-header {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-bottom: 3px solid #FBBF24;
+  padding: 16px 20px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #B45309;
+}
+
+.storybook-card-body {
+  padding: 20px;
+}
+
+/* 🎠 加载动画 - 弹跳点 */
+.storybook-spinner {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.storybook-spinner span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+
+.storybook-spinner span:nth-child(1) {
+  background: #F97316;
+  animation-delay: 0s;
+}
+
+.storybook-spinner span:nth-child(2) {
+  background: #FBBF24;
+  animation-delay: 0.2s;
+}
+
+.storybook-spinner span:nth-child(3) {
+  background: #22C55E;
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-12px); }
+}
+
+/* 🌈 可爱进度条 */
+.storybook-progress {
+  width: 100%;
+  height: 16px;
+  background: #FEF3C7;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid #FCD34D;
+}
+
+.storybook-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #FB923C, #F97316, #EA580C);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.storybook-progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 💬 可爱提示框 */
+.storybook-tooltip {
+  position: absolute;
+  z-index: 50;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5D4E37;
+  background: #FFFFFF;
+  border: 2px solid #FBBF24;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(251, 146, 60, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.storybook-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 🚦 状态指示器 */
+.status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-dot-success {
+  background: #22C55E;
+}
+
+.status-dot-warning {
+  background: #FBBF24;
+}
+
+.status-dot-error {
+  background: #EF4444;
+}
+
+.status-dot-info {
+  background: #3B82F6;
+}
+
+.status-dot-pending {
+  background: #9CA3AF;
+}
+
+/* 🎪 标签/徽章 */
+.storybook-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 2px solid;
+}
+
+.storybook-badge-orange {
+  background: #FFF7ED;
+  border-color: #FB923C;
+  color: #C2410C;
+}
+
+.storybook-badge-blue {
+  background: #EFF6FF;
+  border-color: #60A5FA;
+  color: #1D4ED8;
+}
+
+.storybook-badge-green {
+  background: #F0FDF4;
+  border-color: #4ADE80;
+  color: #15803D;
+}
+
+.storybook-badge-pink {
+  background: #FDF2F8;
+  border-color: #F472B6;
+  color: #BE185D;
+}
+
+/* 📱 响应式设计 */
+@media (max-width: 768px) {
+  body::before {
+    background-size: 30px 30px;
+  }
+
+  .storybook-panel {
+    border-radius: 16px;
+    border-width: 2px;
+  }
+
+  .candy-button {
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  .storybook-card {
+    border-radius: 16px;
+  }
+}
+
+/* 🎨 自定义滚动条 - 可爱风格 */
+.storybook-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #FBBF24 #FEF3C7;
+}
+
+.storybook-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.storybook-scrollbar::-webkit-scrollbar-track {
+  background: #FEF3C7;
+  border-radius: 5px;
+}
+
+.storybook-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FBBF24 0%, #F97316 100%);
+  border-radius: 5px;
+  border: 2px solid #FEF3C7;
+}
+
+.storybook-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #F97316 0%, #EA580C 100%);
+}
+
+/* ✨ 动画效果 */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 🎭 入场动画 */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 动画延迟类 */
+.delay-75 { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+/* 🎨 文字颜色工具类 */
+.text-warm-brown { color: #5D4E37; }
+.text-warm-gray { color: #78716C; }
+.text-orange-primary { color: #F97316; }
+.text-orange-dark { color: #C2410C; }
+
+/* 🎨 背景色工具类 */
+.bg-cream { background-color: #FFFBEB; }
+.bg-cream-dark { background-color: #FEF3C7; }
+.bg-warm-white { background-color: #FFFBF5; }
+
+/* 🖼️ 图片容器 - 圆润风格 */
+.storybook-image-container {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FBBF24 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 3px solid #FBBF24;
+}
+
+.storybook-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 3px dashed #FBBF24;
+  border-radius: 16px;
+  color: #B45309;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+/* 🎪 导航侧边栏样式 */
+.storybook-nav {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFFBF5 100%);
+  border-right: 3px solid #FBBF24;
+  box-shadow: 4px 0 20px rgba(251, 146, 60, 0.1);
+}
+
+.storybook-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  color: #78716C;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+  margin: 4px 8px;
+}
+
+.storybook-nav-item:hover {
+  background: #FEF3C7;
+  color: #F97316;
+}
+
+.storybook-nav-item.active {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #C2410C;
+  border: 2px solid #FBBF24;
+}
+
+/* 🎯 阶段指示器 */
+.phase-indicator {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #FFFFFF;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.phase-indicator.pending {
+  border-color: #D1D5DB;
+  background: #F9FAFB;
+}
+
+.phase-indicator.in-progress {
+  border-color: #FBBF24;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  box-shadow: 0 2px 12px rgba(251, 191, 36, 0.2);
+}
+
+.phase-indicator.completed {
+  border-color: #22C55E;
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+}
+
+.phase-indicator.locked {
+  border-color: #9CA3AF;
+  background: #F3F4F6;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 📖 翻页书样式预留 */
+.flipbook-page {
+  background: #FFFFFF;
+  border-radius: 4px;
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.1),
+    inset 0 0 60px rgba(0, 0, 0, 0.02);
+}
+
+.flipbook-page-corner {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, transparent 50%, #FEF3C7 50%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flipbook-page-corner:hover {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, transparent 50%, #FBBF24 50%);
+}

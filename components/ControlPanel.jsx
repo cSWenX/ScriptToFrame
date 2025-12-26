@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 /**
- * 控制面板组件 - 未来科技风格
+ * 控制面板组件 - 儿童绘本风格
  * 功能: 关键帧数量、画风选择、生成控制
  */
 const ControlPanel = ({
@@ -23,29 +23,27 @@ const ControlPanel = ({
   const [language, setLanguage] = useState('zh');
   const [aspectRatio, setAspectRatio] = useState('16:9');
 
-  // 画风选项
+  // 画风选项 - 儿童绘本风格
   const styleOptions = [
-    { value: 'default', label: '默认风格' },
-    { value: 'anime', label: '日漫风格' },
-    { value: 'manga', label: '国漫风格' },
-    { value: 'korean', label: '韩漫风格' },
-    { value: '3d', label: '3D风格' },
-    { value: 'chibi', label: 'Q版风格' },
-    { value: 'realistic', label: '写实风格' }
+    { value: 'default', label: '🎨 默认风格' },
+    { value: 'watercolor', label: '🖌️ 水彩插画' },
+    { value: 'cartoon', label: '🎪 卡通风格' },
+    { value: 'crayon', label: '🖍️ 蜡笔风格' },
+    { value: 'fairytale', label: '🧚 童话风格' },
+    { value: 'papercut', label: '✂️ 剪纸风格' },
+    { value: 'flat', label: '📐 扁平插画' }
   ];
 
-  // 题材类型选项
+  // 题材类型选项 - 儿童故事
   const genreOptions = [
-    { value: 'general', label: '通用' },
-    { value: 'xuanhuan', label: '玄幻修仙' },
-    { value: 'urban', label: '都市逆袭/战神' },
-    { value: 'system', label: '系统流/穿越' },
-    { value: 'apocalypse', label: '末日/规则怪谈' },
-    { value: 'romance', label: '霸总甜宠' },
-    { value: 'ancient', label: '古风宫斗' },
-    { value: 'rebirth', label: '穿书/重生' },
-    { value: 'comedy', label: '搞笑沙雕' },
-    { value: 'suspense', label: '悬疑惊悚' }
+    { value: 'general', label: '📚 通用' },
+    { value: 'fairytale', label: '🏰 经典童话' },
+    { value: 'adventure', label: '🗺️ 冒险故事' },
+    { value: 'animals', label: '🐻 动物故事' },
+    { value: 'friendship', label: '🤝 友谊故事' },
+    { value: 'family', label: '👨‍👩‍👧 家庭故事' },
+    { value: 'nature', label: '🌿 自然科普' },
+    { value: 'fantasy', label: '✨ 奇幻故事' }
   ];
 
   // 分辨率选项
@@ -57,9 +55,9 @@ const ControlPanel = ({
 
   // 语言选项
   const languageOptions = [
-    { value: 'zh', label: '中文' },
-    { value: 'en', label: 'English' },
-    { value: 'ja', label: '日本語' }
+    { value: 'zh', label: '🇨🇳 中文' },
+    { value: 'en', label: '🇺🇸 English' },
+    { value: 'ja', label: '🇯🇵 日本語' }
   ];
 
   const handleAnalyze = () => {
@@ -100,43 +98,46 @@ const ControlPanel = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="cyber-card-header">
+      {/* 标题栏 */}
+      <div className="storybook-card-header">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></div>
-          <h2 className="text-lg font-semibold text-purple-300 neon-text">控制中心</h2>
+          <span className="text-2xl">🎮</span>
+          <h2 className="text-lg font-bold text-orange-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            控制中心
+          </h2>
         </div>
       </div>
 
-      <div className="cyber-card-body flex-1 space-y-6 cyber-scrollbar overflow-y-auto">
-        {/* 关键帧数量 */}
-        <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            剧场数量: <span className="text-purple-400 font-bold">{frameCount}</span>
-            <span className="text-xs text-purple-300/70">(生成{frameCount + 1}帧)</span>
+      <div className="storybook-card-body flex-1 space-y-5 storybook-scrollbar overflow-y-auto">
+        {/* 页数设置 */}
+        <div className="storybook-panel p-4">
+          <label className="block text-sm font-bold text-orange-600 mb-3" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            📖 绘本页数: <span className="text-blue-500">{frameCount}</span>
+            <span className="text-xs text-gray-500 font-normal ml-1">(生成{frameCount + 1}页)</span>
           </label>
           <input
             type="range"
             min="3"
-            max="12"
+            max="40"
             value={frameCount}
             onChange={(e) => setFrameCount(parseInt(e.target.value))}
-            className="cyber-slider w-full"
+            className="storybook-slider w-full"
           />
-          <div className="flex justify-between text-xs text-cyan-400/60 mt-2 font-['Rajdhani']">
-            <span>3</span>
-            <span>12</span>
+          <div className="flex justify-between text-xs text-gray-500 mt-2 font-medium">
+            <span>3页</span>
+            <span>40页</span>
           </div>
         </div>
 
         {/* 画风选择 */}
         <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            画风风格
+          <label className="block text-sm font-bold text-orange-600 mb-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            🎨 画风风格
           </label>
           <select
             value={style}
             onChange={(e) => setStyle(e.target.value)}
-            className="cyber-select"
+            className="storybook-select"
           >
             {styleOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -146,15 +147,15 @@ const ControlPanel = ({
           </select>
         </div>
 
-        {/* 漫剧类型 */}
+        {/* 故事类型 */}
         <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            漫剧类型
+          <label className="block text-sm font-bold text-orange-600 mb-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            📚 故事类型
           </label>
           <select
             value={genre}
             onChange={(e) => setGenre(e.target.value)}
-            className="cyber-select"
+            className="storybook-select"
           >
             {genreOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -166,13 +167,13 @@ const ControlPanel = ({
 
         {/* 图片分辨率 */}
         <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            分辨率
+          <label className="block text-sm font-bold text-orange-600 mb-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            📐 分辨率
           </label>
           <select
             value={resolution}
             onChange={(e) => setResolution(e.target.value)}
-            className="cyber-select"
+            className="storybook-select"
           >
             {resolutionOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -184,13 +185,13 @@ const ControlPanel = ({
 
         {/* 语言设置 */}
         <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            语言
+          <label className="block text-sm font-bold text-orange-600 mb-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            🌐 语言
           </label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="cyber-select"
+            className="storybook-select"
           >
             {languageOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -202,57 +203,53 @@ const ControlPanel = ({
 
         {/* 图片比例 */}
         <div>
-          <label className="block text-sm font-medium text-cyan-300 mb-3 font-['Orbitron'] tracking-wide">
-            比例
+          <label className="block text-sm font-bold text-orange-600 mb-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+            📏 比例
           </label>
           <select
             value={aspectRatio}
             onChange={(e) => setAspectRatio(e.target.value)}
-            className="cyber-select"
+            className="storybook-select"
           >
-            <option value="16:9">16:9 (横屏)</option>
-            <option value="1:1">1:1 (方形)</option>
-            <option value="9:16">9:16 (竖屏)</option>
+            <option value="16:9">📺 16:9 (横屏)</option>
+            <option value="1:1">⬜ 1:1 (方形)</option>
+            <option value="9:16">📱 9:16 (竖屏)</option>
           </select>
         </div>
 
-        {/* AI分析按钮 */}
-        <div className="pt-4 border-t border-cyan-500/30">
+        {/* AI分析按钮区域 */}
+        <div className="pt-4 border-t-2 border-yellow-200">
           {isAnalyzing ? (
-            // 分析进行中时显示停止按钮
             <button
               onClick={onStopAnalysis}
-              className="cyber-button cyber-button-warning w-full mb-4"
+              className="candy-button candy-button-pink w-full mb-4"
             >
-              <div className="flex items-center gap-2">
-                <span>⏹️</span>
-                <span>停止分析</span>
-              </div>
+              <span>⏹️</span>
+              <span>停止分析</span>
             </button>
           ) : (
-            // 正常情况下显示分析按钮
             <button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
-              className="cyber-button cyber-button-primary w-full mb-4"
+              className="candy-button candy-button-orange w-full mb-4"
             >
-              <div className="flex items-center gap-2">
-                <span>🧠</span>
-                <span>AI智能分析</span>
-              </div>
+              <span>🧠</span>
+              <span>AI智能分析</span>
             </button>
           )}
 
           {analysisResult && (
-            <div className="text-xs text-cyan-300/80 mb-4 p-3 bg-cyan-500/10 rounded border border-cyan-500/30 backdrop-blur-sm">
+            <div className="text-sm mb-4 p-4 bg-green-50 rounded-2xl border-2 border-green-300">
               <div className="flex items-center gap-2 mb-2">
-                <div className="status-indicator status-success"></div>
-                <span className="font-semibold text-green-400">分析完成</span>
+                <span className="status-dot status-dot-success"></span>
+                <span className="font-bold text-green-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+                  ✨ 分析完成!
+                </span>
               </div>
-              <p className="text-cyan-400/70 font-['Rajdhani']">
+              <p className="text-gray-600 text-xs">
                 推荐: {analysisResult.recommendedGenre} | {analysisResult.recommendedStyle}
               </p>
-              <p className="text-cyan-400/70 font-['Rajdhani']">
+              <p className="text-gray-600 text-xs">
                 场景: {analysisResult.estimatedScenes}个
               </p>
             </div>
@@ -262,78 +259,68 @@ const ControlPanel = ({
         {/* 生成按钮区域 */}
         <div className="space-y-3 pb-4">
           {isGeneratingFirst ? (
-            // 生成第一张图进行中时显示停止按钮
             <button
               onClick={onStopFirstFrame}
-              className="cyber-button cyber-button-warning w-full"
+              className="candy-button candy-button-pink w-full"
             >
-              <div className="flex items-center gap-2">
-                <span>⏹️</span>
-                <span>停止生成</span>
-              </div>
+              <span>⏹️</span>
+              <span>停止生成</span>
             </button>
           ) : (
-            // 正常情况下显示生成第一张图按钮
             <button
               onClick={handleGenerateFirst}
               disabled={isGeneratingFirst || !analysisResult}
-              className="cyber-button cyber-button-success w-full"
+              className={`candy-button w-full ${!analysisResult ? 'candy-button-gray' : 'candy-button-green'}`}
             >
-              <div className="flex items-center gap-2">
-                <span>🎬</span>
-                <span>生成第一张图</span>
-              </div>
+              <span>🎬</span>
+              <span>生成第一页</span>
             </button>
           )}
 
           {isGeneratingAll ? (
-            // 批量生成进行中时显示停止按钮
             <button
               onClick={onStopAllFrames}
-              className="cyber-button cyber-button-warning w-full"
+              className="candy-button candy-button-pink w-full"
             >
-              <div className="flex items-center gap-2">
-                <span>⏹️</span>
-                <span>停止生成</span>
-              </div>
+              <span>⏹️</span>
+              <span>停止生成</span>
             </button>
           ) : (
-            // 正常情况下显示批量生成按钮
             <button
               onClick={handleGenerateAll}
               disabled={isGeneratingAll || !analysisResult}
-              className="cyber-button cyber-button-danger w-full"
+              className={`candy-button w-full ${!analysisResult ? 'candy-button-gray' : 'candy-button-blue'}`}
             >
-              <div className="flex items-center gap-2">
-                <span>🚀</span>
-                <span>生成所有分镜</span>
-              </div>
+              <span>🚀</span>
+              <span>生成所有页面</span>
             </button>
           )}
         </div>
 
         {/* 提示信息 */}
-        <div className="text-xs text-cyan-400/60 p-4 bg-blue-500/5 rounded-lg border border-blue-500/20 backdrop-blur-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-blue-400">ℹ️</span>
-            <span className="font-semibold text-blue-300">操作指南</span>
+        <div className="text-sm p-4 bg-blue-50 rounded-2xl border-2 border-blue-200">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xl">💡</span>
+            <span className="font-bold text-blue-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+              操作指南
+            </span>
           </div>
-          <ul className="list-none space-y-1 ml-4 font-['Rajdhani']">
+          <ul className="space-y-2 text-gray-600 text-xs">
             <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-0.5">1.</span>
-              先点击"AI智能分析"解析剧本
+              <span className="text-orange-500 font-bold">1.</span>
+              先点击"AI智能分析"解析故事
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-0.5">2.</span>
-              生成第一张图确认风格
+              <span className="text-orange-500 font-bold">2.</span>
+              生成第一页确认风格
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-0.5">3.</span>
-              满意后生成所有分镜图
+              <span className="text-orange-500 font-bold">3.</span>
+              满意后生成所有页面
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-cyan-400 mt-0.5">4.</span>
-              可单独重新生成任意图片
+              <span className="text-orange-500 font-bold">4.</span>
+              可单独重新生成任意页面
             </li>
           </ul>
         </div>

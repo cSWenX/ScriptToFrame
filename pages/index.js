@@ -7,8 +7,8 @@ import ProgressBar from '../components/ProgressBar';
 import { getApiEndpoint } from '../config/api-config';
 
 /**
- * ScriptToFrame 主页面
- * 三栏布局: 剧本输入(30%) - 控制面板(15%) - 分镜显示(55%)
+ * 儿童绘本创作工具 - 主页面
+ * 三栏布局: 故事输入(30%) - 控制面板(15%) - 绘本画板(55%)
  */
 export default function Home() {
   const [script, setScript] = useState('');
@@ -91,7 +91,7 @@ export default function Home() {
   };
 
   /**
-   * AI智能分析剧本 (新4步工作流 + 进度条)
+   * AI智能分析剧本 (使用SSE流式进度 + fetch stream方案)
    */
   const handleAnalyzeScript = async (config) => {
     console.log('🎭 [前端] 开始AI智能分析:', {
@@ -105,15 +105,20 @@ export default function Home() {
         script: !!script,
         scriptValid: scriptValid
       });
-      alert('请先输入有效的剧本内容');
+      alert('请先输入有效的故事内容');
       return;
     }
 
     // 启动进度条
+    console.log('⏳ [前端] 设置状态: isAnalyzing=true, progress=0, visible=true');
     setIsAnalyzing(true);
     setCurrentConfig(config);
     setAnalysisProgress(0);
-    setProgressVisible(prev => ({ ...prev, analysis: true }));
+    setProgressVisible(prev => {
+      const newState = { ...prev, analysis: true };
+      console.log('⏳ [前端] progressVisible 新状态:', newState);
+      return newState;
+    });
 
     // 清除之前的分析结果
     console.log('🧹 [前端] 清除之前的分析结果');
@@ -121,107 +126,138 @@ export default function Home() {
     setFrames([]);
     setFirstFrameData(null);
 
-    // 模拟4步分析进度
-    const updateProgress = (step, progress) => {
-      const totalSteps = 4;
-      const stepProgress = ((step - 1) / totalSteps) * 100 + (progress / totalSteps);
-      setAnalysisProgress(Math.min(100, stepProgress));
-    };
-
     try {
       // 创建AbortController用于停止控制
       const controller = new AbortController();
       setAnalysisController(controller);
 
-      // 步骤1: 准备请求 (0-10%)
-      updateProgress(1, 10);
-      const apiEndpoint = getApiEndpoint('intelligentAnalyze');
-      console.log('🔗 [前端] API端点:', apiEndpoint);
-
-      const requestData = {
-        script,
-        sceneCount: config.frameCount,
-        style: config.style,
-        genre: config.genre
-      };
-
-      // 步骤2: 发送请求 (10-20%)
-      updateProgress(1, 20);
-      console.log('📤 [前端] 发送请求数据:', {
-        ...requestData,
-        scriptLength: requestData.script.length,
-        script: requestData.script.substring(0, 100) + '...'
+      // 构建请求URL
+      const params = new URLSearchParams({
+        stream: 'true'
       });
 
-      // 步骤3: 等待响应 (20-80%)
-      updateProgress(2, 0);
-      const response = await fetch(apiEndpoint, {
+      console.log('🔗 [前端] 调用API: /api/intelligent-analyze-script?stream=true');
+
+      // 使用fetch + ReadableStream处理SSE流
+      const response = await fetch(`/api/intelligent-analyze-script?${params.toString()}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestData),
-        signal: controller.signal // 添加停止信号
+        body: JSON.stringify({
+          script,
+          sceneCount: config.frameCount,
+          style: config.style,
+          genre: config.genre
+        }),
+        signal: controller.signal
       });
 
-      updateProgress(3, 50);
       console.log('📥 [前端] 收到响应:', {
         status: response.status,
         statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-
-      // 步骤4: 处理结果 (80-100%)
-      updateProgress(3, 80);
-      const result = await response.json();
-      console.log('📊 [前端] 解析响应数据:', {
-        success: result.success,
-        dataType: typeof result.data,
-        error: result.error,
-        failedStep: result.failedStep
-      });
-
-      updateProgress(4, 90);
-
-      if (result.success) {
-        console.log('✅ [前端] 智能分析成功:', {
-          frameCount: result.data?.storyboard_frames?.length || 0,
-          analysisSteps: result.data?.analysis_steps || 'unknown'
-        });
-
-        setAnalysisResult(result.data);
-        const frameStructure = result.data.storyboard_frames.map(frame => ({
-          ...frame,
-          id: `frame_${frame.sequence}`,
-          displayDescription: frame.chineseDescription,
-          prompt: frame.jimengPrompt,
-          isGenerating: false,
-          imageUrl: null,
-          error: null
-        }));
-        setFrames(frameStructure);
-
-        console.log('🎬 [前端] 生成的关键帧结构:', frameStructure.map(frame => ({
-          sequence: frame.sequence,
-          hasPrompt: !!frame.prompt,
-          hasDescription: !!frame.displayDescription
-        })));
-
-        // 完成进度条
-        updateProgress(4, 100);
-        setTimeout(() => {
-          setProgressVisible(prev => ({ ...prev, analysis: false }));
-        }, 2000);
-
-        console.log(`✅ 智能分析完成，生成${frameStructure.length}个关键帧`);
-      } else {
-        console.error('❌ [前端] 智能分析API返回失败:', result);
-        alert(`智能分析失败: ${result.error}`);
-        if (result.failedStep) {
-          console.error('失败步骤:', result.failedStep);
+        headers: {
+          'content-type': response.headers.get('content-type')
         }
-        setProgressVisible(prev => ({ ...prev, analysis: false }));
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+
+      // 处理SSE流 - 使用更健壮的行解析方法
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let eventCount = 0;
+
+      console.log('📊 [前端] 开始读取SSE流...');
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          console.log(`✅ [前端] SSE流读取完成，共收到${eventCount}个事件`);
+          break;
+        }
+
+        // 将新数据添加到缓冲区
+        buffer += decoder.decode(value, { stream: true });
+        console.log(`📥 [前端] 收到${value.length}字节数据，缓冲区大小: ${buffer.length}`);
+
+        // 处理完整的行（以 \n\n 分隔的SSE事件）
+        // SSE格式: data: {...}\n\n
+        const events = buffer.split('\n\n');
+
+        // 保留最后一个不完整的事件在缓冲区
+        buffer = events.pop() || '';
+        console.log(`📍 [前端] 分割后事件数: ${events.length}, 剩余缓冲: ${buffer.length}`);
+
+        for (const event of events) {
+          // 跳过空事件
+          if (!event.trim()) {
+            console.log('⏭️  [前端] 跳过空事件');
+            continue;
+          }
+
+          // 提取 data: 行
+          const lines = event.split('\n').filter(line => line.trim());
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              eventCount++;
+              const dataStr = line.slice(6).trim();
+              console.log(`📨 [前端] 收到SSE事件 #${eventCount}: ${dataStr.substring(0, 80)}...`);
+
+              try {
+                const data = JSON.parse(dataStr);
+
+                if (data.type === 'progress') {
+                  // 实时更新进度条
+                  console.log(`📊 [前端] 收到进度事件: Step${data.step}, ${data.progress}%, 消息: ${data.message}`);
+                  setAnalysisProgress(data.progress);
+                  console.log(`📊 [前端] 进度条已更新为: ${data.progress}%`);
+                }
+                else if (data.type === 'complete') {
+                  // 分析完成
+                  console.log('✅ [前端] AI智能分析完成');
+                  setAnalysisResult(data.data);
+
+                  const frameStructure = data.data.storyboard_frames.map(frame => ({
+                    ...frame,
+                    id: `frame_${frame.sequence}`,
+                    displayDescription: frame.chineseDescription,
+                    prompt: frame.jimengPrompt,
+                    isGenerating: false,
+                    imageUrl: null,
+                    error: null
+                  }));
+                  setFrames(frameStructure);
+
+                  console.log('🎬 [前端] 生成的关键帧结构:', frameStructure.map(frame => ({
+                    sequence: frame.sequence,
+                    hasPrompt: !!frame.prompt,
+                    hasDescription: !!frame.displayDescription
+                  })));
+
+                  // 2秒后隐藏进度条
+                  setTimeout(() => {
+                    setProgressVisible(prev => ({ ...prev, analysis: false }));
+                  }, 2000);
+
+                  console.log(`✅ 智能分析完成，生成${frameStructure.length}个关键帧`);
+                }
+                else if (data.type === 'error') {
+                  console.error('❌ [前端] AI智能分析失败:', data.error);
+                  alert(`智能分析失败: ${data.error}`);
+                  setProgressVisible(prev => ({ ...prev, analysis: false }));
+                }
+              } catch (e) {
+                console.error('❌ [前端] 解析SSE数据失败:', e.message, 'Line:', line);
+              }
+            }
+          }
+        }
+      }
+
     } catch (error) {
       console.error('💥 [前端] 智能分析网络错误:', {
         message: error.message,
@@ -246,7 +282,7 @@ export default function Home() {
   };
 
   /**
-   * 生成第一张图 (新版本支持即梦提示词 + 进度条)
+   * 生成第一张图 (单步进度 - 从0%推进到100%)
    */
   const handleGenerateFirstFrame = async (config) => {
     console.log('🖼️ [前端] 开始生成第一张图:', {
@@ -257,11 +293,8 @@ export default function Home() {
     });
 
     if (!analysisResult || !frames.length) {
-      console.error('❌ [前端] 生成第一张图失败: 缺少分析结果', {
-        analysisResult: !!analysisResult,
-        framesLength: frames.length
-      });
-      alert('请先分析剧本');
+      console.error('❌ [前端] 生成第一张图失败: 缺少分析结果');
+      alert('请先进行AI智能分析');
       return;
     }
 
@@ -270,23 +303,12 @@ export default function Home() {
     setFirstFrameProgress(0);
     setProgressVisible(prev => ({ ...prev, firstFrame: true }));
 
-    // 模拟图片生成进度
-    const updateProgress = (step, progress) => {
-      const totalSteps = 3;
-      const stepProgress = ((step - 1) / totalSteps) * 100 + (progress / totalSteps);
-      setFirstFrameProgress(Math.min(100, stepProgress));
-    };
-
     try {
-      // 步骤1: 准备第一帧数据 (0-20%)
-      updateProgress(1, 0);
       const firstFrame = frames[0];
       console.log('🎯 [前端] 第一帧数据:', {
         sequence: firstFrame.sequence,
         hasPrompt: !!(firstFrame.prompt || firstFrame.jimengPrompt),
-        hasDescription: !!(firstFrame.displayDescription || firstFrame.chineseDescription),
-        promptLength: (firstFrame.prompt || firstFrame.jimengPrompt || '').length,
-        descriptionLength: (firstFrame.displayDescription || firstFrame.chineseDescription || '').length
+        hasDescription: !!(firstFrame.displayDescription || firstFrame.chineseDescription)
       });
 
       // 检查是否有提示词
@@ -298,11 +320,12 @@ export default function Home() {
         return;
       }
 
-      updateProgress(1, 50);
+      // 更新进度：30% (准备数据完成)
+      setFirstFrameProgress(30);
 
-      // 步骤2: 发送到Python后端 (20-80%)
+      // 发送到Python后端
       const controller = new AbortController();
-      setFirstFrameController(controller); // 保存到state中供停止按钮使用
+      setFirstFrameController(controller);
 
       const timeoutId = setTimeout(() => {
         console.warn('⏰ [前端] 图片生成超时，中断请求 (10分钟)');
@@ -318,57 +341,30 @@ export default function Home() {
         characters: []
       };
 
-      updateProgress(2, 10);
-      console.log('📤 [前端] 发送图片生成请求:', {
-        frame: {
-          sequence: requestData.frame.sequence,
-          hasPrompt: !!requestData.frame.prompt
-        },
-        promptLength: requestData.prompt.length,
-        prompt: requestData.prompt.substring(0, 100) + '...',
-        descriptionLength: (requestData.chineseDescription || '').length,
-        style: requestData.style,
-        configKeys: Object.keys(requestData.config || {})
-      });
+      console.log('📤 [前端] 发送图片生成请求到Python后端');
 
-      updateProgress(2, 30);
-      console.log('🔗 [前端] 调用Python后端API: /api/generate-image-python');
+      // 更新进度：50% (发送请求完成)
+      setFirstFrameProgress(50);
 
       const response = await fetch('/api/generate-image-python', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData),
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
-      updateProgress(2, 70);
-      console.log('📥 [前端] 收到图片生成响应:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
 
-      // 步骤3: 处理结果 (80-100%)
-      updateProgress(3, 0);
+      // 更新进度：75% (收到响应)
+      setFirstFrameProgress(75);
+
+      console.log('📥 [前端] 收到图片生成响应, status:', response.status);
+
       const result = await response.json();
-      console.log('📊 [前端] 解析图片生成响应数据:', {
-        success: result.success,
-        hasData: !!result.data,
-        hasImageUrl: !!(result.data?.imageUrl),
-        error: result.error,
-        dataKeys: result.data ? Object.keys(result.data) : []
-      });
-
-      updateProgress(3, 50);
+      console.log('📊 [前端] 解析响应数据, success:', result.success);
 
       if (result.success) {
-        console.log('✅ [前端] 图片生成成功:', {
-          imageUrl: result.data.imageUrl ? result.data.imageUrl.substring(0, 100) + '...' : 'none',
-          dataSize: JSON.stringify(result.data).length
-        });
+        console.log('✅ [前端] 图片生成成功');
 
         setFirstFrameData(result.data);
         setFrames(prevFrames =>
@@ -379,15 +375,15 @@ export default function Home() {
           )
         );
 
-        // 完成进度条
-        updateProgress(3, 100);
+        // 完成进度条：100%
+        setFirstFrameProgress(100);
         setTimeout(() => {
           setProgressVisible(prev => ({ ...prev, firstFrame: false }));
         }, 2000);
 
-        console.log('🎬 [前端] 第一帧状态已更新');
+        console.log('🎬 [前端] 第一帧显示完成');
       } else {
-        console.error('❌ [前端] 图片生成API返回失败:', result);
+        console.error('❌ [前端] 图片生成失败:', result.error);
         alert(`生成失败: ${result.error}`);
         setFrames(prevFrames =>
           prevFrames.map((frame, index) =>
@@ -402,20 +398,17 @@ export default function Home() {
     } catch (error) {
       console.error('💥 [前端] 图片生成网络错误:', {
         message: error.message,
-        name: error.name,
-        stack: error.stack
+        name: error.name
       });
 
       let errorMessage = '生成失败，请检查网络连接';
       if (error.name === 'AbortError') {
         console.log('⏹️ [前端] 图片生成被用户停止');
-        // 区分超时和用户主动停止
         if (firstFrameController && !firstFrameController.signal.aborted) {
           errorMessage = '图片生成超时，请稍后重试。由于AI生成需要较长时间，请耐心等待...';
           console.warn('⏰ [前端] 请求被中断 (超时)');
           alert(errorMessage);
         } else {
-          // 用户主动停止，不显示错误
           console.log('👤 [前端] 用户主动停止生成');
         }
       } else if (error.message.includes('timeout')) {
@@ -442,7 +435,7 @@ export default function Home() {
   };
 
   /**
-   * 生成所有分镜图 (新版本：智能检测是否需要先分析 + 进度条)
+   * 生成所有分镜图 (SSE流式逐帧生成 + 实时显示)
    */
   const handleGenerateAllFrames = async (config) => {
     console.log('🎨 [前端] 开始批量生成所有分镜图:', {
@@ -452,9 +445,11 @@ export default function Home() {
       timestamp: new Date().toISOString()
     });
 
-    // 智能检测：如果没有提示词，先执行分析
     if (!analysisResult || !frames.length) {
-      console.error('❌ [前端] 批量生成失败: 缺少分析结果');
+      console.error('❌ [前端] 批量生成失败: 缺少分析结果', {
+        analysisResult: !!analysisResult,
+        framesLength: frames.length
+      });
       alert('请先进行AI智能分析');
       return;
     }
@@ -481,8 +476,6 @@ export default function Home() {
         )
       );
 
-      setBatchProgress(10);
-
       // 创建AbortController用于停止控制
       const controller = new AbortController();
       setAllFramesController(controller);
@@ -490,91 +483,116 @@ export default function Home() {
       const requestData = {
         frames: frames,
         referenceImage: firstFrameData?.imageUrl || null,
-        config: config,
-        characters: []
+        config: config
       };
 
       console.log('📤 [前端] 发送批量生成请求:', {
         framesCount: requestData.frames.length,
         hasReferenceImage: !!requestData.referenceImage,
-        configKeys: Object.keys(requestData.config || {}),
-        framesWithPrompts: requestData.frames.filter(f => f.prompt || f.jimengPrompt).length
+        configKeys: Object.keys(requestData.config || {})
       });
 
-      setBatchProgress(20);
+      console.log('🔗 [前端] 调用API: /api/generate-all-images?stream=true');
 
-      console.log('🔗 [前端] 调用批量生成API: /api/generate-all-images');
-      // 使用配置的批量生成API端点
-      const response = await fetch(getApiEndpoint('generateAllImages'), {
+      // 使用fetch + ReadableStream处理SSE流
+      const response = await fetch('/api/generate-all-images?stream=true', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestData),
-        signal: controller.signal // 添加停止信号
+        signal: controller.signal
       });
 
-      setBatchProgress(30);
-
-      console.log('📥 [前端] 收到批量生成响应:', {
+      console.log('📥 [前端] 收到响应:', {
         status: response.status,
         statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-
-      setBatchProgress(50);
-
-      const result = await response.json();
-      console.log('📊 [前端] 解析批量生成响应数据:', {
-        success: result.success,
-        hasData: !!result.data,
-        dataLength: result.data ? result.data.length : 0,
-        hasStats: !!result.stats,
-        error: result.error
-      });
-
-      setBatchProgress(70);
-
-      if (result.success) {
-        console.log('✅ [前端] 批量生成API调用成功:', {
-          generatedCount: result.data.length,
-          stats: result.stats || 'no stats'
-        });
-
-        setBatchProgress(80);
-
-        // 更新所有帧的结果
-        setFrames(prevFrames =>
-          prevFrames.map((frame) => {
-            const generatedFrame = result.data.find(f => f.sequence === frame.sequence);
-            if (generatedFrame) {
-              return {
-                ...frame,
-                imageUrl: generatedFrame.imageUrl,
-                isGenerating: false,
-                error: generatedFrame.error || null
-              };
-            }
-            return { ...frame, isGenerating: false };
-          })
-        );
-
-        setBatchProgress(100);
-
-        // 完成进度条
-        setTimeout(() => {
-          setProgressVisible(prev => ({ ...prev, batch: false }));
-        }, 2000);
-
-        console.log(`✅ [前端] 成功生成${result.data.length}张分镜图`);
-        if (result.stats) {
-          console.log('📈 [前端] 批量生成统计:', result.stats);
+        headers: {
+          'content-type': response.headers.get('content-type')
         }
-      } else {
-        console.error('❌ [前端] 批量生成API返回失败:', result);
-        alert(`批量生成失败: ${result.error}`);
-        setProgressVisible(prev => ({ ...prev, batch: false }));
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+
+      // 处理SSE流
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // 将新数据添加到缓冲区
+        buffer += decoder.decode(value, { stream: true });
+
+        // 按行分割处理SSE数据
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // 保留最后一行（可能未完成）
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.type === 'progress') {
+                // 更新进度条
+                setBatchProgress(data.progress);
+                console.log(`📊 [前端] ${data.message}`);
+              }
+              else if (data.type === 'frame_complete') {
+                // 逐帧更新UI - 立即显示生成的图片
+                setFrames(prevFrames =>
+                  prevFrames.map(frame =>
+                    frame.sequence === data.sequence
+                      ? {
+                          ...frame,
+                          imageUrl: data.imageUrl,
+                          isGenerating: false,
+                          error: null
+                        }
+                      : frame
+                  )
+                );
+                console.log(`✅ [前端] 第${data.sequence}帧生成完成，立即显示`);
+              }
+              else if (data.type === 'frame_error') {
+                // 标记错误帧
+                setFrames(prevFrames =>
+                  prevFrames.map(frame =>
+                    frame.sequence === data.sequence
+                      ? {
+                          ...frame,
+                          error: data.error,
+                          isGenerating: false
+                        }
+                      : frame
+                  )
+                );
+                console.error(`❌ [前端] 第${data.sequence}帧生成失败:`, data.error);
+              }
+              else if (data.type === 'complete') {
+                console.log('✅ [前端] 所有分镜图生成完成');
+
+                // 2秒后隐藏进度条
+                setTimeout(() => {
+                  setProgressVisible(prev => ({ ...prev, batch: false }));
+                }, 2000);
+              }
+              else if (data.type === 'error') {
+                console.error('❌ [前端] 批量生成失败:', data.error);
+                alert(`批量生成失败: ${data.error}`);
+                setProgressVisible(prev => ({ ...prev, batch: false }));
+              }
+            } catch (e) {
+              console.error('❌ [前端] 解析SSE数据失败:', e.message, 'Line:', line);
+            }
+          }
+        }
+      }
+
     } catch (error) {
       console.error('💥 [前端] 批量生成网络错误:', {
         message: error.message,
@@ -595,6 +613,8 @@ export default function Home() {
       console.log('🏁 [前端] 批量生成完成，状态重置');
       setIsGeneratingAll(false);
       setAllFramesController(null);
+
+      // 清除所有isGenerating状态
       setFrames(prevFrames =>
         prevFrames.map(frame => ({ ...frame, isGenerating: false }))
       );
@@ -691,7 +711,7 @@ export default function Home() {
     try {
       const link = document.createElement('a');
       link.href = frame.imageUrl;
-      link.download = `frame_${frame.sequence}.jpg`;
+      link.download = `storybook_page_${frame.sequence}.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -721,54 +741,59 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>ScriptToFrame - AI漫剧分镜生成器</title>
-        <meta name="description" content="基于AI的未来科技漫剧分镜生成平台" />
+        <title>AI绘本创作工坊 - 让故事变成画</title>
+        <meta name="description" content="AI驱动的儿童绘本创作工具，让您的故事变成精美的绘本插图" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="min-h-screen">
-        {/* 未来科技风格头部 */}
-        <header className="border-b border-cyan-500/30 backdrop-blur-md relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/50 to-gray-800/50"></div>
-          <div className="relative z-10 px-6 py-6">
+        {/* 儿童绘本风格头部 */}
+        <header className="relative overflow-hidden">
+          {/* 背景装饰 */}
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-100 via-yellow-50 to-pink-100"></div>
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-2 left-10 text-4xl animate-float">🌟</div>
+            <div className="absolute top-4 right-20 text-3xl animate-float delay-200">✨</div>
+            <div className="absolute top-1 right-1/3 text-2xl animate-float delay-100">🌈</div>
+          </div>
+
+          <div className="relative z-10 px-6 py-5 border-b-4 border-yellow-300">
             <div className="flex justify-between items-center">
               <div className="fade-in-up">
-                <h1 className="text-3xl font-bold neon-blue font-['Orbitron']">
-                  SCRIPT<span className="neon-purple">TO</span>FRAME
+                <h1 className="text-3xl font-bold text-orange-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+                  <span className="text-4xl mr-2">📚</span>
+                  AI绘本创作工坊
                 </h1>
-                <p className="text-cyan-300/80 mt-1 font-['Rajdhani'] text-lg tracking-wide">
-                  AI驱动的未来分镜生成平台
+                <p className="text-orange-500/80 mt-1 text-lg" style={{ fontFamily: "'Nunito', sans-serif" }}>
+                  让您的故事变成精美的绘本插图
                 </p>
               </div>
               <div className="flex items-center gap-4 fade-in-up delay-200">
-                <div className="status-indicator status-success"></div>
-                <span className="text-cyan-300 font-['Rajdhani'] text-sm">
-                  系统在线 | v1.0.0
-                </span>
-                <div className="text-xs text-cyan-400/60">
-                  Claude + 火山引擎即梦
+                <div className="flex items-center gap-2 px-4 py-2 bg-white/80 rounded-full border-2 border-green-300 shadow-md">
+                  <div className="status-dot status-dot-success"></div>
+                  <span className="text-green-600 font-medium" style={{ fontFamily: "'Nunito', sans-serif" }}>
+                    系统就绪
+                  </span>
+                </div>
+                <div className="px-3 py-1 bg-blue-50 rounded-full border-2 border-blue-200 text-blue-600 text-sm" style={{ fontFamily: "'Nunito', sans-serif" }}>
+                  Claude + 即梦AI
                 </div>
               </div>
             </div>
           </div>
-
-          {/* 动态装饰线 */}
-          <div className="absolute bottom-0 left-0 right-0 h-px">
-            <div className="h-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60"></div>
-          </div>
         </header>
 
         {/* 主内容区 - 三栏布局 */}
-        <main className="flex h-[calc(100vh-120px)] gap-2 p-2">
+        <main className="flex h-[calc(100vh-140px)] gap-3 p-3">
           {/* 进度条区域 */}
-          <div className="absolute inset-x-0 top-[120px] z-40 px-2">
+          <div className="absolute inset-x-0 top-[140px] z-40 px-3">
             {/* AI智能分析进度条 */}
             <ProgressBar
               progress={analysisProgress}
               isVisible={progressVisible.analysis}
-              title="AI智能分析"
-              subtitle="正在执行4步工作流：故事切分 → 关键帧提取 → 提示词生成 → 结果整合"
+              title="AI正在阅读故事"
+              subtitle="理解故事 → 规划场景 → 生成绘画指令 → 完成准备"
               variant="primary"
               size="medium"
               animated={true}
@@ -778,8 +803,8 @@ export default function Home() {
             <ProgressBar
               progress={firstFrameProgress}
               isVisible={progressVisible.firstFrame}
-              title="生成第一张图"
-              subtitle="准备数据 → 调用AI生成 → 处理结果"
+              title="绘制第一页插图"
+              subtitle="准备画布 → AI绘画中 → 完成创作"
               variant="success"
               size="medium"
               animated={true}
@@ -789,16 +814,17 @@ export default function Home() {
             <ProgressBar
               progress={batchProgress}
               isVisible={progressVisible.batch}
-              title="批量生成分镜图"
-              subtitle="逐个生成所有分镜图片，请耐心等待..."
+              title="绘制全部插图"
+              subtitle="正在一页一页地画出精美插图，请耐心等待..."
               variant="info"
               size="medium"
               animated={true}
             />
           </div>
-          {/* 左栏 - 剧本输入 (30%) */}
+
+          {/* 左栏 - 故事输入 (30%) */}
           <div className="w-[30%] fade-in-up delay-100">
-            <div className="cyber-panel h-full">
+            <div className="storybook-panel h-full">
               <ScriptInput
                 value={script}
                 onChange={setScript}
@@ -809,7 +835,7 @@ export default function Home() {
 
           {/* 中栏 - 控制面板 (15%) */}
           <div className="w-[15%] fade-in-up delay-200">
-            <div className="cyber-panel h-full">
+            <div className="storybook-panel h-full">
               <ControlPanel
                 onAnalyzeScript={handleAnalyzeScript}
                 onGenerateFirstFrame={handleGenerateFirstFrame}
@@ -825,9 +851,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 右栏 - 分镜显示 (55%) */}
+          {/* 右栏 - 绘本画板 (55%) */}
           <div className="w-[55%] fade-in-up delay-300">
-            <div className="cyber-panel h-full">
+            <div className="storybook-panel h-full">
               <StoryboardDisplay
                 frames={frames}
                 onRegenerateFrame={handleRegenerateFrame}
@@ -839,18 +865,19 @@ export default function Home() {
           </div>
         </main>
 
-        {/* 底部状态栏 */}
-        <footer className="border-t border-cyan-500/30 backdrop-blur-md">
+        {/* 底部状态栏 - 可爱风格 */}
+        <footer className="border-t-4 border-yellow-300 bg-gradient-to-r from-orange-50 via-yellow-50 to-pink-50">
           <div className="px-6 py-3">
             <div className="flex justify-between items-center text-sm">
-              <div className="flex items-center gap-4 text-cyan-400/70">
-                <span>© 2025 ScriptToFrame</span>
-                <span>|</span>
-                <span>AI分镜生成技术</span>
+              <div className="flex items-center gap-4 text-orange-500" style={{ fontFamily: "'Nunito', sans-serif" }}>
+                <span>© 2025 AI绘本创作工坊</span>
+                <span className="text-yellow-400">✨</span>
+                <span>让每个故事都有精美的插图</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="status-indicator status-info"></div>
-                <span className="text-cyan-300/80">就绪</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🎨</span>
+                <span className="text-2xl">📖</span>
+                <span className="text-2xl">✨</span>
               </div>
             </div>
           </div>
