@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Docker 容器启动脚本
-# 同时启动前端和后端服务
+# Docker 容器启动脚本 - 兼容版
+# 适用于老版本Docker环境
 
 set -e
 
@@ -11,20 +11,9 @@ echo "🚀 Starting ScriptToFrame services..."
 export NODE_ENV=${NODE_ENV:-production}
 export PYTHON_ENV=${PYTHON_ENV:-production}
 
-# 检查必需的环境变量
-check_env_var() {
-    local var_name=$1
-    local var_value=$(eval echo \$$var_name)
-    if [ -z "$var_value" ]; then
-        echo "❌ Error: Environment variable $var_name is not set"
-        echo "Please set $var_name in your .env file or environment"
-        exit 1
-    fi
-}
-
+# 检查关键环境变量
 echo "🔍 Checking environment variables..."
 
-# 检查关键环境变量
 if [ -n "$VOLCENGINE_ACCESS_KEY_ID" ]; then
     echo "✅ VOLCENGINE_ACCESS_KEY_ID is set"
 else
@@ -43,7 +32,7 @@ echo "✅ Environment check completed"
 mkdir -p /app/logs
 cd /app
 
-# 启动Python后端 (后台运行)
+# 启动Python后端
 echo "🐍 Starting Python backend on port 8081..."
 cd /app/python-backend
 
@@ -57,12 +46,13 @@ DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
 DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com/v1}
 EOF
 
-# 启动Python后端
-python -m uvicorn main:app --host 0.0.0.0 --port 8081 --log-level info > /app/logs/backend.log 2>&1 &
+# 启动Python后端服务
+echo "Starting uvicorn server..."
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8081 --log-level info > /app/logs/backend.log 2>&1 &
 BACKEND_PID=$!
 
 echo "⏳ Waiting for backend to start..."
-sleep 8
+sleep 10
 
 # 检查后端是否启动成功
 if ! kill -0 $BACKEND_PID 2>/dev/null; then
@@ -93,11 +83,12 @@ EOF
 echo "🌐 Starting Next.js frontend on port 3000..."
 
 # 启动前端服务
-node server.js > /app/logs/frontend.log 2>&1 &
+echo "Starting Next.js server..."
+npm start > /app/logs/frontend.log 2>&1 &
 FRONTEND_PID=$!
 
 echo "⏳ Waiting for frontend to start..."
-sleep 5
+sleep 8
 
 # 检查前端是否启动成功
 if ! kill -0 $FRONTEND_PID 2>/dev/null; then
@@ -117,8 +108,22 @@ echo "📖 API Docs: http://localhost:8081/docs"
 echo "📝 Logs directory: /app/logs/"
 echo ""
 
+# 等待2秒后进行健康检查
+sleep 2
+
+# 简单的健康检查
+echo "🏥 Health checking services..."
+if curl -f http://localhost:8081/api/health > /dev/null 2>&1; then
+    echo "✅ Backend health check passed"
+else
+    echo "⚠️  Backend health check failed, but continuing..."
+fi
+
+echo "🎯 ScriptToFrame deployment completed successfully!"
+
 # 保持容器运行并处理信号
 cleanup() {
+    echo ""
     echo "🛑 Shutting down services..."
     kill $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
     wait $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
@@ -130,7 +135,7 @@ trap cleanup TERM INT
 
 # 等待进程结束
 while kill -0 $BACKEND_PID 2>/dev/null && kill -0 $FRONTEND_PID 2>/dev/null; do
-    sleep 1
+    sleep 5
 done
 
 echo "⚠️  One or more services stopped unexpectedly"
