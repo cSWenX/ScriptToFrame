@@ -22,11 +22,22 @@ services:
       - NEXT_PUBLIC_APP_NAME=ScriptToFrame
       - NEXT_PUBLIC_VERSION=1.0.0
       - NODE_ENV=production
+      # 网络配置
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
     volumes:
       - ./logs:/app/logs                    # 日志持久化
       - app_data:/app/data                  # 应用数据持久化
+      - /data/tobyai/generated:/app/public/generated
     networks:
       - scripttoframe-network
+    # DNS配置 - 修复网络问题
+    dns:
+      - 223.5.5.5    # 阿里云DNS
+      - 8.8.8.8      # Google DNS
+      - 114.114.114.114  # 国内DNS
+    # 额外主机映射 (如果需要)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/"]
       interval: 30s

@@ -1,98 +1,28 @@
-# ScriptToFrame Docker 多服务容器
-# 包含Next.js前端和Python后端
+# 使用 Node 18 Slim (Debian 12 Bookworm)
+FROM node:18-slim
 
-FROM node:18-alpine AS base
+# 1. 换源 (修复路径：针对 Debian 12 新版位置)
+# 如果 debian.sources 存在，就修改它；否则尝试修改旧的 sources.list (为了兼容性)
+RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then       sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources;     elif [ -f /etc/apt/sources.list ]; then       sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list;     fi
 
-# 安装Python和必要工具
-RUN apk add --no-cache \
-    python3 \
-    py3-pip \
-    curl \
-    bash \
-    && ln -sf python3 /usr/bin/python
+# 2. 安装系统基础依赖
+# 必须先 update，否则可能找不到包
+RUN apt-get update &&     apt-get install -y python3 python3-pip make g++ git &&     apt-get clean
 
 WORKDIR /app
-
-# ================================
-# 前端依赖安装
-# ================================
-FROM base AS deps
-
-# 复制package文件
-COPY package*.json ./
-RUN npm ci --only=production
-
-# ================================
-# 前端构建
-# ================================
-FROM base AS builder
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
 
 COPY . .
 
-# 构建Next.js应用
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+# 3. 安装 Python 依赖 (带判断逻辑)
+RUN if [ -f "requirements.txt" ]; then pip3 install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --break-system-packages;     elif [ -f "python-backend/requirements.txt" ]; then pip3 install --no-cache-dir -r python-backend/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --break-system-packages;     else echo "Warning: requirements.txt not found"; fi
 
+# 4. 安装 Node 依赖 (核心修复步骤)
+# 第一步：暴力删除 package.json 里所有带 'darwin-arm64' 的行 (解决 EBADPLATFORM 报错)
+# 第二步：npm install
+RUN sed -i '/darwin-arm64/d' package.json &&     rm -f package-lock.json &&     npm install --registry=https://registry.npmmirror.com --legacy-peer-deps --force --no-audit
+
+# 5. 构建
 RUN npm run build
 
-# ================================
-# Python后端依赖
-# ================================
-FROM base AS python-deps
-
-WORKDIR /app/python-backend
-
-# 复制Python依赖
-COPY python-backend/requirements.txt .
-
-# 安装Python依赖
-RUN pip install --no-cache-dir -r requirements.txt
-
-# ================================
-# 生产镜像
-# ================================
-FROM base AS runner
-
-WORKDIR /app
-
-# 创建非root用户
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# 复制构建产物
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-
-# 复制Python后端
-COPY --from=python-deps --chown=nextjs:nodejs /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=python-deps --chown=nextjs:nodejs /usr/local/bin /usr/local/bin
-COPY --chown=nextjs:nodejs python-backend/ ./python-backend/
-
-# 复制启动脚本
-COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
-
-# 创建必要目录
-RUN mkdir -p logs && chown -R nextjs:nodejs logs
-
-# 设置环境变量
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# 切换到非root用户
-USER nextjs
-
-# 暴露端口
-EXPOSE 3000 8081
-
-# 健康检查
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000/ || exit 1
-
-# 启动命令
-CMD ["./docker-entrypoint.sh"]
+EXPOSE 3000
+CMD ["npm", "start"]
