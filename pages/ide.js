@@ -482,7 +482,7 @@ function IDEWorkspace() {
         console.log(`📝 [IDE] 第 ${page.page_index} 页配音文本: ${finalText.substring(0, 50)}...`);
 
         // 调用Python后端TTS API
-        const response = await fetch('http://localhost:8081/api/generate-audio', {
+        const response = await fetch('/api/generate-audio', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
