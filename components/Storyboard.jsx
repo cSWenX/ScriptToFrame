@@ -31,6 +31,15 @@ const Storyboard = ({
     await onGenerateAll?.();
   };
 
+  // 处理提示词更新
+  const handleUpdatePrompt = (pageIndex, newPrompt) => {
+    console.log('📝 [Storyboard] 更新提示词:', pageIndex, newPrompt.substring(0, 50) + '...');
+    actions.updatePage({
+      page_index: pageIndex,
+      jimeng_prompt: newPrompt
+    });
+  };
+
   // 打开修图模态框
   const handleOpenInpaint = (page) => {
     setInpaintTarget(page);
@@ -178,6 +187,7 @@ const Storyboard = ({
                 onPreview={() => handlePreview(page)}
                 onRegenerate={() => handleGeneratePage(page.page_index)}
                 onInpaint={() => handleOpenInpaint(page)}
+                onUpdatePrompt={handleUpdatePrompt}
               />
             ))}
           </div>
@@ -228,8 +238,26 @@ const PageCard = ({
   isGenerating,
   onPreview,
   onRegenerate,
-  onInpaint
+  onInpaint,
+  onUpdatePrompt
 }) => {
+  const [isEditingPrompt, setIsEditingPrompt] = useState(false);
+  const [editedPrompt, setEditedPrompt] = useState(page.jimeng_prompt || '');
+
+  // 保存提示词
+  const handleSavePrompt = () => {
+    if (editedPrompt !== page.jimeng_prompt) {
+      onUpdatePrompt?.(page.page_index, editedPrompt);
+    }
+    setIsEditingPrompt(false);
+  };
+
+  // 取消编辑
+  const handleCancelEdit = () => {
+    setEditedPrompt(page.jimeng_prompt || '');
+    setIsEditingPrompt(false);
+  };
+
   return (
     <div className="bg-white rounded-xl border-2 border-yellow-200 overflow-hidden hover:border-orange-300 transition-all duration-200 hover:shadow-lg group">
       {/* 图片区域 */}
@@ -339,21 +367,57 @@ const PageCard = ({
 
       {/* 内容信息 */}
       <div className="p-3">
-        {/* 显示提示词（如果有） */}
-        {page.jimeng_prompt && (
-          <div className="mb-2">
-            <div className="flex items-center gap-1 mb-1">
+        {/* 显示/编辑提示词 */}
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1">
               <span className="text-xs">🎨</span>
               <span className="text-xs font-bold text-purple-600">画面提示词</span>
             </div>
-            <p
-              className="text-xs text-gray-500 line-clamp-3 bg-purple-50 rounded-lg p-2 border border-purple-100"
-              style={{ fontFamily: "'Nunito', sans-serif" }}
-            >
-              {page.jimeng_prompt}
-            </p>
+            {!isEditingPrompt ? (
+              <button
+                onClick={() => setIsEditingPrompt(true)}
+                className="text-xs text-purple-500 hover:text-purple-700 flex items-center gap-0.5"
+              >
+                ✏️ 编辑
+              </button>
+            ) : (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={handleSavePrompt}
+                  className="text-xs bg-green-500 text-white px-2 py-0.5 rounded hover:bg-green-600"
+                >
+                  ✓ 保存
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="text-xs bg-gray-300 text-gray-700 px-2 py-0.5 rounded hover:bg-gray-400"
+                >
+                  ✕ 取消
+                </button>
+              </div>
+            )}
           </div>
-        )}
+
+          {isEditingPrompt ? (
+            <textarea
+              value={editedPrompt}
+              onChange={(e) => setEditedPrompt(e.target.value)}
+              className="w-full text-xs text-gray-600 bg-purple-50 rounded-lg p-2 border-2 border-purple-300 focus:border-purple-500 focus:outline-none resize-none"
+              style={{ fontFamily: "'Nunito', sans-serif", minHeight: '80px' }}
+              placeholder="输入画面提示词..."
+            />
+          ) : (
+            <p
+              className={`text-xs text-gray-500 line-clamp-3 bg-purple-50 rounded-lg p-2 border border-purple-100 cursor-pointer hover:bg-purple-100 transition-colors ${!page.jimeng_prompt ? 'italic' : ''}`}
+              style={{ fontFamily: "'Nunito', sans-serif" }}
+              onClick={() => setIsEditingPrompt(true)}
+              title="点击编辑提示词"
+            >
+              {page.jimeng_prompt || '点击添加提示词...'}
+            </p>
+          )}
+        </div>
 
         {/* 显示语音脚本预览 */}
         <p
