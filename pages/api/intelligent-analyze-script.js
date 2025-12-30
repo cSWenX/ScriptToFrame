@@ -13,23 +13,38 @@ function getStyleDescription(styleId) {
   return style.styleSuffix.replace(/^，/, '');
 }
 
-// 分镜脚本生成提示词（新版本 - 三阶段）
-const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词专家
+// 分镜脚本生成提示词（新版本 - 智能分镜）
+const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词专家 & 视觉叙事大师
 
 ## 1. 任务目标
-你将接收一个"故事文本"和一个"用户选择的风格"，请按顺序完成以下三个阶段的任务。你的核心目标是协助用户制作一本**"图文音"俱佳的少儿绘本**，并确保**分镜脚本与配音文本完全一致**。
+你将接收一个"故事文本"和一个"用户选择的风格"。你需要先进行智能分镜规划，然后按顺序完成资产建立、脚本编写，最后输出为标准的JSON格式。
+你的核心目标是：打破固定页数限制，完全根据故事的内在节奏，制作一本**"图文音"节奏完美的少儿绘本**。
 
 ## 2. 全局风格
 用户选择的风格：{STYLE_NAME}
-风格描述词（请在生成所有画面提示词时，将该风格的中文描述词置于句首）：
+风格描述词（生成画面提示词时，置于句首）：
 {STYLE_DESCRIPTION}
+
+---
+
+## 阶段零：智能分镜规划 (Intelligent Segmentation Logic)
+
+**核心原则：形式服从内容 (Form Follows Content)**
+请勿使用固定的页数限制。请根据以下**"视觉节拍 (Visual Beats)"**逻辑，将故事自动划分为最合理的页数。每一页必须只承载一个核心视觉状态。
+
+**强制分页触发条件：**
+1. **时空切换**：一旦出现地点变化（如：室内->室外）或时间显著流逝（如：第二天），必须分页。
+2. **动作序列**：如果一段文字包含连续的复杂动作（如："他先穿好衣服，然后冲出门，最后跳进河里"），必须拆分为多页，每页展示一个动作阶段。
+3. **情绪突变**：当氛围发生重大转折（如：从平静变惊恐），必须分页以制造视觉冲击。
+4. **信息浓度**：单页文字不宜过密。如果对话过长，请拆分为"全景（交代环境）"和"特写（聚焦表情）"两页。
+5. **翻页悬念**：在秘密揭晓或惊讶时刻前分页，利用翻页动作制造惊喜。
 
 ---
 
 ## 阶段一：建立资产库 (Asset Library)
 
 **规则：**
-1. 分析故事，提取所有关键角色和背景。
+1. 根据阶段零的规划，提取所有出场的关键角色和背景。
 2. **命名规范**：
    - 角色：\`{故事名缩写}-角色名-编号(01,02...)\`
    - 背景：\`{故事名缩写}-环境名-编号(01,02...)\`
@@ -41,62 +56,66 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
 ## 阶段二：分镜与语音脚本 (Storyboard & Audio Script)
 
 **核心指令：**
-在此阶段，你需要同时扮演**分镜画师**和**少儿频道主持人**。
+根据阶段零拆分出的页数，逐页生成内容。
 
-**1. 语音脚本生成规则 (Voiceover Generation) —— 唯一真理：**
-- **目标**：将原故事转化为适合TTS（语音合成）朗读的脚本。
-- **原则**：句子要短，多用拟声词，**此处的文本是最终配音依据**。
-- **格式**：每一句台词前必须标注建议的语气（如[开心]、[神秘]）。
+**1. 语音脚本生成规则 (Voiceover) —— 唯一真理：**
+- **内容**：将原故事转化为适合TTS朗读的脚本，句子要短，多用拟声词。
+- **对应**：此处的文本是最终配音依据。
+- **标注**：每一句台词前标注建议语气（如[开心]）。
 
 **2. 画面描述规则 (Visual Prompt) —— 严谨对应：**
-- **语言**：**中文**。
-- **图文同步强制规则**：如果画面中有对话气泡，**气泡内的文字必须与"绘本语音脚本"中的台词100%完全一致，一字不差**。如果台词过长不适合放入气泡，则在画面描述中不要写气泡指令。
-- **结构必须包含以下要素，并用逗号分隔**：
-  1. **[风格词]**：使用上面的风格描述词
-  2. **[环境背景]**：使用资产ID（如 Story-BG-01），并描述细节。
-  3. **[角色构图与动作]**：使用资产ID（如 Story-Char-01），描述位置、姿态及神情。
-  4. **[对话气泡]**(可选)：格式为"对话气泡从[角色]嘴边冒出，气泡内写着文字：'与语音脚本完全一致的台词'"。
-  5. **[光影与氛围]**：描述光线、时间及氛围。
+- **语言**：中文。
+- **气泡强制规则**：如果画面有对话气泡，气泡内文字必须与"语音脚本"台词100%一致。若台词过长，画面描述中不要写气泡指令。
+- **结构 (用逗号分隔)**：
+  1. **[风格词]**：使用全局风格描述。
+  2. **[环境背景]**：引用资产ID，描述细节。
+  3. **[角色构图/景别]**：引用资产ID。必须根据分镜逻辑指定景别（如：特写、全景、仰视）。
+  4. **[对话气泡]**(可选)："对话气泡从[角色]嘴边冒出，气泡内写着：'文字'"。
+  5. **[光影与氛围]**：描述光线、色彩倾向。
 
 ---
 
 ## 阶段三：TTS 配音专用纯文本 (TTS Raw Text)
 
-**核心指令：**
-将"阶段二"中所有的"绘本语音脚本"提取出来，整理成纯文本。
-
 **规则：**
-1. **绝对一致性**：这里的内容必须与"阶段二"中的文字**一字不差**。
-2. **格式**：按分镜顺序排列。
-3. **标注**：如果是角色就改为"【角色名】【语气】的说"，如果是旁白就去掉标注。
+1. 提取阶段二中所有语音脚本。
+2. **格式**：按分镜顺序排列。如果是角色台词，格式为"【角色名】【语气】的说"；旁白则直接写。
 
 ---
 
 ## Output Format (输出格式 - JSON)
-请严格按照以下JSON格式输出，确保可以被JSON.parse解析：
+
+请严格按照以下JSON格式输出，不要输出任何Markdown代码块标记之外的文字，确保可以直接被代码解析。
+**pages 数组的长度由你根据"阶段零"的逻辑自动决定。**
 
 \`\`\`json
 {
-  "story_name": "故事名称缩写（用于资产命名）",
+  "story_analysis": {
+    "total_words": "原故事字数",
+    "estimated_pages": "AI计算出的总页数",
+    "pacing_strategy": "简述分镜策略（如：动作密集型、情感细腻型）"
+  },
+  "story_name": "故事名称缩写",
   "assets": [
     {
       "type": "character",
       "id": "Story-Char-01",
       "name": "角色中文名",
-      "prompt": "[风格词], 三视图, 正面, 侧面, 背面, 白底, 全身照, 角色设定图, [角色外貌详细描述]"
+      "prompt": "[风格词], 三视图, 正面, 侧面, 背面, 白底, 全身照, 角色设定图, [详细描述]"
     },
     {
       "type": "background",
       "id": "Story-BG-01",
       "name": "背景中文名",
-      "prompt": "[风格词], 空镜头, 无人物, 环境概念图, 广角, [环境详细描述]"
+      "prompt": "[风格词], 空镜头, 无人物, 环境概念图, 广角, [详细描述]"
     }
   ],
   "pages": [
     {
       "page_index": 1,
       "scene_id": "S-01",
-      "jimeng_prompt": "[风格词], Story-BG-01(森林), 画面左下角是 Story-Char-01(小兔子), 正向右上方跳跃, 神情兴奋, 一个白色的气泡在它头顶, 气泡里写着: '你好呀!', 阳光从树叶缝隙洒下, 丁达尔效应, 梦幻氛围。",
+      "rationale": "简述本页拆分理由（如：开篇定场 / 情绪转折点）",
+      "jimeng_prompt": "[风格词], Story-BG-01(森林), 全景镜头, 画面中央是 Story-Char-01(小兔子), 它正向右上方跳跃, 神情兴奋, 一个白色的气泡在它头顶, 气泡里写着: '你好呀!', 阳光从树叶缝隙洒下, 丁达尔效应, 梦幻氛围。",
       "asset_refs": ["Story-Char-01", "Story-BG-01"],
       "voice_script": [
         {
@@ -115,9 +134,6 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
   ]
 }
 \`\`\`
-
-## 页数要求
-请将故事拆分为 {PAGE_COUNT} 页。
 
 ## Input Story
 以下是我的故事原文：
@@ -200,6 +216,13 @@ function parseAIResponse(responseText, styleId) {
   try {
     const data = JSON.parse(jsonStr);
 
+    // 提取故事分析信息
+    const storyAnalysis = data.story_analysis || {
+      total_words: '未知',
+      estimated_pages: data.pages?.length || 0,
+      pacing_strategy: '默认策略'
+    };
+
     // 处理资产数据
     const assets = (data.assets || []).map((asset, index) => ({
       id: asset.id || `asset_${Date.now()}_${index}`,
@@ -218,6 +241,7 @@ function parseAIResponse(responseText, styleId) {
     const pages = (data.pages || []).map((page, index) => ({
       page_index: page.page_index || index + 1,
       scene_id: page.scene_id || `S-${String(index + 1).padStart(2, '0')}`,
+      rationale: page.rationale || '', // 分页理由
       jimeng_prompt: page.jimeng_prompt || '',
       asset_refs: page.asset_refs || [], // 引用的资产ID列表
       voice_script: page.voice_script || [], // 语音脚本（带角色和情绪）
@@ -234,9 +258,11 @@ function parseAIResponse(responseText, styleId) {
     }));
 
     console.log(`✅ 解析成功: ${characters.length}个角色, ${backgrounds.length}个背景, ${pages.length}页`);
+    console.log(`📊 故事分析: ${storyAnalysis.estimated_pages}页, 策略: ${storyAnalysis.pacing_strategy}`);
 
     return {
       story_name: data.story_name || 'Story',
+      story_analysis: storyAnalysis,
       assets,
       characters,
       backgrounds,
@@ -251,7 +277,7 @@ function parseAIResponse(responseText, styleId) {
 }
 
 // SSE流式响应处理
-async function handleStreamingAnalysis(req, res, requestId, story, pageCount, styleId) {
+async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -269,14 +295,13 @@ async function handleStreamingAnalysis(req, res, requestId, story, pageCount, st
     const styleName = STYLE_CONFIG[styleId]?.name || '经典水彩风';
     const styleDescription = getStyleDescription(styleId);
 
-    // 构建提示词
+    // 构建提示词（不再需要PAGE_COUNT）
     const prompt = STORYBOARD_PROMPT_TEMPLATE
-      .replace('{PAGE_COUNT}', pageCount.toString())
       .replace('{STYLE_NAME}', styleName)
       .replace('{STYLE_DESCRIPTION}', styleDescription)
       .replace('{STORY_CONTENT}', story);
 
-    sendProgress(10, 'AI正在阅读故事...');
+    sendProgress(10, 'AI正在阅读故事，智能规划分镜...');
 
     // 调用AI
     const aiResponse = await callDeepSeek(prompt, requestId);
@@ -284,9 +309,9 @@ async function handleStreamingAnalysis(req, res, requestId, story, pageCount, st
     sendProgress(60, '解析资产库...');
 
     // 解析结果
-    const { story_name, assets, characters, backgrounds, pages } = parseAIResponse(aiResponse, styleId);
+    const { story_name, story_analysis, assets, characters, backgrounds, pages } = parseAIResponse(aiResponse, styleId);
 
-    sendProgress(80, '整理分镜脚本...');
+    sendProgress(80, `AI规划了 ${pages.length} 页分镜...`);
 
     sendProgress(90, '生成语音脚本...');
 
@@ -295,9 +320,10 @@ async function handleStreamingAnalysis(req, res, requestId, story, pageCount, st
       type: 'complete',
       data: {
         story_name,
-        assets,        // 完整资产列表（角色+背景）
-        characters,    // 仅角色
-        backgrounds,   // 仅背景
+        story_analysis,  // 新增：故事分析信息
+        assets,          // 完整资产列表（角色+背景）
+        characters,      // 仅角色
+        backgrounds,     // 仅背景
         pages,
         style: styleId,
         analysisComplete: true
@@ -305,9 +331,9 @@ async function handleStreamingAnalysis(req, res, requestId, story, pageCount, st
     })}\n\n`);
     res.flush?.();
 
-    sendProgress(100, '分析完成');
+    sendProgress(100, `分析完成 - ${story_analysis.pacing_strategy}`);
 
-    console.log(`✅ [智能分析-${requestId}] 流式分析完成`);
+    console.log(`✅ [智能分析-${requestId}] 流式分析完成，共 ${pages.length} 页`);
     res.end();
 
   } catch (error) {
@@ -319,24 +345,24 @@ async function handleStreamingAnalysis(req, res, requestId, story, pageCount, st
 }
 
 // 传统JSON响应处理
-async function handleTraditionalAnalysis(req, res, requestId, story, pageCount, styleId) {
+async function handleTraditionalAnalysis(req, res, requestId, story, styleId) {
   try {
     const styleName = STYLE_CONFIG[styleId]?.name || '经典水彩风';
     const styleDescription = getStyleDescription(styleId);
 
     const prompt = STORYBOARD_PROMPT_TEMPLATE
-      .replace('{PAGE_COUNT}', pageCount.toString())
       .replace('{STYLE_NAME}', styleName)
       .replace('{STYLE_DESCRIPTION}', styleDescription)
       .replace('{STORY_CONTENT}', story);
 
     const aiResponse = await callDeepSeek(prompt, requestId);
-    const { story_name, assets, characters, backgrounds, pages } = parseAIResponse(aiResponse, styleId);
+    const { story_name, story_analysis, assets, characters, backgrounds, pages } = parseAIResponse(aiResponse, styleId);
 
     res.status(200).json({
       success: true,
       data: {
         story_name,
+        story_analysis,
         assets,
         characters,
         backgrounds,
@@ -365,7 +391,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { script, sceneCount = 8, style = 'watercolor' } = req.body;
+    const { script, style = 'watercolor' } = req.body;
 
     if (!script || script.trim().length < 50) {
       return res.status(400).json({
@@ -377,9 +403,9 @@ export default async function handler(req, res) {
     const { stream } = req.query;
 
     if (stream === 'true') {
-      return await handleStreamingAnalysis(req, res, requestId, script, sceneCount, style);
+      return await handleStreamingAnalysis(req, res, requestId, script, style);
     } else {
-      return await handleTraditionalAnalysis(req, res, requestId, script, sceneCount, style);
+      return await handleTraditionalAnalysis(req, res, requestId, script, style);
     }
 
   } catch (error) {

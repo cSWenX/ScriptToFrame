@@ -30,10 +30,10 @@ function IDEWorkspace() {
 
   /**
    * 阶段1: AI 分析故事
-   * 先计算分镜数量，再生成分镜脚本 + 提取角色
+   * AI智能规划分镜数量 + 生成分镜脚本 + 提取角色
    */
   const handleAnalyzeStory = useCallback(async () => {
-    const { rawStory, style_preset, settings } = project;
+    const { rawStory, style_preset } = project;
 
     if (!rawStory || rawStory.trim().length < 50) {
       alert('请先输入至少50个字符的故事');
@@ -47,46 +47,16 @@ function IDEWorkspace() {
       visible: true,
       value: 0,
       title: 'AI正在阅读故事',
-      subtitle: '计算最佳分镜数量...'
+      subtitle: '智能规划分镜中...'
     });
 
     try {
-      // 第一步：AI计算最佳分镜数量
-      let sceneCount = settings.pageCount || 8;
-      try {
-        console.log('🔢 [IDE] 计算最佳分镜数量...');
-        const countResponse = await fetch('/api/calculate-scene-count', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ story: rawStory })
-        });
-        const countResult = await countResponse.json();
-        if (countResult.success) {
-          sceneCount = countResult.data.sceneCount;
-          console.log(`✅ [IDE] AI建议分镜数量: ${sceneCount}页, 原因: ${countResult.data.reason}`);
-          actions.setProgress({
-            value: 5,
-            subtitle: `AI建议 ${sceneCount} 页分镜 - ${countResult.data.reason}`
-          });
-          // 更新设置中的页数
-          actions.updateSettings({ pageCount: sceneCount });
-        }
-      } catch (countError) {
-        console.warn('⚠️ [IDE] 分镜数量计算失败，使用默认值:', countError.message);
-      }
-
-      // 第二步：生成分镜脚本
-      actions.setProgress({
-        value: 10,
-        subtitle: '生成分镜脚本...'
-      });
-
+      // 直接调用智能分析API，AI会自动决定分镜数量
       const response = await fetch('/api/intelligent-analyze-script?stream=true', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           script: rawStory,
-          sceneCount: sceneCount,
           style: style_preset
         })
       });
@@ -134,12 +104,18 @@ function IDEWorkspace() {
                     });
                   });
 
-                  // 保存故事名称
+                  // 保存故事名称和分析信息
                   if (result.story_name) {
                     actions.updateProject({ story_name: result.story_name });
                   }
 
-                  // 设置分镜页面（包含asset_refs, voice_script, tts_text）
+                  // 保存故事分析信息
+                  if (result.story_analysis) {
+                    actions.updateProject({ story_analysis: result.story_analysis });
+                    console.log(`📊 [IDE] 故事分析: ${result.story_analysis.estimated_pages}页, 策略: ${result.story_analysis.pacing_strategy}`);
+                  }
+
+                  // 设置分镜页面（包含asset_refs, voice_script, tts_text, rationale）
                   const pages = result.pages || [];
                   actions.setPages(pages);
 
