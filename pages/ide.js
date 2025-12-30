@@ -30,7 +30,7 @@ function IDEWorkspace() {
 
   /**
    * 阶段1: AI 分析故事
-   * 生成分镜脚本 + 提取角色
+   * 先计算分镜数量，再生成分镜脚本 + 提取角色
    */
   const handleAnalyzeStory = useCallback(async () => {
     const { rawStory, style_preset, settings } = project;
@@ -47,16 +47,46 @@ function IDEWorkspace() {
       visible: true,
       value: 0,
       title: 'AI正在阅读故事',
-      subtitle: '理解故事 → 识别角色 → 生成脚本'
+      subtitle: '计算最佳分镜数量...'
     });
 
     try {
+      // 第一步：AI计算最佳分镜数量
+      let sceneCount = settings.pageCount || 8;
+      try {
+        console.log('🔢 [IDE] 计算最佳分镜数量...');
+        const countResponse = await fetch('/api/calculate-scene-count', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ story: rawStory })
+        });
+        const countResult = await countResponse.json();
+        if (countResult.success) {
+          sceneCount = countResult.data.sceneCount;
+          console.log(`✅ [IDE] AI建议分镜数量: ${sceneCount}页, 原因: ${countResult.data.reason}`);
+          actions.setProgress({
+            value: 5,
+            subtitle: `AI建议 ${sceneCount} 页分镜 - ${countResult.data.reason}`
+          });
+          // 更新设置中的页数
+          actions.updateSettings({ pageCount: sceneCount });
+        }
+      } catch (countError) {
+        console.warn('⚠️ [IDE] 分镜数量计算失败，使用默认值:', countError.message);
+      }
+
+      // 第二步：生成分镜脚本
+      actions.setProgress({
+        value: 10,
+        subtitle: '生成分镜脚本...'
+      });
+
       const response = await fetch('/api/intelligent-analyze-script?stream=true', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           script: rawStory,
-          sceneCount: settings.pageCount || 8,
+          sceneCount: sceneCount,
           style: style_preset
         })
       });
@@ -650,6 +680,7 @@ function IDEWorkspace() {
               <div className="storybook-panel h-full overflow-hidden">
                 <MultiViewPanel
                   onGenerateCharacter={handleGenerateCharacter}
+                  onGenerateAllCharacters={handleGenerateAllCharacters}
                   onGeneratePage={handleGeneratePage}
                   onGenerateAll={handleGenerateAllPages}
                   onInpaint={handleInpaint}

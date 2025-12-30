@@ -10,6 +10,7 @@ import Flipbook from './Flipbook';
  */
 const MultiViewPanel = ({
   onGenerateCharacter,
+  onGenerateAllCharacters,
   onGeneratePage,
   onGenerateAll,
   onInpaint,
@@ -99,6 +100,7 @@ const MultiViewPanel = ({
         {activeRightTab === 'assets' && (
           <AssetLab
             onGenerateCharacter={onGenerateCharacter}
+            onGenerateAllCharacters={onGenerateAllCharacters}
             isGeneratingCharacters={isGeneratingCharacters}
           />
         )}

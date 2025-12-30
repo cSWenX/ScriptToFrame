@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useProject } from '../contexts/ProjectContext';
+import ImageViewer from './ImageViewer';
 
 /**
  * 资产库组件 (Asset Lab) v3
@@ -14,6 +15,7 @@ const AssetLab = ({ onGenerateCharacter, onGenerateAllCharacters, isGeneratingCh
   const [editingId, setEditingId] = useState(null);
   const [generatingId, setGeneratingId] = useState(null);
   const [filterType, setFilterType] = useState('all'); // 'all' | 'character' | 'background'
+  const [viewerImage, setViewerImage] = useState(null); // 图片查看器状态
   const fileInputRef = useRef(null);
 
   // 按类型过滤资产
@@ -88,6 +90,14 @@ const AssetLab = ({ onGenerateCharacter, onGenerateAllCharacters, isGeneratingCh
 
   return (
     <div className="h-full flex flex-col">
+      {/* 图片查看器 */}
+      <ImageViewer
+        isOpen={!!viewerImage}
+        imageUrl={viewerImage?.url}
+        title={viewerImage?.title}
+        onClose={() => setViewerImage(null)}
+      />
+
       {/* 隐藏的文件输入 */}
       <input
         ref={fileInputRef}
@@ -240,6 +250,7 @@ const AssetLab = ({ onGenerateCharacter, onGenerateAllCharacters, isGeneratingCh
                 onLock={() => handleLockAsset(asset.id)}
                 onGenerate={() => handleGenerateSingle(asset)}
                 onUpload={() => handleUpload(asset.id)}
+                onImageClick={() => setViewerImage({ url: asset.image_url, title: asset.name })}
               />
             ))}
           </div>
@@ -297,7 +308,8 @@ const AssetCard = ({
   onRemove,
   onLock,
   onGenerate,
-  onUpload
+  onUpload,
+  onImageClick
 }) => {
   const [editPrompt, setEditPrompt] = useState(asset.prompt || '');
   const [editName, setEditName] = useState(asset.name || '');
@@ -443,12 +455,20 @@ const AssetCard = ({
                   <img
                     src={asset.image_url}
                     alt={`${asset.name}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer"
+                    onClick={onImageClick}
+                    title="点击查看大图"
                   />
                   {!asset.locked && (
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <button
-                        onClick={onGenerate}
+                        onClick={(e) => { e.stopPropagation(); onImageClick(); }}
+                        className="px-2 py-1 bg-white text-gray-700 rounded text-xs font-bold hover:bg-gray-100"
+                      >
+                        🔍 查看
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onGenerate(); }}
                         className={`px-2 py-1 text-white rounded text-xs font-bold ${
                           isCharacter ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'
                         }`}
@@ -456,12 +476,19 @@ const AssetCard = ({
                         🔄 重生成
                       </button>
                       <button
-                        onClick={onUpload}
+                        onClick={(e) => { e.stopPropagation(); onUpload(); }}
                         className="px-2 py-1 bg-white text-gray-700 rounded text-xs font-bold hover:bg-gray-100"
                       >
                         📤 上传
                       </button>
                     </div>
+                  )}
+                  {asset.locked && (
+                    <div
+                      className="absolute inset-0 cursor-pointer"
+                      onClick={onImageClick}
+                      title="点击查看大图"
+                    />
                   )}
                 </>
               ) : (
