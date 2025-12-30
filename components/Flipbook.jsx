@@ -122,6 +122,28 @@ const EmptyPageContent = () => (
   </div>
 );
 
+// 获取当前页的字幕文本
+const getSubtitleText = (page) => {
+  if (!page) return '';
+  // 优先使用 tts_text
+  if (page.tts_text && page.tts_text.trim()) {
+    return page.tts_text;
+  }
+  // 其次从 voice_script 拼接
+  if (page.voice_script && Array.isArray(page.voice_script) && page.voice_script.length > 0) {
+    return page.voice_script
+      .map(v => v.role === '旁白' ? v.text : `${v.role}：${v.text}`)
+      .join(' ');
+  }
+  // 兼容旧数据
+  if (page.dialogues && Array.isArray(page.dialogues) && page.dialogues.length > 0) {
+    return page.dialogues
+      .map(d => d.role === '旁白' ? d.text : `${d.role}：${d.text}`)
+      .join(' ');
+  }
+  return page.narration || page.text || page.display_text || '';
+};
+
 const Flipbook = () => {
   const { state } = useProject();
   const { project } = state;
@@ -254,6 +276,17 @@ const Flipbook = () => {
   });
 
   const totalBookPages = bookPages.length;
+
+  // 获取当前页的字幕
+  const getCurrentSubtitle = useCallback(() => {
+    // currentPage 表示已翻过的页数
+    // currentPage = 1 时，显示第1页的字幕
+    const pageIndex = currentPage - 1;
+    if (pageIndex >= 0 && pageIndex < validPages.length) {
+      return getSubtitleText(validPages[pageIndex]);
+    }
+    return '';
+  }, [currentPage, validPages]);
 
   // 获取当前页的音频URL
   const getCurrentAudioUrl = useCallback(() => {
@@ -600,6 +633,44 @@ const Flipbook = () => {
           )}
         </button>
       </div>
+
+      {/* 字幕显示框 */}
+      {getCurrentSubtitle() && (
+        <div className="w-full max-w-3xl mx-auto px-4 py-2 flex-shrink-0">
+          <div
+            className="relative bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50
+                       rounded-2xl px-6 py-4 shadow-lg border-2 border-amber-200
+                       transform transition-all duration-500 ease-out"
+            style={{
+              boxShadow: '0 4px 20px rgba(251, 191, 36, 0.2), inset 0 1px 0 rgba(255,255,255,0.8)'
+            }}
+          >
+            {/* 装饰性引号 */}
+            <span className="absolute -top-2 -left-1 text-4xl text-amber-300 opacity-60 select-none">"</span>
+            <span className="absolute -bottom-4 -right-1 text-4xl text-amber-300 opacity-60 select-none">"</span>
+
+            {/* 字幕文字 */}
+            <p
+              className="text-center text-stone-700 leading-relaxed relative z-10"
+              style={{
+                fontFamily: "'Comic Neue', 'Nunito', 'PingFang SC', sans-serif",
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                letterSpacing: '0.02em'
+              }}
+            >
+              {getCurrentSubtitle()}
+            </p>
+
+            {/* 页码指示 */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2
+                            bg-amber-400 text-white text-xs font-bold
+                            px-3 py-1 rounded-full shadow-md">
+              📖 第 {currentPage} 页
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 键盘提示 */}
       <p className="text-center text-xs text-stone-400 pb-1">

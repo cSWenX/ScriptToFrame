@@ -339,12 +339,28 @@ const PageCard = ({
 
       {/* 内容信息 */}
       <div className="p-3">
-        {/* 显示文字预览 */}
+        {/* 显示提示词（如果有） */}
+        {page.jimeng_prompt && (
+          <div className="mb-2">
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-xs">🎨</span>
+              <span className="text-xs font-bold text-purple-600">画面提示词</span>
+            </div>
+            <p
+              className="text-xs text-gray-500 line-clamp-3 bg-purple-50 rounded-lg p-2 border border-purple-100"
+              style={{ fontFamily: "'Nunito', sans-serif" }}
+            >
+              {page.jimeng_prompt}
+            </p>
+          </div>
+        )}
+
+        {/* 显示语音脚本预览 */}
         <p
           className="text-xs text-gray-600 line-clamp-2 mb-2"
           style={{ fontFamily: "'Nunito', sans-serif" }}
         >
-          {page.display_text || page.script_text || '暂无内容'}
+          {page.tts_text || page.display_text || page.script_text || '暂无内容'}
         </p>
 
         {/* 状态标签 */}

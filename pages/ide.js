@@ -6,10 +6,11 @@ import StoryEngine from '../components/StoryEngine';
 import PhaseController from '../components/PhaseController';
 import MultiViewPanel from '../components/MultiViewPanel';
 import ProgressBar from '../components/ProgressBar';
+import ResizablePanels from '../components/ResizablePanels';
 
 /**
  * 儿童绘本创作 IDE - 主页面
- * 架构: 导航侧边栏 + 三栏工作区 (30% + 15% + 55%)
+ * 架构: 导航侧边栏 + 三栏工作区 (可拖拽调整大小)
  *
  * 工作流程:
  * 1. 全局设置 (风格/画幅/分辨率)
@@ -625,46 +626,47 @@ function IDEWorkspace() {
             </div>
           )}
 
-          {/* 三栏工作区 */}
-          <main className="flex-1 flex gap-2 p-2 overflow-hidden">
-            {/* 左栏 - 故事引擎 (30%) */}
-            <div className="w-[30%] flex-shrink-0">
-              <div className="storybook-panel h-full overflow-hidden">
-                <StoryEngine />
-              </div>
-            </div>
-
-            {/* 中栏 - 指挥塔 (15%) */}
-            <div className="w-[15%] flex-shrink-0">
-              <div className="storybook-panel h-full overflow-hidden">
-                <PhaseController
-                  onAnalyzeStory={handleAnalyzeStory}
-                  onGenerateAllCharacters={handleGenerateAllCharacters}
-                  onLockAllCharacters={handleLockAllCharacters}
-                  onGenerateAllPages={handleGenerateAllPages}
-                  onGenerateAllAudio={handleGenerateAllAudio}
-                  isAnalyzing={isAnalyzing}
-                  isGeneratingCharacters={isGeneratingCharacters}
-                  isGeneratingPages={isGeneratingPages}
-                  isGeneratingAudio={isGeneratingAudio}
-                />
-              </div>
-            </div>
-
-            {/* 右栏 - 多功能视窗 (55%) */}
-            <div className="flex-1 min-w-0">
-              <div className="storybook-panel h-full overflow-hidden">
-                <MultiViewPanel
-                  onGenerateCharacter={handleGenerateCharacter}
-                  onGenerateAllCharacters={handleGenerateAllCharacters}
-                  onGeneratePage={handleGeneratePage}
-                  onGenerateAll={handleGenerateAllPages}
-                  onInpaint={handleInpaint}
-                  isGenerating={isGeneratingPages}
-                  isGeneratingCharacters={isGeneratingCharacters}
-                />
-              </div>
-            </div>
+          {/* 三栏工作区 - 可拖拽调整大小 */}
+          <main className="flex-1 flex p-2 overflow-hidden">
+            <ResizablePanels
+              initialLeftWidth={30}
+              initialMiddleWidth={15}
+              minWidth={10}
+              maxWidth={50}
+              leftPanel={
+                <div className="storybook-panel h-full">
+                  <StoryEngine />
+                </div>
+              }
+              middlePanel={
+                <div className="storybook-panel h-full">
+                  <PhaseController
+                    onAnalyzeStory={handleAnalyzeStory}
+                    onGenerateAllCharacters={handleGenerateAllCharacters}
+                    onLockAllCharacters={handleLockAllCharacters}
+                    onGenerateAllPages={handleGenerateAllPages}
+                    onGenerateAllAudio={handleGenerateAllAudio}
+                    isAnalyzing={isAnalyzing}
+                    isGeneratingCharacters={isGeneratingCharacters}
+                    isGeneratingPages={isGeneratingPages}
+                    isGeneratingAudio={isGeneratingAudio}
+                  />
+                </div>
+              }
+              rightPanel={
+                <div className="storybook-panel h-full">
+                  <MultiViewPanel
+                    onGenerateCharacter={handleGenerateCharacter}
+                    onGenerateAllCharacters={handleGenerateAllCharacters}
+                    onGeneratePage={handleGeneratePage}
+                    onGenerateAll={handleGenerateAllPages}
+                    onInpaint={handleInpaint}
+                    isGenerating={isGeneratingPages}
+                    isGeneratingCharacters={isGeneratingCharacters}
+                  />
+                </div>
+              }
+            />
           </main>
         </div>
       </div>
