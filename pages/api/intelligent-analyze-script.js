@@ -284,12 +284,14 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   const sendProgress = (progress, message) => {
+    console.log(`📊 [智能分析-${requestId}] 进度: ${progress}% - ${message}`);
     res.write(`data: ${JSON.stringify({ type: 'progress', progress, message })}\n\n`);
     res.flush?.();
   };
 
   try {
     sendProgress(0, '开始分析故事...');
+    await sleep(500);
 
     // 获取风格信息
     const styleName = STYLE_CONFIG[styleId]?.name || '经典水彩风';
@@ -301,19 +303,32 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
       .replace('{STYLE_DESCRIPTION}', styleDescription)
       .replace('{STORY_CONTENT}', story);
 
+    sendProgress(5, '准备Claude/DeepSeek连接...');
+    await sleep(600);
+
     sendProgress(10, 'AI正在阅读故事，智能规划分镜...');
 
-    // 调用AI
+    // 调用AI（这是耗时操作）
     const aiResponse = await callDeepSeek(prompt, requestId);
 
-    sendProgress(60, '解析资产库...');
+    sendProgress(60, '成功获取AI分析结果...');
+    await sleep(400);
+
+    sendProgress(70, '解析资产库（角色和背景）...');
 
     // 解析结果
     const { story_name, story_analysis, assets, characters, backgrounds, pages } = parseAIResponse(aiResponse, styleId);
 
     sendProgress(80, `AI规划了 ${pages.length} 页分镜...`);
+    await sleep(400);
 
-    sendProgress(90, '生成语音脚本...');
+    sendProgress(85, '验证页面数据...');
+    await sleep(300);
+
+    sendProgress(90, '整理语音脚本和视觉描述...');
+    await sleep(300);
+
+    sendProgress(95, '准备最终结果...');
 
     // 发送完成结果
     res.write(`data: ${JSON.stringify({
@@ -331,7 +346,7 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
     })}\n\n`);
     res.flush?.();
 
-    sendProgress(100, `分析完成 - ${story_analysis.pacing_strategy}`);
+    sendProgress(100, `✅ 分析完成 - ${story_analysis.pacing_strategy}`);
 
     console.log(`✅ [智能分析-${requestId}] 流式分析完成，共 ${pages.length} 页`);
     res.end();
@@ -342,6 +357,11 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
     res.flush?.();
     res.end();
   }
+}
+
+// 辅助函数：延迟
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // 传统JSON响应处理

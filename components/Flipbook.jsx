@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useProject } from '../contexts/ProjectContext';
 
 /**
@@ -151,13 +151,13 @@ const Flipbook = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [autoPlay, setAutoPlay] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
   const [bookDimensions, setBookDimensions] = useState({ width: 800, height: 450 });
 
-  // 有效页面（有图片的）
-  const validPages = pages.filter(p => p.image_url);
+  // 有效页面（有图片的）- 使用 useMemo 缓存，防止每次渲染都生成新数组
+  const validPages = useMemo(() => {
+    return pages.filter(p => p.image_url);
+  }, [pages]);
   const totalPages = validPages.length;
 
   // 获取图片比例
@@ -300,52 +300,126 @@ const Flipbook = () => {
   }, [currentPage, validPages]);
 
   // 翻页时自动播放音频
+  // 核心逻辑：
+  // 1. 翻到新页面 → 自动获取该页音频 → 自动播放
+  // 2. 用户操作（翻页、点击播放按钮）优先级最高
   useEffect(() => {
-    if (currentPage === 0 || currentPage >= totalBookPages - 1) {
-      // 封面或封底，停止播放
+    // 如果是封面（currentPage=0）或封底（currentPage>总页数），停止播放
+    if (currentPage === 0 || currentPage > validPages.length) {
       if (audioRef.current) {
         audioRef.current.pause();
+        // 只有当真的在播放时才改变状态，避免不必要的渲染
+        if (!audioRef.current.paused) {
+          setIsPlaying(false);
+        }
       }
-      setIsPlaying(false);
       return;
     }
 
     const audioUrl = getCurrentAudioUrl();
     console.log(`📖 [Flipbook] 翻到第 ${currentPage} 页, 音频URL:`, audioUrl);
 
-    if (audioUrl && audioRef.current && !isMuted) {
-      audioRef.current.src = audioUrl;
-      audioRef.current.load();
+    if (!audioRef.current) return;
 
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log('🔊 [Flipbook] 音频开始播放');
-            setIsPlaying(true);
-          })
-          .catch(err => {
-            console.log('⚠️ [Flipbook] 自动播放被阻止:', err.message);
-            setIsPlaying(false);
-          });
+    // 如果没有音频 URL，停止播放
+    if (!audioUrl) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    // 【关键修复】：严格比较当前 src 和 目标 url
+    // 浏览器中的 src 属性通常是绝对路径（http://...），而数据中的可能是相对路径
+    // 我们创建一个临时的 URL 对象来对比绝对路径，确保准确性
+    const currentSrc = audioRef.current.src;
+    const targetSrc = new URL(audioUrl, window.location.href).href;
+
+    if (currentSrc === targetSrc) {
+      // URL 没变，说明是同一页的音频，不做任何操作（保留当前的播放/暂停状态）
+      // 这样点击"暂停"导致重渲染时，代码会在这里直接 return，不会执行下面的 .play()
+      console.log('🔊 [Flipbook] 音频URL未改变，保持当前状态');
+      return;
+    }
+
+    // --- 只有 URL 确实改变了（翻页了），才执行加载和自动播放 ---
+
+    // 停止当前播放
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+
+    // 设置新的音频源
+    audioRef.current.src = audioUrl;
+
+    // 确保音量正常
+    if (audioRef.current.volume === 0 || audioRef.current.volume !== 1.0) {
+      audioRef.current.volume = 1.0;
+      console.log('🔊 [Flipbook] 设置音量为 1.0');
+    }
+
+    // 确保不是静音状态
+    if (audioRef.current.muted) {
+      audioRef.current.muted = false;
+      console.log('🔊 [Flipbook] 取消静音');
+    }
+
+    console.log('🔊 [Flipbook] 音频元素状态:', {
+      src: audioRef.current.src,
+      volume: audioRef.current.volume,
+      muted: audioRef.current.muted,
+      readyState: audioRef.current.readyState
+    });
+
+    // 监听loadeddata事件，等音频数据加载完成后再播放
+    // 使用 { once: true } 自动移除监听器，更简洁
+    const handleLoadedData = () => {
+      console.log('🔊 [Flipbook] 音频数据已加载，readyState:', audioRef.current?.readyState);
+      // 只有在加载新页面音频时，才自动播放
+      if (audioRef.current) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('✅ [Flipbook] 音频开始播放');
+              setIsPlaying(true);
+            })
+            .catch(err => {
+              console.error('❌ [Flipbook] 播放失败:', err.message, err);
+              setIsPlaying(false);
+            });
+        }
       }
-    } else {
+    };
+
+    // 添加错误处理
+    const handleError = (e) => {
+      console.error('❌ [Flipbook] 音频加载错误:', {
+        error: e,
+        src: audioRef.current?.src,
+        networkState: audioRef.current?.networkState,
+        readyState: audioRef.current?.readyState
+      });
+      setIsPlaying(false);
+    };
+
+    audioRef.current.addEventListener('loadeddata', handleLoadedData, { once: true });
+    audioRef.current.addEventListener('error', handleError, { once: true });
+
+    // 开始加载音频
+    try {
+      audioRef.current.load();
+      console.log('🔊 [Flipbook] 开始加载音频...');
+    } catch (err) {
+      console.error('❌ [Flipbook] 加载音频失败:', err);
       setIsPlaying(false);
     }
-  }, [currentPage, isMuted, getCurrentAudioUrl, totalBookPages]);
+  }, [currentPage, getCurrentAudioUrl, validPages.length]);
 
-  // 音频结束处理
+  // 音频播放完毕的处理
   const handleAudioEnded = useCallback(() => {
-    console.log('🔊 [Flipbook] 音频播放结束, autoPlay:', autoPlay);
+    console.log('🔊 [Flipbook] 音频播放结束');
     setIsPlaying(false);
-
-    if (autoPlay && currentPage < totalBookPages - 1) {
-      console.log('📖 [Flipbook] 自动翻页到下一页');
-      setTimeout(() => {
-        setCurrentPage(prev => prev + 1);
-      }, 800);
-    }
-  }, [autoPlay, currentPage, totalBookPages]);
+    // 不再自动翻页，用户需要手动翻页
+  }, []);
 
   // 翻页
   const nextPage = () => {
@@ -371,7 +445,10 @@ const Flipbook = () => {
 
   // 切换音频播放/暂停
   const toggleAudio = useCallback(() => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) {
+      console.log('⚠️ [Flipbook] 音频元素不存在');
+      return;
+    }
 
     const audioUrl = getCurrentAudioUrl();
     if (!audioUrl) {
@@ -379,19 +456,37 @@ const Flipbook = () => {
       return;
     }
 
-    if (isPlaying) {
+    // 直接检查 audio 元素的 paused 状态，而不是依赖 React 状态
+    const isPaused = audioRef.current.paused;
+
+    console.log('🔊 [Flipbook] 切换播放状态:', {
+      currentState: isPaused ? '暂停' : '播放中',
+      isPlayingState: isPlaying,
+      actualPaused: audioRef.current.paused,
+      src: audioRef.current.src
+    });
+
+    if (!isPaused) {
+      // 当前正在播放 → 暂停
       audioRef.current.pause();
       setIsPlaying(false);
+      console.log('⏸️  [Flipbook] 音频已暂停');
     } else {
-      if (audioRef.current.src !== audioUrl) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.load();
+      // 当前暂停 → 播放
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('▶️  [Flipbook] 音频继续播放');
+            setIsPlaying(true);
+          })
+          .catch(err => {
+            console.error('❌ [Flipbook] 播放失败:', err.message);
+            setIsPlaying(false);
+          });
       }
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.error('播放失败:', err));
     }
-  }, [isPlaying, getCurrentAudioUrl]);
+  }, [getCurrentAudioUrl, isPlaying]);
 
   // 键盘导航
   useEffect(() => {
@@ -436,69 +531,50 @@ const Flipbook = () => {
           {title || '未命名绘本'}
         </h2>
         <div className="flex items-center gap-3">
-          {/* 自动播放开关 */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-xs text-stone-500">自动播放</span>
-            <div
-              className={`w-9 h-5 rounded-full p-0.5 transition-colors cursor-pointer ${
-                autoPlay ? 'bg-amber-500' : 'bg-stone-300'
-              }`}
-              onClick={() => setAutoPlay(!autoPlay)}
+          {/* 播放/暂停 互斥按钮 */}
+          {!isPlaying ? (
+            // 显示播放按钮
+            <button
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.play()
+                    .then(() => {
+                      console.log('▶️  [Flipbook] 点击播放按钮，音频开始播放');
+                      setIsPlaying(true);
+                    })
+                    .catch(e => {
+                      console.error('❌ [Flipbook] 播放失败:', e.message);
+                      setIsPlaying(false);
+                    });
+                }
+              }}
+              className="p-1.5 rounded-full bg-green-500 text-white hover:bg-green-600 transition-all shadow-sm"
+              title="播放"
             >
-              <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                autoPlay ? 'translate-x-4' : 'translate-x-0'
-              }`} />
-            </div>
-          </label>
-
-          {/* 播放/暂停按钮 */}
-          <button
-            onClick={toggleAudio}
-            className={`p-1.5 rounded-full transition-all ${
-              isPlaying
-                ? 'bg-amber-500 text-white animate-pulse'
-                : 'bg-amber-100 text-amber-600 hover:bg-amber-200'
-            }`}
-            title={isPlaying ? '暂停' : '播放'}
-          >
-            {isPlaying ? (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-              </svg>
-            ) : (
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
               </svg>
-            )}
-          </button>
-
-          {/* 静音开关 */}
-          <button
-            onClick={() => {
-              setIsMuted(!isMuted);
-              if (!isMuted && audioRef.current) {
-                audioRef.current.pause();
-                setIsPlaying(false);
-              }
-            }}
-            className={`p-1.5 rounded-full transition-colors ${
-              isMuted ? 'bg-stone-300 text-stone-500' : 'bg-amber-100 text-amber-600'
-            }`}
-            title={isMuted ? '取消静音' : '静音'}
-          >
-            {isMuted ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </button>
+          ) : (
+            // 显示暂停按钮
+            <button
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.pause();
+                  setIsPlaying(false);
+                  console.log('⏸️  [Flipbook] 点击暂停按钮，音频已暂停');
+                }
+              }}
+              className="p-1.5 rounded-full bg-amber-500 text-white hover:bg-amber-600 transition-all shadow-sm animate-pulse"
+              title="暂停"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
               </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-            )}
-          </button>
+            </button>
+          )}
 
-          <span className="text-xs text-stone-500">
+          <span className="text-xs text-stone-500 font-mono">
             {currentPage} / {totalBookPages - 1}
           </span>
         </div>

@@ -132,7 +132,8 @@ export default async function handler(req, res) {
       success: true,
       data: {
         pageIndex,
-        image_url: result.data.imageUrl
+        image_url: result.data.imageUrl,
+        tos_url: result.data.tosUrl  // 即梦返回的原始TOS URL，用于修图
       }
     });
 

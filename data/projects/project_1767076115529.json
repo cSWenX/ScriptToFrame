@@ -1,0 +1,1694 @@
+{
+  "id": "project_1767076115529",
+  "title": "泥巴青蛙",
+  "story_name": "小蝌蚪找妈妈",
+  "style_preset": "3d_clay",
+  "created_at": "2025-12-30T06:28:35.529Z",
+  "updated_at": "2025-12-30T09:22:47.178Z",
+  "assets": [
+    {
+      "id": "KT-FrogMom-01",
+      "type": "character",
+      "name": "青蛙妈妈",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只温柔的青蛙妈妈，披着碧绿的黏土质感外衣，露着雪白的肚皮，鼓着一对圆溜溜的大眼睛，嘴巴宽宽的，面带慈祥的微笑，四肢圆润可爱，蹲坐姿势。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301435361FBD3A7DEAA9C53F75A8-4880-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767162937&x-signature=F%2FtFXpe%2BLI4J1WMIE%2BQykmRZFKE%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Tadpole-01",
+      "type": "character",
+      "name": "小蝌蚪群（初期）",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一群黑黑圆圆的小蝌蚪，大脑袋，长尾巴，身体是光滑的深色黏土质感，眼睛是白色小点，表情好奇又活泼，聚在一起游动的动态。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143545229D79DBDC066C406564-6446-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767162946&x-signature=nqz7tsgyOERVn416Qt7Z2Dcu7Q0%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Tadpole-02",
+      "type": "character",
+      "name": "小蝌蚪（长后腿）",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只小蝌蚪，黑色的，大脑袋长尾巴，脚部是两条小小的、肉乎乎的青蛙后腿，腿的末端是圆球状，表情带着一点成长的惊讶。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301441260BF61CDE96D3E4407677-4590-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163287&x-signature=6tsvHZs9c9AB9g5t4onivGeBAoA%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Tadpole-03",
+      "type": "character",
+      "name": "小蝌蚪（长全四肢）",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只小蝌蚪，大脑袋长尾巴，身体前后长出了四条小小的、圆润的青蛙腿，前腿较短，后腿较粗，表情更加坚定。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143603207BA4BA0142C12A35CA-1899-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767162964&x-signature=Nxe7f%2Btqb%2BsHyHDat1rMer2PunM%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Tadpole-04",
+      "type": "character",
+      "name": "小青蛙（最终形态）",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只刚完成变身的小青蛙，披着嫩绿色的黏土衣裳，露着白肚皮，大眼睛，四条腿健壮，尾巴完全消失，表情兴奋又自豪。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143613D2E74E0BA46B0E2A3B91-8920-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767162973&x-signature=IEVhpZVy%2FHwd37tRirAcwmJQQ6Y%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Carp-01",
+      "type": "character",
+      "name": "鲤鱼阿姨",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一条和善的鲤鱼阿姨，橙红色黏土身体，覆盖着闪亮的鳞片纹理，眼睛大大的，嘴巴宽宽的，面带温柔的微笑，鱼鳍柔软。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123014362279A649040839C43FBD5D-2954-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767162982&x-signature=sDS20u3Un4Q2fqBJtWCapnGr4AY%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Turtle-01",
+      "type": "character",
+      "name": "乌龟",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只慢悠悠的乌龟，深绿色圆润的龟壳，浅绿色的头部和四肢，头顶有两只圆圆的大眼睛，嘴巴宽宽，表情憨厚慈祥。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143802F417FD8818E33D40EC4B-3481-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163082&x-signature=9hwIicVbWZSuk2Vd%2BvbjMo9Ebis%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-Catfish-01",
+      "type": "character",
+      "name": "大鲶鱼",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一条灰色的大鲶鱼，身体光滑呈流线型，嘴巴大大的，嘴边有两根长长的胡须，肚子是白色的，眼睛笑眯眯的，表情友善。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143641B32DAFBC7D4D8D295723-6651-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163001&x-signature=DUBQT7ACXdHywSm0HxxPFfqDQl4%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-BG-SpringPond-01",
+      "type": "background",
+      "name": "春日池塘全景",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，一个温暖的春日池塘，岸边是嫩绿色的柳树，枝条垂下，水面波光粼粼，倒映着蓝天白云，近处有柔柔的水草，远处有融化的冰雪痕迹，整体色彩明亮柔和。",
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123014365041F5024308DF2644B9F4-4839-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163011&x-signature=Nj3x%2F5QwOcVnq2eIT7UGBRqXmlw%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-BG-Underwater-01",
+      "type": "background",
+      "name": "水下世界（水草丛）",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，水下视角，阳光透过水面形成一道道光柱（丁达尔效应），照亮了摇曳的、翠绿色的黏土质感水草，背景是深蓝色的池水，有细小的气泡上升，充满梦幻感。",
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143920DCD228736CAE0547740A-5336-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163161&x-signature=%2FaJ%2BQQ0%2BpZxI%2FWuf7zs375LD%2B1A%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-BG-PondSurface-01",
+      "type": "background",
+      "name": "池塘水面（鸭子戏水）",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，平静的池塘水面，反射着天空的淡蓝色和云朵，近景有几片圆圆的睡莲叶，水面有微微的涟漪，远处是模糊的岸边景色，氛围宁静。",
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301437159190A0499F46D33F4384-5765-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163035&x-signature=LiuGod4xkVpDd19ouk1vnQWxcgk%3D",
+      "locked": true
+    },
+    {
+      "id": "KT-BG-Lotus-01",
+      "type": "background",
+      "name": "荷花池",
+      "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，一片美丽的荷花池，几朵粉色的荷花盛开，碧绿圆润的荷叶铺在水面上，荷叶上还有晶莹的水珠，背景是温暖的夕阳或晨光，色彩鲜艳而温馨。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230143726C02DFC278560762B1E2F-3181-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163047&x-signature=lXWDiWmEPH1fhrrYTfUOf1H7GCg%3D",
+      "locked": true
+    }
+  ],
+  "pages": [
+    {
+      "page_index": 1,
+      "scene_id": "S-01",
+      "rationale": "开篇定场。展示春天来临、冰雪融化、万物复苏的整体环境，为故事奠定温暖的基调。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-SpringPond-01(春日池塘全景)，全景镜头，画面中池塘边的泥土里，KT-FrogMom-01(青蛙妈妈)正从一个小泥洞里探出半个身子，伸着懒腰，表情舒适，阳光暖暖地照在它碧绿的衣裳上，岸边柳树嫩芽清晰可见。",
+      "asset_refs": [
+        "KT-BG-SpringPond-01",
+        "KT-FrogMom-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "温暖舒缓",
+          "text": "暖和的春天来了。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "温和叙述",
+          "text": "池塘里的冰雪融化了，岸边的柳树，抽出了嫩绿的新芽。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "亲切",
+          "text": "青蛙妈妈在泥洞里睡了一个冬天，现在，它醒来了。"
+        }
+      ],
+      "tts_text": "暖和的春天来了。池塘里的冰雪融化了，岸边的柳树，抽出了嫩绿的新芽。青蛙妈妈在泥洞里睡了一个冬天，现在，它醒来了。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "暖和的春天来了。",
+          "emotion": "温暖舒缓"
+        },
+        {
+          "role": "旁白",
+          "text": "池塘里的冰雪融化了，岸边的柳树，抽出了嫩绿的新芽。",
+          "emotion": "温和叙述"
+        },
+        {
+          "role": "旁白",
+          "text": "青蛙妈妈在泥洞里睡了一个冬天，现在，它醒来了。",
+          "emotion": "亲切"
+        }
+      ],
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015100551D8EDBF75E7902B9CED-6096-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165006&x-signature=PF%2FCEABxnF0kpl6VWmZyfZTJOEw%3D",
+      "audio_url": "/audio/pages/page_1.wav",
+      "status": "ready",
+      "tos_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015100551D8EDBF75E7902B9CED-6096-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165006&x-signature=PF%2FCEABxnF0kpl6VWmZyfZTJOEw%3D",
+      "edit_prompt": "不要青蛙背上的绿色的披风",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:10:06.127Z"
+    },
+    {
+      "page_index": 2,
+      "scene_id": "S-02",
+      "rationale": "动作序列分页。从苏醒到产卵，是两个连续但不同的核心动作，分页展示生命孕育的细节。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景镜头，KT-FrogMom-01(青蛙妈妈)跳进了清澈的水中，正游向一片翠绿的水草，它的身后留下一串小气泡，身体姿态轻盈。不要青蛙身上的披风",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-FrogMom-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "轻柔",
+          "text": "它扑通一声，跳进池塘里。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "充满希望",
+          "text": "在柔柔的水草丛中，产下了许多黑黑圆圆的卵。"
+        }
+      ],
+      "tts_text": "它扑通一声，跳进池塘里。在柔柔的水草丛中，产下了许多黑黑圆圆的卵。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "它扑通一声，跳进池塘里。",
+          "emotion": "轻柔"
+        },
+        {
+          "role": "旁白",
+          "text": "在柔柔的水草丛中，产下了许多黑黑圆圆的卵。",
+          "emotion": "充满希望"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230153819C32A9090CB86CC4A3E73-1400-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767166700&x-signature=2Khif%2FpIbd0laK%2Frrc%2B9t98Qj6g%3D",
+      "audio_url": "/audio/pages/page_2.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230153819C32A9090CB86CC4A3E73-1400-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767166700&x-signature=2Khif%2FpIbd0laK%2Frrc%2B9t98Qj6g%3D",
+      "edit_prompt": "不要右下角的小人，草上加一些黑黑的蝌蚪卵",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:38:20.517Z"
+    },
+    {
+      "page_index": 3,
+      "scene_id": "S-03",
+      "rationale": "时间流逝与生命诞生。几天后，卵变成蝌蚪，是故事主角的正式登场，需要独立页面强调。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，特写镜头，聚焦在一团透明胶质里的黑卵上，一些卵已经孵化，变成了KT-Tadpole-01(小蝌蚪)，它们晃动着大脑袋和长尾巴，正要游出来，阳光透过水面照亮了这个微观世界。",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "愉快",
+          "text": "春风轻轻吹过，阳光暖暖地照着。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "惊奇",
+          "text": "没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。"
+        }
+      ],
+      "tts_text": "春风轻轻吹过，阳光暖暖地照着。没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "春风轻轻吹过，阳光暖暖地照着。",
+          "emotion": "愉快"
+        },
+        {
+          "role": "旁白",
+          "text": "没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。",
+          "emotion": "惊奇"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230144337BD84161B79D0F03FC999-4704-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163417&x-signature=er03dKI7XnC6h%2FCo8iceFlbCv0o%3D",
+      "audio_url": "/audio/pages/page_3.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230144337BD84161B79D0F03FC999-4704-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163417&x-signature=er03dKI7XnC6h%2FCo8iceFlbCv0o%3D"
+    },
+    {
+      "page_index": 4,
+      "scene_id": "S-04",
+      "rationale": "展示主角的初始状态和快乐生活，为后续的“缺失感”（找妈妈）做铺垫。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，全景镜头，一群KT-Tadpole-01(小蝌蚪)在水里快乐地游来游去，有的正钻进茂密的水草里捉迷藏，有的正浮向水面，画面充满动感和活力，水波粼粼。",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "活泼欢快",
+          "text": "他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。"
+        }
+      ],
+      "tts_text": "他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。",
+          "emotion": "活泼欢快"
+        }
+      ],
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301501543175D2C2583504470901-9656-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164515&x-signature=Tw2aAEglH6fB4PfNhWDYSF68pyM%3D",
+      "audio_url": "/audio/pages/page_4.wav",
+      "status": "ready",
+      "tos_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301501543175D2C2583504470901-9656-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164515&x-signature=Tw2aAEglH6fB4PfNhWDYSF68pyM%3D",
+      "edit_prompt": "我要全景图片，不要椭圆形的，不要右下角的小人",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:01:55.473Z"
+    },
+    {
+      "page_index": 5,
+      "scene_id": "S-05",
+      "rationale": "情绪突变与动机产生。看到鸭子一家触发“寻母”念头，是故事核心冲突的起点，需独立一页营造情感冲击。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-PondSurface-01(池塘水面)，水下仰视镜头，KT-Tadpole-01(小蝌蚪群)聚在水面下，抬头望着上方。水面上，鸭妈妈带着一群毛茸茸的小鸭子正在划水，影子倒映在水中，小蝌蚪们的表情从快乐变成了羡慕和思考。",
+      "asset_refs": [
+        "KT-BG-PondSurface-01",
+        "KT-Tadpole-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "观察叙述",
+          "text": "有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "模仿温柔",
+          "text": "嘎嘎，嘎嘎。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "羡慕与疑惑",
+          "text": "小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”"
+        }
+      ],
+      "tts_text": "有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水。嘎嘎，嘎嘎。小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水。",
+          "emotion": "观察叙述"
+        },
+        {
+          "role": "旁白",
+          "text": "嘎嘎，嘎嘎。",
+          "emotion": "模仿温柔"
+        },
+        {
+          "role": "旁白",
+          "text": "小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”",
+          "emotion": "羡慕与疑惑"
+        }
+      ],
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301444309E779C2E0862DC409FB1-8201-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163470&x-signature=i4maTQrsEyxQf7RschI1fQ3dXQo%3D",
+      "audio_url": "/audio/pages/page_5.wav",
+      "status": "ready",
+      "tos_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301444309E779C2E0862DC409FB1-8201-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163470&x-signature=i4maTQrsEyxQf7RschI1fQ3dXQo%3D"
+    },
+    {
+      "page_index": 6,
+      "scene_id": "S-06",
+      "rationale": "决定与出发。将“决定”这个心理动作视觉化，开启冒险旅程。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景镜头，KT-Tadpole-01(小蝌蚪群)排成一个小队形，尾巴整齐地摆动，坚定地朝着画面右侧游去，眼神充满决心，背景的水草向后移动，表现出前进的动态。",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "坚定",
+          "text": "于是，他们决定去寻找妈妈。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "富有节奏",
+          "text": "小蝌蚪游哇游，游哇游……"
+        }
+      ],
+      "tts_text": "于是，他们决定去寻找妈妈。小蝌蚪游哇游，游哇游……",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "于是，他们决定去寻找妈妈。",
+          "emotion": "坚定"
+        },
+        {
+          "role": "旁白",
+          "text": "小蝌蚪游哇游，游哇游……",
+          "emotion": "富有节奏"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015005358E05A2D24ED27467FF3-3445-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164453&x-signature=D11a6dkJPbVJm%2BaGbQfILirhCdQ%3D",
+      "audio_url": "/audio/pages/page_6.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015005358E05A2D24ED27467FF3-3445-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164453&x-signature=D11a6dkJPbVJm%2BaGbQfILirhCdQ%3D",
+      "edit_prompt": "不要蝌蚪前面的小人",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:00:53.663Z"
+    },
+    {
+      "page_index": 7,
+      "scene_id": "S-07",
+      "rationale": "第一次“认错妈妈”的发现阶段。引入新角色（鲤鱼），展示蝌蚪的误判依据（大眼睛，宽嘴巴）。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，全景镜头，KT-Carp-01正在水草间优雅地游动，教一条小鲤鱼吃东西。KT-Tadpole-01(小蝌蚪群)从画面左侧游入，好奇又兴奋地看着KT-Carp-01。",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-01",
+        "KT-Carp-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "发现新事物",
+          "text": "看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "内心活动",
+          "text": "鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！"
+        }
+      ],
+      "tts_text": "看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。",
+          "emotion": "发现新事物"
+        },
+        {
+          "role": "旁白",
+          "text": "鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！",
+          "emotion": "内心活动"
+        }
+      ],
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301458315102ED9A57D693418B6B-8718-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164311&x-signature=%2FtFPQUTyhEI0CEh%2FFOtuELRiySg%3D",
+      "audio_url": "/audio/pages/page_7.wav",
+      "status": "ready",
+      "tos_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301458315102ED9A57D693418B6B-8718-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164311&x-signature=%2FtFPQUTyhEI0CEh%2FFOtuELRiySg%3D",
+      "edit_prompt": "不要鲤鱼头上的人形奶奶",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T06:55:55.959Z"
+    },
+    {
+      "page_index": 8,
+      "scene_id": "S-08",
+      "rationale": "第一次“认错妈妈”的互动阶段。聚焦对话和表情，制造一个温馨的误会场景。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景特写，KT-Tadpole-01(小蝌蚪群)围在KT-Carp-01(鲤鱼阿姨)面前，兴奋地张着嘴。一个大的对话气泡从蝌蚪群冒出，气泡内写着：“妈妈！妈妈！”。鲤鱼阿姨微微低头，表情和蔼。",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-01",
+        "KT-Carp-01"
+      ],
+      "voice_script": [
+        {
+          "role": "KT-Tadpole-01",
+          "emotion": "兴奋礼貌",
+          "text": "妈妈！妈妈！"
+        },
+        {
+          "role": "KT-Carp-01",
+          "emotion": "和善微笑",
+          "text": "傻孩子，我不是你们的妈妈。"
+        }
+      ],
+      "tts_text": "小蝌蚪们兴奋礼貌的喊妈妈！妈妈！鲤鱼阿姨和善微笑的说傻孩子，我不是你们的妈妈。",
+      "dialogues": [
+        {
+          "role": "KT-Tadpole-01",
+          "text": "妈妈！妈妈！",
+          "emotion": "兴奋礼貌"
+        },
+        {
+          "role": "KT-Carp-01",
+          "text": "傻孩子，我不是你们的妈妈。",
+          "emotion": "和善微笑"
+        }
+      ],
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230144634C2FBF9A98CB74B2ACEA8-7819-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163594&x-signature=9IJ2SZE%2FdvJ8geqlhaYXj0m5a6A%3D",
+      "audio_url": "/audio/pages/page_8.wav",
+      "status": "ready",
+      "tos_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230144634C2FBF9A98CB74B2ACEA8-7819-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767163594&x-signature=9IJ2SZE%2FdvJ8geqlhaYXj0m5a6A%3D"
+    },
+    {
+      "page_index": 9,
+      "scene_id": "S-09",
+      "rationale": "第一次“认错妈妈”的告别与成长阶段。鲤鱼提供线索，同时触发蝌蚪第一次形态变化（长出后腿），必须分页。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景镜头，KT-Carp-01用鱼鳍指向远方。KT-Tadpole-01(小蝌蚪群)们正在礼貌地点头告别，它们的身体后方已经长出了两条小小的后腿，尾巴依然很长。鲤鱼是一个完整的鱼，不要增加人类形象，鲤鱼用鱼鳍指向远方，不要漏了水下世界背景",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-02",
+        "KT-Carp-01"
+      ],
+      "voice_script": [
+        {
+          "role": "KT-Carp-01",
+          "emotion": "耐心指引",
+          "text": "你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！"
+        },
+        {
+          "role": "旁白",
+          "emotion": "感谢与继续",
+          "text": "小蝌蚪们谢过了鲤鱼阿姨，继续向前游。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "惊奇",
+          "text": "他们游了一段时间，咦？长出了两条后腿。"
+        }
+      ],
+      "tts_text": "鲤鱼阿姨耐心指引的说你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！小蝌蚪们谢过了鲤鱼阿姨，继续向前游。他们游了一段时间，咦？长出了两条后腿。",
+      "dialogues": [
+        {
+          "role": "KT-Carp-01",
+          "text": "你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！",
+          "emotion": "耐心指引"
+        },
+        {
+          "role": "旁白",
+          "text": "小蝌蚪们谢过了鲤鱼阿姨，继续向前游。",
+          "emotion": "感谢与继续"
+        },
+        {
+          "role": "旁白",
+          "text": "他们游了一段时间，咦？长出了两条后腿。",
+          "emotion": "惊奇"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015142335AFD19BCB6FA346FE79-2911-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165264&x-signature=P3rgYSZgcxE419C7FiOaXcxEMV4%3D",
+      "audio_url": "/audio/pages/page_9.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015142335AFD19BCB6FA346FE79-2911-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165264&x-signature=P3rgYSZgcxE419C7FiOaXcxEMV4%3D",
+      "edit_prompt": "鲤鱼是用鱼鳍指向远方，而不是手",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:12:50.756Z"
+    },
+    {
+      "page_index": 10,
+      "scene_id": "S-10",
+      "rationale": "第二次“认错妈妈”的发现与互动。基于新线索（大眼睛、四条腿）误认乌龟，动作更急切。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，动态镜头，黑色的小蝌蚪们快速游动着，追向前方正在慢悠悠划水的KT-Turtle-01(乌龟)。小蝌蚪们表情极度开心，张大了嘴喊叫，乌龟惊讶地回头。",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-02",
+        "KT-Turtle-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "发现目标",
+          "text": "这时，他们看见一只乌龟在水里慢慢地划动。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "内心确信",
+          "text": "乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了！"
+        },
+        {
+          "role": "KT-Tadpole-02",
+          "emotion": "激动大声",
+          "text": "妈妈！妈妈！我们找到你了！"
+        }
+      ],
+      "tts_text": "这时，他们看见一只乌龟在水里慢慢地划动。乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了！小蝌蚪们激动大声的喊妈妈！妈妈！我们找到你了！",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "这时，他们看见一只乌龟在水里慢慢地划动。",
+          "emotion": "发现目标"
+        },
+        {
+          "role": "旁白",
+          "text": "乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了！",
+          "emotion": "内心确信"
+        },
+        {
+          "role": "KT-Tadpole-02",
+          "text": "妈妈！妈妈！我们找到你了！",
+          "emotion": "激动大声"
+        }
+      ],
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230145452945A2A2E6D7C8A459091-3432-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164092&x-signature=8rYjPKJJMv6aZIi5ytHDa7Kb1q4%3D",
+      "audio_url": "/audio/pages/page_10.wav",
+      "status": "ready",
+      "tos_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230145452945A2A2E6D7C8A459091-3432-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164092&x-signature=8rYjPKJJMv6aZIi5ytHDa7Kb1q4%3D"
+    },
+    {
+      "page_index": 11,
+      "scene_id": "S-11",
+      "rationale": "第二次“认错妈妈”的澄清与再成长。乌龟提供更具体的线索（绿衣裳），蝌蚪长出前腿，失望但坚持。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，特写镜头，KT-Turtle-01(乌龟)笑着对面前的KT-Tadpole-03(长全四肢的小蝌蚪)们说话。小蝌蚪们表情有些失望，但认真听着，它们的身体前方也长出了两条小小的前腿。需要严格参考KT-Tadpole-03(长全四肢的小蝌蚪)",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-03",
+        "KT-Turtle-01"
+      ],
+      "voice_script": [
+        {
+          "role": "KT-Turtle-01",
+          "emotion": "憨厚地笑",
+          "text": "哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！"
+        },
+        {
+          "role": "旁白",
+          "emotion": "略带失望但坚定",
+          "text": "小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。"
+        }
+      ],
+      "tts_text": "乌龟憨厚地笑的说哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。",
+      "dialogues": [
+        {
+          "role": "KT-Turtle-01",
+          "text": "哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！",
+          "emotion": "憨厚地笑"
+        },
+        {
+          "role": "旁白",
+          "text": "小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。",
+          "emotion": "略带失望但坚定"
+        }
+      ],
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015073880A1BAE0A733BE46BAD5-8236-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164859&x-signature=IZ%2FO47oDmLdxA8Qz5XbfQ3nTZ2U%3D",
+      "audio_url": "/audio/pages/page_11.wav",
+      "status": "ready",
+      "tos_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015073880A1BAE0A733BE46BAD5-8236-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164859&x-signature=IZ%2FO47oDmLdxA8Qz5XbfQ3nTZ2U%3D"
+    },
+    {
+      "page_index": 12,
+      "scene_id": "S-12",
+      "rationale": "第三次“认错妈妈”与线索汇总。误认鲶鱼，线索几乎集齐（缺叫声），鲶鱼给出完整描述，制造最终悬念。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，低角度仰视镜头，KT-Catfish-01(大鲶鱼)庞大的身躯从水底游过。KT-Tadpole-03(长全四肢的小蝌蚪)们怯生生地游近，小声叫着。鲶鱼友善地低头看着它们。是鲶鱼，不是鲨鱼",
+      "asset_refs": [
+        "KT-BG-Underwater-01",
+        "KT-Tadpole-03",
+        "KT-Catfish-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "犹豫猜测",
+          "text": "这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？"
+        },
+        {
+          "role": "KT-Tadpole-03",
+          "emotion": "怯生生",
+          "text": "妈妈，妈妈！"
+        },
+        {
+          "role": "KT-Catfish-01",
+          "emotion": "笑着纠正",
+          "text": "孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "牢记在心",
+          "text": "小蝌蚪们记住了：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会‘呱呱’叫。"
+        }
+      ],
+      "tts_text": "这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？小蝌蚪们怯生生地叫妈妈，妈妈！大鲶鱼笑着纠正的说孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。小蝌蚪们记住了：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会‘呱呱’叫。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？",
+          "emotion": "犹豫猜测"
+        },
+        {
+          "role": "KT-Tadpole-03",
+          "text": "妈妈，妈妈！",
+          "emotion": "怯生生"
+        },
+        {
+          "role": "KT-Catfish-01",
+          "text": "孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。",
+          "emotion": "笑着纠正"
+        },
+        {
+          "role": "旁白",
+          "text": "小蝌蚪们记住了：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会‘呱呱’叫。",
+          "emotion": "牢记在心"
+        }
+      ],
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230150634E0578640F390CA46E83F-2733-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164794&x-signature=0K%2FoD%2FlvNEqjw9bUbOEngR3Hvig%3D",
+      "audio_url": "/audio/pages/page_12.wav",
+      "status": "ready",
+      "tos_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230150634E0578640F390CA46E83F-2733-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164794&x-signature=0K%2FoD%2FlvNEqjw9bUbOEngR3Hvig%3D"
+    },
+    {
+      "page_index": 13,
+      "scene_id": "S-13",
+      "rationale": "最终变身前的最后成长与接近目标。尾巴变短，游向荷花池，画面转向更明亮的场景，预示高潮来临。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Lotus-01(荷花池)，水下视角，KT-Tadpole-04(尾巴变短的小青蛙)们朝着画面中央一片巨大的荷叶游去，它们的尾巴已经变得很短，身体更接近青蛙形态，眼神充满期待。阳光透过荷叶缝隙洒下光斑。",
+      "asset_refs": [
+        "KT-BG-Lotus-01",
+        "KT-Tadpole-04"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "坚持不懈",
+          "text": "他们游哇游，不知不觉，尾巴变短了。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "充满希望",
+          "text": "终于，游到一片荷花旁时……"
+        }
+      ],
+      "tts_text": "他们游哇游，不知不觉，尾巴变短了。终于，游到一片荷花旁时……",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "他们游哇游，不知不觉，尾巴变短了。",
+          "emotion": "坚持不懈"
+        },
+        {
+          "role": "旁白",
+          "text": "终于，游到一片荷花旁时……",
+          "emotion": "充满希望"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301507587CCD72E4B459D3419B8B-9738-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164879&x-signature=kUzXBTXUaMaeKNj9l0ufNBRDaU0%3D",
+      "audio_url": "/audio/pages/page_13.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301507587CCD72E4B459D3419B8B-9738-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767164879&x-signature=kUzXBTXUaMaeKNj9l0ufNBRDaU0%3D",
+      "edit_prompt": "不要每只青蛙尾部的粉红色的长条",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:07:58.960Z"
+    },
+    {
+      "page_index": 14,
+      "scene_id": "S-14",
+      "rationale": "高潮：发现与确认。所有线索吻合，平静而肯定地叫出“妈妈”，与之前的急切形成对比。利用翻页悬念（妈妈会答应吗？）。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Lotus-01(荷花池)，仰视镜头，KT-FrogMom-01(青蛙妈妈)蹲在一张碧绿的荷叶上，披着绿衣裳，露着白肚皮，鼓着大眼睛，正伸出舌头捉一只飞虫。KT-Tadpole-04(小青蛙们)从荷叶下的水里探出头，轻轻地叫着，表情肯定又温柔。",
+      "asset_refs": [
+        "KT-BG-Lotus-01",
+        "KT-FrogMom-01",
+        "KT-Tadpole-04"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "确认",
+          "text": "他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。"
+        },
+        {
+          "role": "KT-Tadpole-04",
+          "emotion": "轻声肯定",
+          "text": "妈妈！妈妈！"
+        }
+      ],
+      "tts_text": "他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。小青蛙们轻声肯定地叫妈妈！妈妈！",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。",
+          "emotion": "确认"
+        },
+        {
+          "role": "KT-Tadpole-04",
+          "text": "妈妈！妈妈！",
+          "emotion": "轻声肯定"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230151439D33F3C58B640CF435BD4-5704-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165280&x-signature=P5onB49fJgFNCXVw9RpV0hvmzvM%3D",
+      "audio_url": "/audio/pages/page_14.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230151439D33F3C58B640CF435BD4-5704-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165280&x-signature=P5onB49fJgFNCXVw9RpV0hvmzvM%3D",
+      "edit_prompt": "不要大青蛙背上的披风",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:14:39.991Z"
+    },
+    {
+      "page_index": 15,
+      "scene_id": "S-15",
+      "rationale": "大团圆与结局。连续动作分镜（认出、邀请、跳跃、变身、新生活）浓缩在一页，展现生命圆满转变的瞬间和美好结局。",
+      "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Lotus-01(荷花池)，全景镜头，KT-FrogMom-01(青蛙妈妈)开心地低头看着荷叶。几只KT-Tadpole-04(小青蛙)正从水中用力跃起，跳向荷叶，在空中时尾巴完全消失，变成了披着绿衣裳的小青蛙。它们落在妈妈身边，一起望向远方。画面温馨明亮。",
+      "asset_refs": [
+        "KT-BG-Lotus-01",
+        "KT-FrogMom-01",
+        "KT-Tadpole-04"
+      ],
+      "voice_script": [
+        {
+          "role": "KT-FrogMom-01",
+          "emotion": "开心惊喜",
+          "text": "好孩子，你们已经长成青蛙了，快跳上来吧！"
+        },
+        {
+          "role": "旁白",
+          "emotion": "有力",
+          "text": "小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶！"
+        },
+        {
+          "role": "旁白",
+          "emotion": "喜悦",
+          "text": "他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "自豪结尾",
+          "text": "从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。"
+        }
+      ],
+      "tts_text": "青蛙妈妈开心惊喜的说好孩子，你们已经长成青蛙了，快跳上来吧！小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶！他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。",
+      "dialogues": [
+        {
+          "role": "KT-FrogMom-01",
+          "text": "好孩子，你们已经长成青蛙了，快跳上来吧！",
+          "emotion": "开心惊喜"
+        },
+        {
+          "role": "旁白",
+          "text": "小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶！",
+          "emotion": "有力"
+        },
+        {
+          "role": "旁白",
+          "text": "他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。",
+          "emotion": "喜悦"
+        },
+        {
+          "role": "旁白",
+          "text": "从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。",
+          "emotion": "自豪结尾"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230151910575BC0905973304967FB-8676-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165551&x-signature=HYR4CTgs6O%2F75zYaJN%2FPmhisie8%3D",
+      "audio_url": "/audio/pages/page_15.wav",
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230151910575BC0905973304967FB-8676-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165551&x-signature=HYR4CTgs6O%2F75zYaJN%2FPmhisie8%3D",
+      "edit_prompt": "去掉小青蛙背上的披风",
+      "edit_strength": 0.65,
+      "last_edited": "2025-12-30T07:19:11.328Z"
+    }
+  ],
+  "currentPhase": 4,
+  "phaseStatus": {
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed"
+  },
+  "rawStory": "暖和的春天来了，池塘里的冰雪融化了，岸边的柳树抽出了嫩绿的新芽。青蛙妈妈在泥洞里睡了一个冬天，现在醒来了。它跳进池塘里，在柔柔的水草丛中产下了许多黑黑圆圆的卵。\n春风轻轻吹过，阳光暖暖地照着。没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。\n有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水，鸭妈妈温柔地叫着，小鸭子们紧紧跟着。小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”\n于是，他们决定去寻找妈妈。\n小蝌蚪游哇游，看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！他们迎上去，很有礼貌地喊道：“妈妈！妈妈！”\n鲤鱼阿姨笑了，摇摇头说：“傻孩子，我不是你们的妈妈。你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！”\n小蝌蚪们谢过了鲤鱼阿姨，继续向前游。他们游了一段时间，长出了两条后腿。\n这时，他们看见一只乌龟在水里慢慢地划动。乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了，连忙追上去，大声喊：“妈妈！妈妈！我们找到你了！”\n乌龟听了，笑着说：“哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！”\n小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。\n这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？虽然它没有绿衣裳，但也许妈妈换衣服了呢？他们游过去，怯生生地叫：“妈妈，妈妈！”\n大鲶鱼笑着甩了甩尾巴说：“孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。”\n小蝌蚪们记住了大鲶鱼的话：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会“呱呱”叫。\n他们游哇游，不知不觉，尾巴变短了。\n终于，游到一片荷花旁时，他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛，正在捉飞来的小虫子。\n小蝌蚪们游过去，这一次，他们很肯定，轻轻地叫道：“妈妈！妈妈！”\n青蛙妈妈低头一看，看见了一群小青蛙，开心地笑了：“好孩子，你们已经长成青蛙了，快跳上来吧！”\n小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶。他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。\n\n",
+  "scriptData": {
+    "story_name": "小蝌蚪找妈妈",
+    "story_analysis": {
+      "total_words": "约600字",
+      "estimated_pages": 15,
+      "pacing_strategy": "成长与寻亲的线性叙事。分镜策略：1）以季节和场景变化作为开篇定场与章节分隔。2）将蝌蚪的成长（长出后腿、前腿、尾巴变短）作为关键节点分页，强化生命变化的视觉节奏。3）每次“认错妈妈”的互动都拆分为“发现-对话-告别”三页，制造悬念与情感起伏。4）最终相认与变身作为高潮，用连续动作分镜增强戏剧性。"
+    },
+    "assets": [
+      {
+        "id": "KT-FrogMom-01",
+        "type": "character",
+        "name": "青蛙妈妈",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只温柔的青蛙妈妈，披着碧绿的黏土质感外衣，露着雪白的肚皮，鼓着一对圆溜溜的大眼睛，嘴巴宽宽的，面带慈祥的微笑，四肢圆润可爱，蹲坐姿势。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-01",
+        "type": "character",
+        "name": "小蝌蚪群（初期）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一群黑黑圆圆的小蝌蚪，大脑袋，长尾巴，身体是光滑的深色黏土质感，眼睛是白色小点，表情好奇又活泼，聚在一起游动的动态。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-02",
+        "type": "character",
+        "name": "小蝌蚪（长后腿）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只小蝌蚪，大脑袋长尾巴，身体后方长出了两条小小的、肉乎乎的青蛙后腿，腿的末端是圆球状，表情带着一点成长的惊讶。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-03",
+        "type": "character",
+        "name": "小蝌蚪（长全四肢）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只小蝌蚪，大脑袋长尾巴，身体前后长出了四条小小的、圆润的青蛙腿，前腿较短，后腿较粗，表情更加坚定。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-04",
+        "type": "character",
+        "name": "小青蛙（最终形态）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只刚完成变身的小青蛙，披着嫩绿色的黏土衣裳，露着白肚皮，大眼睛，四条腿健壮，尾巴完全消失，表情兴奋又自豪。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Carp-01",
+        "type": "character",
+        "name": "鲤鱼阿姨",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一条和善的鲤鱼阿姨，橙红色黏土身体，覆盖着闪亮的鳞片纹理，眼睛大大的，嘴巴宽宽的，面带温柔的微笑，鱼鳍柔软。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Turtle-01",
+        "type": "character",
+        "name": "乌龟",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只慢悠悠的乌龟，深绿色圆润的龟壳，浅绿色的头部和四肢，头顶有两只圆圆的大眼睛，嘴巴宽宽，表情憨厚慈祥。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Catfish-01",
+        "type": "character",
+        "name": "大鲶鱼",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一条灰色的大鲶鱼，身体光滑呈流线型，嘴巴大大的，嘴边有两根长长的胡须，肚子是白色的，眼睛笑眯眯的，表情友善。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-SpringPond-01",
+        "type": "background",
+        "name": "春日池塘全景",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，一个温暖的春日池塘，岸边是嫩绿色的柳树，枝条垂下，水面波光粼粼，倒映着蓝天白云，近处有柔柔的水草，远处有融化的冰雪痕迹，整体色彩明亮柔和。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-Underwater-01",
+        "type": "background",
+        "name": "水下世界（水草丛）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，水下视角，阳光透过水面形成一道道光柱（丁达尔效应），照亮了摇曳的、翠绿色的黏土质感水草，背景是深蓝色的池水，有细小的气泡上升，充满梦幻感。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-PondSurface-01",
+        "type": "background",
+        "name": "池塘水面（鸭子戏水）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，平静的池塘水面，反射着天空的淡蓝色和云朵，近景有几片圆圆的睡莲叶，水面有微微的涟漪，远处是模糊的岸边景色，氛围宁静。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-Lotus-01",
+        "type": "background",
+        "name": "荷花池",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，一片美丽的荷花池，几朵粉色的荷花盛开，碧绿圆润的荷叶铺在水面上，荷叶上还有晶莹的水珠，背景是温暖的夕阳或晨光，色彩鲜艳而温馨。",
+        "image_url": null,
+        "locked": false
+      }
+    ],
+    "characters": [
+      {
+        "id": "KT-FrogMom-01",
+        "type": "character",
+        "name": "青蛙妈妈",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只温柔的青蛙妈妈，披着碧绿的黏土质感外衣，露着雪白的肚皮，鼓着一对圆溜溜的大眼睛，嘴巴宽宽的，面带慈祥的微笑，四肢圆润可爱，蹲坐姿势。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-01",
+        "type": "character",
+        "name": "小蝌蚪群（初期）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一群黑黑圆圆的小蝌蚪，大脑袋，长尾巴，身体是光滑的深色黏土质感，眼睛是白色小点，表情好奇又活泼，聚在一起游动的动态。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-02",
+        "type": "character",
+        "name": "小蝌蚪（长后腿）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只小蝌蚪，大脑袋长尾巴，身体后方长出了两条小小的、肉乎乎的青蛙后腿，腿的末端是圆球状，表情带着一点成长的惊讶。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-03",
+        "type": "character",
+        "name": "小蝌蚪（长全四肢）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只小蝌蚪，大脑袋长尾巴，身体前后长出了四条小小的、圆润的青蛙腿，前腿较短，后腿较粗，表情更加坚定。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Tadpole-04",
+        "type": "character",
+        "name": "小青蛙（最终形态）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只刚完成变身的小青蛙，披着嫩绿色的黏土衣裳，露着白肚皮，大眼睛，四条腿健壮，尾巴完全消失，表情兴奋又自豪。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Carp-01",
+        "type": "character",
+        "name": "鲤鱼阿姨",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一条和善的鲤鱼阿姨，橙红色黏土身体，覆盖着闪亮的鳞片纹理，眼睛大大的，嘴巴宽宽的，面带温柔的微笑，鱼鳍柔软。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Turtle-01",
+        "type": "character",
+        "name": "乌龟",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一只慢悠悠的乌龟，深绿色圆润的龟壳，浅绿色的头部和四肢，头顶有两只圆圆的大眼睛，嘴巴宽宽，表情憨厚慈祥。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-Catfish-01",
+        "type": "character",
+        "name": "大鲶鱼",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。三视图，正面，侧面，背面，白底，全身照，角色设定图，一条灰色的大鲶鱼，身体光滑呈流线型，嘴巴大大的，嘴边有两根长长的胡须，肚子是白色的，眼睛笑眯眯的，表情友善。",
+        "image_url": null,
+        "locked": false
+      }
+    ],
+    "backgrounds": [
+      {
+        "id": "KT-BG-SpringPond-01",
+        "type": "background",
+        "name": "春日池塘全景",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，一个温暖的春日池塘，岸边是嫩绿色的柳树，枝条垂下，水面波光粼粼，倒映着蓝天白云，近处有柔柔的水草，远处有融化的冰雪痕迹，整体色彩明亮柔和。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-Underwater-01",
+        "type": "background",
+        "name": "水下世界（水草丛）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，水下视角，阳光透过水面形成一道道光柱（丁达尔效应），照亮了摇曳的、翠绿色的黏土质感水草，背景是深蓝色的池水，有细小的气泡上升，充满梦幻感。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-PondSurface-01",
+        "type": "background",
+        "name": "池塘水面（鸭子戏水）",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，平静的池塘水面，反射着天空的淡蓝色和云朵，近景有几片圆圆的睡莲叶，水面有微微的涟漪，远处是模糊的岸边景色，氛围宁静。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "KT-BG-Lotus-01",
+        "type": "background",
+        "name": "荷花池",
+        "prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。空镜头，无人物，环境概念图，广角，一片美丽的荷花池，几朵粉色的荷花盛开，碧绿圆润的荷叶铺在水面上，荷叶上还有晶莹的水珠，背景是温暖的夕阳或晨光，色彩鲜艳而温馨。",
+        "image_url": null,
+        "locked": false
+      }
+    ],
+    "pages": [
+      {
+        "page_index": 1,
+        "scene_id": "S-01",
+        "rationale": "开篇定场。展示春天来临、冰雪融化、万物复苏的整体环境，为故事奠定温暖的基调。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-SpringPond-01(春日池塘全景)，全景镜头，画面中池塘边的泥土里，KT-FrogMom-01(青蛙妈妈)正从一个小泥洞里探出半个身子，伸着懒腰，表情舒适，阳光暖暖地照在它碧绿的衣裳上，岸边柳树嫩芽清晰可见。",
+        "asset_refs": [
+          "KT-BG-SpringPond-01",
+          "KT-FrogMom-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "温暖舒缓",
+            "text": "暖和的春天来了。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "温和叙述",
+            "text": "池塘里的冰雪融化了，岸边的柳树，抽出了嫩绿的新芽。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "亲切",
+            "text": "青蛙妈妈在泥洞里睡了一个冬天，现在，它醒来了。"
+          }
+        ],
+        "tts_text": "暖和的春天来了。池塘里的冰雪融化了，岸边的柳树，抽出了嫩绿的新芽。青蛙妈妈在泥洞里睡了一个冬天，现在，它醒来了。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "暖和的春天来了。",
+            "emotion": "温暖舒缓"
+          },
+          {
+            "role": "旁白",
+            "text": "池塘里的冰雪融化了，岸边的柳树，抽出了嫩绿的新芽。",
+            "emotion": "温和叙述"
+          },
+          {
+            "role": "旁白",
+            "text": "青蛙妈妈在泥洞里睡了一个冬天，现在，它醒来了。",
+            "emotion": "亲切"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 2,
+        "scene_id": "S-02",
+        "rationale": "动作序列分页。从苏醒到产卵，是两个连续但不同的核心动作，分页展示生命孕育的细节。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景镜头，KT-FrogMom-01(青蛙妈妈)跳进了清澈的水中，正游向一片翠绿的水草，它的身后留下一串小气泡，身体姿态轻盈。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-FrogMom-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "轻柔",
+            "text": "它扑通一声，跳进池塘里。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "充满希望",
+            "text": "在柔柔的水草丛中，产下了许多黑黑圆圆的卵。"
+          }
+        ],
+        "tts_text": "它扑通一声，跳进池塘里。在柔柔的水草丛中，产下了许多黑黑圆圆的卵。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "它扑通一声，跳进池塘里。",
+            "emotion": "轻柔"
+          },
+          {
+            "role": "旁白",
+            "text": "在柔柔的水草丛中，产下了许多黑黑圆圆的卵。",
+            "emotion": "充满希望"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 3,
+        "scene_id": "S-03",
+        "rationale": "时间流逝与生命诞生。几天后，卵变成蝌蚪，是故事主角的正式登场，需要独立页面强调。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，特写镜头，聚焦在一团透明胶质里的黑卵上，一些卵已经孵化，变成了KT-Tadpole-01(小蝌蚪)，它们晃动着大脑袋和长尾巴，正要游出来，阳光透过水面照亮了这个微观世界。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "愉快",
+            "text": "春风轻轻吹过，阳光暖暖地照着。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "惊奇",
+            "text": "没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。"
+          }
+        ],
+        "tts_text": "春风轻轻吹过，阳光暖暖地照着。没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "春风轻轻吹过，阳光暖暖地照着。",
+            "emotion": "愉快"
+          },
+          {
+            "role": "旁白",
+            "text": "没过几天，这些小黑点慢慢活动起来，变成了一群大脑袋、长尾巴的小蝌蚪。",
+            "emotion": "惊奇"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 4,
+        "scene_id": "S-04",
+        "rationale": "展示主角的初始状态和快乐生活，为后续的“缺失感”（找妈妈）做铺垫。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，全景镜头，一群KT-Tadpole-01(小蝌蚪)在水里快乐地游来游去，有的正钻进茂密的水草里捉迷藏，有的正浮向水面，画面充满动感和活力，水波粼粼。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "活泼欢快",
+            "text": "他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。"
+          }
+        ],
+        "tts_text": "他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "他们在水里快乐地游来游去，一会儿钻进水草里，一会儿浮出水面晒太阳。",
+            "emotion": "活泼欢快"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 5,
+        "scene_id": "S-05",
+        "rationale": "情绪突变与动机产生。看到鸭子一家触发“寻母”念头，是故事核心冲突的起点，需独立一页营造情感冲击。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-PondSurface-01(池塘水面)，水下仰视镜头，KT-Tadpole-01(小蝌蚪群)聚在水面下，抬头望着上方。水面上，鸭妈妈带着一群毛茸茸的小鸭子正在划水，影子倒映在水中，小蝌蚪们的表情从快乐变成了羡慕和思考。",
+        "asset_refs": [
+          "KT-BG-PondSurface-01",
+          "KT-Tadpole-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "观察叙述",
+            "text": "有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "模仿温柔",
+            "text": "嘎嘎，嘎嘎。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "羡慕与疑惑",
+            "text": "小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”"
+          }
+        ],
+        "tts_text": "有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水。嘎嘎，嘎嘎。小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "有一天，小蝌蚪们看到鸭妈妈带着一群可爱的小鸭子在水面上划水。",
+            "emotion": "观察叙述"
+          },
+          {
+            "role": "旁白",
+            "text": "嘎嘎，嘎嘎。",
+            "emotion": "模仿温柔"
+          },
+          {
+            "role": "旁白",
+            "text": "小蝌蚪们羡慕极了，他们聚在一起想：“我们的妈妈在哪里呢？我们也想找妈妈。”",
+            "emotion": "羡慕与疑惑"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 6,
+        "scene_id": "S-06",
+        "rationale": "决定与出发。将“决定”这个心理动作视觉化，开启冒险旅程。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景镜头，KT-Tadpole-01(小蝌蚪群)排成一个小队形，尾巴整齐地摆动，坚定地朝着画面右侧游去，眼神充满决心，背景的水草向后移动，表现出前进的动态。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "坚定",
+            "text": "于是，他们决定去寻找妈妈。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "富有节奏",
+            "text": "小蝌蚪游哇游，游哇游……"
+          }
+        ],
+        "tts_text": "于是，他们决定去寻找妈妈。小蝌蚪游哇游，游哇游……",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "于是，他们决定去寻找妈妈。",
+            "emotion": "坚定"
+          },
+          {
+            "role": "旁白",
+            "text": "小蝌蚪游哇游，游哇游……",
+            "emotion": "富有节奏"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 7,
+        "scene_id": "S-07",
+        "rationale": "第一次“认错妈妈”的发现阶段。引入新角色（鲤鱼），展示蝌蚪的误判依据（大眼睛，宽嘴巴）。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，全景镜头，KT-Carp-01(鲤鱼阿姨)正在水草间优雅地游动，教一条小鲤鱼吃东西。KT-Tadpole-01(小蝌蚪群)从画面左侧游入，好奇又兴奋地看着鲤鱼阿姨。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-01",
+          "KT-Carp-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "发现新事物",
+            "text": "看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "内心活动",
+            "text": "鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！"
+          }
+        ],
+        "tts_text": "看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "看见一只鲤鱼阿姨在水草间教小鲤鱼捕食。",
+            "emotion": "发现新事物"
+          },
+          {
+            "role": "旁白",
+            "text": "鲤鱼阿姨眼睛大大的，嘴巴宽宽的。小蝌蚪们想：这一定是妈妈！",
+            "emotion": "内心活动"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 8,
+        "scene_id": "S-08",
+        "rationale": "第一次“认错妈妈”的互动阶段。聚焦对话和表情，制造一个温馨的误会场景。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景特写，KT-Tadpole-01(小蝌蚪群)围在KT-Carp-01(鲤鱼阿姨)面前，兴奋地张着嘴。一个大的对话气泡从蝌蚪群冒出，气泡内写着：“妈妈！妈妈！”。鲤鱼阿姨微微低头，表情和蔼。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-01",
+          "KT-Carp-01"
+        ],
+        "voice_script": [
+          {
+            "role": "KT-Tadpole-01",
+            "emotion": "兴奋礼貌",
+            "text": "妈妈！妈妈！"
+          },
+          {
+            "role": "KT-Carp-01",
+            "emotion": "和善微笑",
+            "text": "傻孩子，我不是你们的妈妈。"
+          }
+        ],
+        "tts_text": "小蝌蚪们兴奋礼貌的喊妈妈！妈妈！鲤鱼阿姨和善微笑的说傻孩子，我不是你们的妈妈。",
+        "dialogues": [
+          {
+            "role": "KT-Tadpole-01",
+            "text": "妈妈！妈妈！",
+            "emotion": "兴奋礼貌"
+          },
+          {
+            "role": "KT-Carp-01",
+            "text": "傻孩子，我不是你们的妈妈。",
+            "emotion": "和善微笑"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 9,
+        "scene_id": "S-09",
+        "rationale": "第一次“认错妈妈”的告别与成长阶段。鲤鱼提供线索，同时触发蝌蚪第一次形态变化（长出后腿），必须分页。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，中景镜头，KT-Carp-01(鲤鱼阿姨)用鱼鳍指向远方。KT-Tadpole-02(长后腿的小蝌蚪)们正在礼貌地点头告别，它们的身体后方已经长出了两条小小的后腿，尾巴依然很长。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-02",
+          "KT-Carp-01"
+        ],
+        "voice_script": [
+          {
+            "role": "KT-Carp-01",
+            "emotion": "耐心指引",
+            "text": "你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！"
+          },
+          {
+            "role": "旁白",
+            "emotion": "感谢与继续",
+            "text": "小蝌蚪们谢过了鲤鱼阿姨，继续向前游。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "惊奇",
+            "text": "他们游了一段时间，咦？长出了两条后腿。"
+          }
+        ],
+        "tts_text": "鲤鱼阿姨耐心指引的说你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！小蝌蚪们谢过了鲤鱼阿姨，继续向前游。他们游了一段时间，咦？长出了两条后腿。",
+        "dialogues": [
+          {
+            "role": "KT-Carp-01",
+            "text": "你们的妈妈长着两只大大的眼睛，嘴巴宽宽的。你们到那边去找找吧！",
+            "emotion": "耐心指引"
+          },
+          {
+            "role": "旁白",
+            "text": "小蝌蚪们谢过了鲤鱼阿姨，继续向前游。",
+            "emotion": "感谢与继续"
+          },
+          {
+            "role": "旁白",
+            "text": "他们游了一段时间，咦？长出了两条后腿。",
+            "emotion": "惊奇"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 10,
+        "scene_id": "S-10",
+        "rationale": "第二次“认错妈妈”的发现与互动。基于新线索（大眼睛、四条腿）误认乌龟，动作更急切。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，动态镜头，KT-Tadpole-02(长后腿的小蝌蚪)们快速游动着，追向前方正在慢悠悠划水的KT-Turtle-01(乌龟)。小蝌蚪们表情极度开心，张大了嘴喊叫，乌龟惊讶地回头。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-02",
+          "KT-Turtle-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "发现目标",
+            "text": "这时，他们看见一只乌龟在水里慢慢地划动。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "内心确信",
+            "text": "乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了！"
+          },
+          {
+            "role": "KT-Tadpole-02",
+            "emotion": "激动大声",
+            "text": "妈妈！妈妈！我们找到你了！"
+          }
+        ],
+        "tts_text": "这时，他们看见一只乌龟在水里慢慢地划动。乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了！小蝌蚪们激动大声的喊妈妈！妈妈！我们找到你了！",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "这时，他们看见一只乌龟在水里慢慢地划动。",
+            "emotion": "发现目标"
+          },
+          {
+            "role": "旁白",
+            "text": "乌龟有四条腿，嘴巴也宽宽的，头顶上还长着大眼睛。小蝌蚪们开心极了！",
+            "emotion": "内心确信"
+          },
+          {
+            "role": "KT-Tadpole-02",
+            "text": "妈妈！妈妈！我们找到你了！",
+            "emotion": "激动大声"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 11,
+        "scene_id": "S-11",
+        "rationale": "第二次“认错妈妈”的澄清与再成长。乌龟提供更具体的线索（绿衣裳），蝌蚪长出前腿，失望但坚持。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，特写镜头，KT-Turtle-01(乌龟)笑着对面前的KT-Tadpole-03(长全四肢的小蝌蚪)们说话。小蝌蚪们表情有些失望，但认真听着，它们的身体前方也长出了两条小小的前腿。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-03",
+          "KT-Turtle-01"
+        ],
+        "voice_script": [
+          {
+            "role": "KT-Turtle-01",
+            "emotion": "憨厚地笑",
+            "text": "哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！"
+          },
+          {
+            "role": "旁白",
+            "emotion": "略带失望但坚定",
+            "text": "小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。"
+          }
+        ],
+        "tts_text": "乌龟憨厚地笑的说哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。",
+        "dialogues": [
+          {
+            "role": "KT-Turtle-01",
+            "text": "哎呀，我不是你们的妈妈。我是乌龟。你们的妈妈头顶上有两只大眼睛，披着绿色的衣裳。你们到前面去找找吧！",
+            "emotion": "憨厚地笑"
+          },
+          {
+            "role": "旁白",
+            "text": "小蝌蚪们有些失望，但并没有放弃。他们继续向前游，游哇游，又长出了两条前腿。",
+            "emotion": "略带失望但坚定"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 12,
+        "scene_id": "S-12",
+        "rationale": "第三次“认错妈妈”与线索汇总。误认鲶鱼，线索几乎集齐（缺叫声），鲶鱼给出完整描述，制造最终悬念。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Underwater-01(水下世界)，低角度仰视镜头，KT-Catfish-01(大鲶鱼)庞大的身躯从水底游过。KT-Tadpole-03(长全四肢的小蝌蚪)们怯生生地游近，小声叫着。鲶鱼友善地低头看着它们。",
+        "asset_refs": [
+          "KT-BG-Underwater-01",
+          "KT-Tadpole-03",
+          "KT-Catfish-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "犹豫猜测",
+            "text": "这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？"
+          },
+          {
+            "role": "KT-Tadpole-03",
+            "emotion": "怯生生",
+            "text": "妈妈，妈妈！"
+          },
+          {
+            "role": "KT-Catfish-01",
+            "emotion": "笑着纠正",
+            "text": "孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "牢记在心",
+            "text": "小蝌蚪们记住了：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会‘呱呱’叫。"
+          }
+        ],
+        "tts_text": "这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？小蝌蚪们怯生生地叫妈妈，妈妈！大鲶鱼笑着纠正的说孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。小蝌蚪们记住了：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会‘呱呱’叫。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "这次，他们看见一条大鲶鱼在水底游动。大鲶鱼的嘴巴大大的，肚子白白的。小蝌蚪们想：这次肯定没错了吧？",
+            "emotion": "犹豫猜测"
+          },
+          {
+            "role": "KT-Tadpole-03",
+            "text": "妈妈，妈妈！",
+            "emotion": "怯生生"
+          },
+          {
+            "role": "KT-Catfish-01",
+            "text": "孩子，你们认错人了。我不是你们的妈妈。你们的妈妈披着碧绿的衣裳，露着雪白的肚皮，唱起歌来‘呱呱呱’。你们再去用心找找吧。",
+            "emotion": "笑着纠正"
+          },
+          {
+            "role": "旁白",
+            "text": "小蝌蚪们记住了：大眼睛、宽嘴巴、四条腿、绿衣裳、白肚皮，还会‘呱呱’叫。",
+            "emotion": "牢记在心"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 13,
+        "scene_id": "S-13",
+        "rationale": "最终变身前的最后成长与接近目标。尾巴变短，游向荷花池，画面转向更明亮的场景，预示高潮来临。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Lotus-01(荷花池)，水下视角，KT-Tadpole-04(尾巴变短的小青蛙)们朝着画面中央一片巨大的荷叶游去，它们的尾巴已经变得很短，身体更接近青蛙形态，眼神充满期待。阳光透过荷叶缝隙洒下光斑。",
+        "asset_refs": [
+          "KT-BG-Lotus-01",
+          "KT-Tadpole-04"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "坚持不懈",
+            "text": "他们游哇游，不知不觉，尾巴变短了。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "充满希望",
+            "text": "终于，游到一片荷花旁时……"
+          }
+        ],
+        "tts_text": "他们游哇游，不知不觉，尾巴变短了。终于，游到一片荷花旁时……",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "他们游哇游，不知不觉，尾巴变短了。",
+            "emotion": "坚持不懈"
+          },
+          {
+            "role": "旁白",
+            "text": "终于，游到一片荷花旁时……",
+            "emotion": "充满希望"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 14,
+        "scene_id": "S-14",
+        "rationale": "高潮：发现与确认。所有线索吻合，平静而肯定地叫出“妈妈”，与之前的急切形成对比。利用翻页悬念（妈妈会答应吗？）。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Lotus-01(荷花池)，仰视镜头，KT-FrogMom-01(青蛙妈妈)蹲在一张碧绿的荷叶上，披着绿衣裳，露着白肚皮，鼓着大眼睛，正伸出舌头捉一只飞虫。KT-Tadpole-04(小青蛙们)从荷叶下的水里探出头，轻轻地叫着，表情肯定又温柔。",
+        "asset_refs": [
+          "KT-BG-Lotus-01",
+          "KT-FrogMom-01",
+          "KT-Tadpole-04"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "确认",
+            "text": "他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。"
+          },
+          {
+            "role": "KT-Tadpole-04",
+            "emotion": "轻声肯定",
+            "text": "妈妈！妈妈！"
+          }
+        ],
+        "tts_text": "他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。小青蛙们轻声肯定地叫妈妈！妈妈！",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "他们看见一张碧绿的荷叶上，蹲着一只大青蛙。它披着碧绿的衣裳，露着雪白的肚皮，鼓着一对大眼睛。",
+            "emotion": "确认"
+          },
+          {
+            "role": "KT-Tadpole-04",
+            "text": "妈妈！妈妈！",
+            "emotion": "轻声肯定"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 15,
+        "scene_id": "S-15",
+        "rationale": "大团圆与结局。连续动作分镜（认出、邀请、跳跃、变身、新生活）浓缩在一页，展现生命圆满转变的瞬间和美好结局。",
+        "jimeng_prompt": "儿童绘本风格，3D黏土材质，定格动画质感，OC渲染（Octane Render），柔和的体积光，边缘圆润，Q版角色设计，像盲盒玩具一样的质感，微缩摄影效果，景深虚化（Bokeh），8k高分辨率。KT-BG-Lotus-01(荷花池)，全景镜头，KT-FrogMom-01(青蛙妈妈)开心地低头看着荷叶。几只KT-Tadpole-04(小青蛙)正从水中用力跃起，跳向荷叶，在空中时尾巴完全消失，变成了披着绿衣裳的小青蛙。它们落在妈妈身边，一起望向远方。画面温馨明亮。",
+        "asset_refs": [
+          "KT-BG-Lotus-01",
+          "KT-FrogMom-01",
+          "KT-Tadpole-04"
+        ],
+        "voice_script": [
+          {
+            "role": "KT-FrogMom-01",
+            "emotion": "开心惊喜",
+            "text": "好孩子，你们已经长成青蛙了，快跳上来吧！"
+          },
+          {
+            "role": "旁白",
+            "emotion": "有力",
+            "text": "小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶！"
+          },
+          {
+            "role": "旁白",
+            "emotion": "喜悦",
+            "text": "他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "自豪结尾",
+            "text": "从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。"
+          }
+        ],
+        "tts_text": "青蛙妈妈开心惊喜的说好孩子，你们已经长成青蛙了，快跳上来吧！小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶！他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。",
+        "dialogues": [
+          {
+            "role": "KT-FrogMom-01",
+            "text": "好孩子，你们已经长成青蛙了，快跳上来吧！",
+            "emotion": "开心惊喜"
+          },
+          {
+            "role": "旁白",
+            "text": "小蝌蚪们一用力，蹬了一下后腿，真的跳上了荷叶！",
+            "emotion": "有力"
+          },
+          {
+            "role": "旁白",
+            "text": "他们的尾巴完全不见了，换上了和妈妈一样的绿衣裳。",
+            "emotion": "喜悦"
+          },
+          {
+            "role": "旁白",
+            "text": "从那以后，他们跟着妈妈一起捉害虫，成了田野里的小卫士。",
+            "emotion": "自豪结尾"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      }
+    ],
+    "style": "3d_clay",
+    "analysisComplete": true
+  },
+  "activeRightTab": "flipbook",
+  "activeLeftTab": "script",
+  "settings": {
+    "aspectRatio": "16:9",
+    "resolution": "2k",
+    "language": "zh",
+    "pageCount": 8,
+    "enableSpeechBubble": false,
+    "bubbleLanguage": "zh",
+    "audioLanguage": "zh"
+  },
+  "story_analysis": {
+    "total_words": "约600字",
+    "estimated_pages": 15,
+    "pacing_strategy": "成长与寻亲的线性叙事。分镜策略：1）以季节和场景变化作为开篇定场与章节分隔。2）将蝌蚪的成长（长出后腿、前腿、尾巴变短）作为关键节点分页，强化生命变化的视觉节奏。3）每次“认错妈妈”的互动都拆分为“发现-对话-告别”三页，制造悬念与情感起伏。4）最终相认与变身作为高潮，用连续动作分镜增强戏剧性。"
+  },
+  "_type": "draft",
+  "_meta": {
+    "id": "project_1767076115529",
+    "title": "泥巴青蛙",
+    "updated_at": "2025-12-30T08:58:48.502Z",
+    "pageCount": 15,
+    "coverImage": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123015100551D8EDBF75E7902B9CED-6096-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767165006&x-signature=PF%2FCEABxnF0kpl6VWmZyfZTJOEw%3D",
+    "phaseStatus": {
+      "1": "completed",
+      "2": "completed",
+      "3": "completed",
+      "4": "completed"
+    }
+  }
+}

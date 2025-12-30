@@ -5,7 +5,6 @@ import NavigationDock from '../components/NavigationDock';
 import StoryEngine from '../components/StoryEngine';
 import PhaseController from '../components/PhaseController';
 import MultiViewPanel from '../components/MultiViewPanel';
-import ProgressBar from '../components/ProgressBar';
 import ResizablePanels from '../components/ResizablePanels';
 
 /**
@@ -339,6 +338,7 @@ function IDEWorkspace() {
         actions.updatePage({
           page_index: pageIndex,
           image_url: result.data.image_url,
+          tos_url: result.data.tos_url,  // 保存即梦返回的原始TOS URL，用于修图
           status: 'ready'
         });
         console.log(`✅ [IDE] 第 ${pageIndex} 页生成成功`);
@@ -555,7 +555,7 @@ function IDEWorkspace() {
 
     try {
       // 先生成一个测试音频
-      const response = await fetch('http://localhost:8081/api/generate-audio', {
+      const response = await fetch('/api/generate-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -611,18 +611,50 @@ function IDEWorkspace() {
 
         {/* 主工作区 */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* 进度条区域 */}
+          {/* 顶部进度条区域 - 嵌入式，不阻挡操作 */}
           {progress.visible && (
-            <div className="absolute inset-x-0 top-0 z-50 px-4 pt-2">
-              <ProgressBar
-                progress={progress.value}
-                isVisible={progress.visible}
-                title={progress.title}
-                subtitle={progress.subtitle}
-                variant="primary"
-                size="medium"
-                animated={true}
-              />
+            <div className="flex-shrink-0 px-4 pt-2 pb-1 bg-gradient-to-r from-orange-50 to-yellow-50 border-b border-orange-200">
+              <div className="flex items-center gap-4">
+                {/* 标题和状态 */}
+                <div className="flex items-center gap-2 min-w-[200px]">
+                  <span className="text-lg">✨</span>
+                  <div>
+                    <h3 className="text-sm font-bold text-orange-600" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+                      {progress.title}
+                    </h3>
+                    <p className="text-xs text-gray-500" style={{ fontFamily: "'Nunito', sans-serif" }}>
+                      {progress.subtitle}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 进度条 */}
+                <div className="flex-1 max-w-md">
+                  <div className="w-full bg-orange-100 rounded-full h-3 border border-orange-200 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full transition-all duration-300 relative"
+                      style={{ width: `${Math.min(100, Math.max(0, progress.value))}%` }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 百分比 */}
+                <div className="text-sm font-bold text-orange-600 min-w-[50px] text-right" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+                  {Math.round(progress.value)}%
+                </div>
+
+                {/* 完成标识 */}
+                {progress.value >= 100 && (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded-full border border-green-300 text-green-600 text-xs font-bold">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                    完成
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

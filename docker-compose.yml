@@ -25,6 +25,7 @@ services:
     volumes:
       - ./logs:/app/logs                    # 日志持久化
       - app_data:/app/data                  # 应用数据持久化
+      - /data/tobyai/generated:/app/public/generated
     networks:
       - scripttoframe-network
     healthcheck:

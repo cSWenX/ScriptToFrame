@@ -1,0 +1,842 @@
+{
+  "id": "project_1767085862682",
+  "title": "未命名绘本",
+  "story_name": "NH",
+  "style_preset": "paper_cut",
+  "created_at": "2025-12-30T09:11:02.682Z",
+  "updated_at": "2025-12-30T09:21:29.779Z",
+  "assets": [
+    {
+      "id": "NH-Char-01",
+      "type": "character",
+      "name": "奶牛猫乃禾",
+      "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，三视图，正面，侧面，背面，白底，全身照，角色设定图，一只黑白花纹的奶牛猫，大大的圆眼睛，有剪纸的拼接关节感，穿着红色的小肚兜，表情生动可爱。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301715019AD5189991D7B64D73AA-6296-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172501&x-signature=1UrMVozHEwrkR5S8KvftxYqZ3%2B0%3D",
+      "locked": true
+    },
+    {
+      "id": "NH-Char-02",
+      "type": "character",
+      "name": "小黄鸟",
+      "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，三视图，正面，侧面，背面，白底，全身照，角色设定图，一只明黄色的小鸟，翅膀和尾巴有剪纸的锯齿状边缘，黑色的小圆眼睛，喙是橙色的，姿态灵动。",
+      "image_url": "https://p26-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301715108BF2B34628605D4CA4A6-5573-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172511&x-signature=rIgZPzvfwna1DlIE3R9cVMxnU4k%3D",
+      "locked": true
+    },
+    {
+      "id": "NH-BG-01",
+      "type": "background",
+      "name": "温馨客厅",
+      "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，空镜头，无人物，环境概念图，广角，一个铺着彩色地毯的客厅，有木质的窗框，阳光从窗户斜射进来形成光柱，墙上有简单的剪纸风格花纹装饰，散落着几块积木，氛围温馨。",
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123017151946A83A503BB23D53CF8B-4510-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172520&x-signature=QAoYyPe0kMrmr0Bq9kdRNWikVRo%3D",
+      "locked": true
+    },
+    {
+      "id": "NH-BG-02",
+      "type": "background",
+      "name": "窗台与天空",
+      "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，空镜头，无人物，环境概念图，广角，从室内看向窗外的视角，窗台上有一个小花盆，窗外是剪纸风格的蓝天和几朵白云，视野开阔。",
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123017153125AA0BAE84980F4DE171-4592-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172532&x-signature=uPn%2BUeIkGvuV9vngxa3TDWhfpiw%3D",
+      "locked": true
+    }
+  ],
+  "pages": [
+    {
+      "page_index": 1,
+      "scene_id": "S-01",
+      "rationale": "开篇定场，介绍主角、环境和核心活动，建立温馨专注的氛围。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，全景镜头，画面中央是NH-Char-01(奶牛猫乃禾)，它正趴在地毯上，神情专注地搭着彩色积木城堡，阳光从左侧窗户洒下，照亮它黑白相间的毛发和彩色的积木，温暖宁静。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "平和叙述",
+          "text": "乃禾有一堆彩色的积木。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "轻快",
+          "text": "咔哒，咔哒，搭个大城堡。"
+        }
+      ],
+      "tts_text": "乃禾有一堆彩色的积木。咔哒，咔哒，搭个大城堡。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "乃禾有一堆彩色的积木。",
+          "emotion": "平和叙述"
+        },
+        {
+          "role": "旁白",
+          "text": "咔哒，咔哒，搭个大城堡。",
+          "emotion": "轻快"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301716429C96F0B5E739CF334216-4375-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172602&x-signature=kBNItY4hruaX%2FjwRrGxhDhFlZWg%3D",
+      "audio_url": null,
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301716429C96F0B5E739CF334216-4375-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172602&x-signature=kBNItY4hruaX%2FjwRrGxhDhFlZWg%3D"
+    },
+    {
+      "page_index": 2,
+      "scene_id": "S-02",
+      "rationale": "动作序列与情绪突变。城堡倒塌是第一个戏剧性转折，需要单独一页来放大震惊感。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，中景镜头，NH-Char-01(奶牛猫乃禾)眼睛瞪得圆圆的，嘴巴微张，保持着手伸出的姿势，面前的积木城堡正在哗啦啦地散开，有几块积木飞在空中，用剪纸风格的弧线表示动态，背景有表示惊讶的放射状短线。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "惊讶",
+          "text": "哎呀！手一抖，哗啦啦——"
+        },
+        {
+          "role": "旁白",
+          "emotion": "陈述结果",
+          "text": "城堡倒了，变成一堆乱木头。"
+        }
+      ],
+      "tts_text": "哎呀！手一抖，哗啦啦——城堡倒了，变成一堆乱木头。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "哎呀！手一抖，哗啦啦——",
+          "emotion": "惊讶"
+        },
+        {
+          "role": "旁白",
+          "text": "城堡倒了，变成一堆乱木头。",
+          "emotion": "陈述结果"
+        }
+      ],
+      "image_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230171731494714FFBFB3A452C51C-9876-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172651&x-signature=od5XN0%2FrVQDvYU4wgoOSd77j06k%3D",
+      "audio_url": null,
+      "status": "ready",
+      "tos_url": "https://p3-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230171731494714FFBFB3A452C51C-9876-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172651&x-signature=od5XN0%2FrVQDvYU4wgoOSd77j06k%3D"
+    },
+    {
+      "page_index": 3,
+      "scene_id": "S-03",
+      "rationale": "情绪突变点。从震惊转为外显的愤怒，通过表情和台词强化情绪。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，特写镜头，NH-Char-01(奶牛猫乃禾)眉毛倒竖，脸涨得通红，胡子翘起，嘴巴张大叫喊，一个红色的对话气泡从它嘴边冒出，气泡内写着：'我不玩了！'，背景用剪纸风格的红色火焰纹样装饰，表示愤怒。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "NH-Char-01",
+          "emotion": "生气大喊",
+          "text": "乃禾气得胡子翘！“我不玩了！”"
+        }
+      ],
+      "tts_text": "乃禾气得胡子翘！“我不玩了！”",
+      "dialogues": [
+        {
+          "role": "NH-Char-01",
+          "text": "乃禾气得胡子翘！“我不玩了！”",
+          "emotion": "生气大喊"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123017180818ADD480875E7C4E1750-9239-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172689&x-signature=7TtZqHot99KQwers2hQE6bi5wK8%3D",
+      "audio_url": null,
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/2025123017180818ADD480875E7C4E1750-9239-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172689&x-signature=7TtZqHot99KQwers2hQE6bi5wK8%3D"
+    },
+    {
+      "page_index": 4,
+      "scene_id": "S-04",
+      "rationale": "动作序列拆分。展示愤怒的具体行为（扔积木），为下一页的后果做铺垫。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，中景镜头，NH-Char-01(奶牛猫乃禾)用力将一块红色积木扔向画面右上方，身体呈后仰的发力姿态，积木后方有剪纸风格的白色速度线，咚！的拟声字用剪纸风格字体出现在积木旁。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "强调动作",
+          "text": "咚！他抓起积木扔得远远的。"
+        }
+      ],
+      "tts_text": "咚！他抓起积木扔得远远的。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "咚！他抓起积木扔得远远的。",
+          "emotion": "强调动作"
+        }
+      ],
+      "image_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230171851A5F836D1FD4B5733D01A-3323-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172731&x-signature=M9jl7YvTFfaduuDSrnX6NUTEPEc%3D",
+      "audio_url": null,
+      "status": "ready",
+      "tos_url": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/20251230171851A5F836D1FD4B5733D01A-3323-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172731&x-signature=M9jl7YvTFfaduuDSrnX6NUTEPEc%3D"
+    },
+    {
+      "page_index": 5,
+      "scene_id": "S-05",
+      "rationale": "动作序列与时空关联。积木飞向窗边，引出新角色和外部环境，制造连锁反应。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)与NH-BG-02(窗台与天空)结合，全景镜头，红色积木嗖地飞过画面，划出剪纸风格的弧形轨迹，窗边的NH-Char-02(小黄鸟)被吓得扑棱起翅膀，惊慌地看向积木，几片羽毛飘落，背景有表示惊吓的锯齿状短线。",
+      "asset_refs": [
+        "NH-Char-02",
+        "NH-BG-01",
+        "NH-BG-02"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "快速紧张",
+          "text": "嗖——积木飞出去，"
+        },
+        {
+          "role": "旁白",
+          "emotion": "模拟声音",
+          "text": "吓得窗边的小黄鸟扑棱棱，飞走了。"
+        }
+      ],
+      "tts_text": "嗖——积木飞出去，吓得窗边的小黄鸟扑棱棱，飞走了。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "嗖——积木飞出去，",
+          "emotion": "快速紧张"
+        },
+        {
+          "role": "旁白",
+          "text": "吓得窗边的小黄鸟扑棱棱，飞走了。",
+          "emotion": "模拟声音"
+        }
+      ],
+      "image_url": null,
+      "audio_url": null,
+      "status": "error",
+      "error": "生成失败"
+    },
+    {
+      "page_index": 6,
+      "scene_id": "S-06",
+      "rationale": "情绪转折与氛围营造。外部动作停止，转向内部感受，用静寂和象征物表现愤怒的持续。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，全景镜头，NH-Char-01(奶牛猫乃禾)孤零零地站在散乱的积木中间，低着头，双手捂着肚子，表情难受，它的头顶上方，画着一个由红色剪纸火焰纹样缠绕成的、乱糟糟的'大火球'，房间光线略显暗淡。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "低沉缓慢",
+          "text": "房间里静悄悄。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "比喻描述",
+          "text": "乃禾肚子里有个大火球，滚呀滚，好热呀。"
+        }
+      ],
+      "tts_text": "房间里静悄悄。乃禾肚子里有个大火球，滚呀滚，好热呀。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "房间里静悄悄。",
+          "emotion": "低沉缓慢"
+        },
+        {
+          "role": "旁白",
+          "text": "乃禾肚子里有个大火球，滚呀滚，好热呀。",
+          "emotion": "比喻描述"
+        }
+      ],
+      "image_url": null,
+      "audio_url": null,
+      "status": "error",
+      "error": "生成失败"
+    },
+    {
+      "page_index": 7,
+      "scene_id": "S-07",
+      "rationale": "关键动作与情绪转变点。特写深呼吸，可视化地表现情绪管理过程，是故事的核心教导环节。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，特写镜头，NH-Char-01(奶牛猫乃禾)闭着眼睛，嘴巴嘟成圆形，正在深深地吸气，神情专注平静，它头顶的红色'大火球'正在被一股蓝色的、剪纸风格的清风气流吹散，气流呈螺旋状。",
+      "asset_refs": [
+        "NH-Char-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "引导平静",
+          "text": "乃禾闭上眼，吸一口气。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "释放轻松",
+          "text": "呼——把大火球吹跑啦。"
+        }
+      ],
+      "tts_text": "乃禾闭上眼，吸一口气。呼——把大火球吹跑啦。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "乃禾闭上眼，吸一口气。",
+          "emotion": "引导平静"
+        },
+        {
+          "role": "旁白",
+          "text": "呼——把大火球吹跑啦。",
+          "emotion": "释放轻松"
+        }
+      ],
+      "image_url": null,
+      "audio_url": null,
+      "status": "error",
+      "error": "生成失败"
+    },
+    {
+      "page_index": 8,
+      "scene_id": "S-08",
+      "rationale": "情绪转变后的行为。展示内心平静如何外化为轻柔的动作，与之前的愤怒扔掷形成对比。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，中景镜头，NH-Char-01(奶牛猫乃禾)脸上带着浅浅的微笑，正蹲下身，用两只爪子轻轻地、小心地捡起地上的一块绿色积木，动作温柔，阳光重新变得明亮温暖。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "平和舒缓",
+          "text": "心里变凉快了。"
+        },
+        {
+          "role": "旁白",
+          "emotion": "轻柔叙述",
+          "text": "乃禾捡起积木，一块一块，轻轻搭。"
+        }
+      ],
+      "tts_text": "心里变凉快了。乃禾捡起积木，一块一块，轻轻搭。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "心里变凉快了。",
+          "emotion": "平和舒缓"
+        },
+        {
+          "role": "旁白",
+          "text": "乃禾捡起积木，一块一块，轻轻搭。",
+          "emotion": "轻柔叙述"
+        }
+      ],
+      "image_url": null,
+      "audio_url": null,
+      "status": "error",
+      "error": "生成失败"
+    },
+    {
+      "page_index": 9,
+      "scene_id": "S-09",
+      "rationale": "翻页悬念与成果展示。先展示新城堡的建成，制造翻页后朋友回归的惊喜。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，全景镜头，一座高大、稳固、色彩搭配漂亮的积木城堡矗立在画面中央，NH-Char-01(奶牛猫乃禾)站在城堡旁，双手叉腰，仰着头，脸上洋溢着自豪和开心的笑容，眼睛闪闪发亮。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "NH-Char-01",
+          "emotion": "惊喜自豪",
+          "text": "哇！新城堡搭好啦！"
+        }
+      ],
+      "tts_text": "哇！新城堡搭好啦！",
+      "dialogues": [
+        {
+          "role": "NH-Char-01",
+          "text": "哇！新城堡搭好啦！",
+          "emotion": "惊喜自豪"
+        }
+      ],
+      "image_url": null,
+      "audio_url": null,
+      "status": "error",
+      "error": "生成失败"
+    },
+    {
+      "page_index": 10,
+      "scene_id": "S-10",
+      "rationale": "圆满结局与情感呼应。朋友回归并歌唱，形成积极的闭环，画面充满欢乐与友谊。",
+      "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，欢快的全景镜头，NH-Char-02(小黄鸟)飞了回来，正站在新城堡的尖顶上，张着小嘴，NH-Char-01(奶牛猫乃禾)在下面开心地拍着手，背景有剪纸风格的音符和小花朵装饰，阳光明媚，色彩明快。",
+      "asset_refs": [
+        "NH-Char-01",
+        "NH-Char-02",
+        "NH-BG-01"
+      ],
+      "voice_script": [
+        {
+          "role": "旁白",
+          "emotion": "欢快",
+          "text": "小黄鸟飞回来，叽叽喳喳唱起歌。"
+        }
+      ],
+      "tts_text": "小黄鸟飞回来，叽叽喳喳唱起歌。",
+      "dialogues": [
+        {
+          "role": "旁白",
+          "text": "小黄鸟飞回来，叽叽喳喳唱起歌。",
+          "emotion": "欢快"
+        }
+      ],
+      "image_url": null,
+      "audio_url": null,
+      "status": "error",
+      "error": "生成失败"
+    }
+  ],
+  "currentPhase": 2,
+  "phaseStatus": {
+    "1": "completed",
+    "2": "in_progress",
+    "3": "completed",
+    "4": "pending"
+  },
+  "rawStory": "第 1 页\n🔊 朗读文本：\n\n乃禾有一堆彩色的积木。咔哒，咔哒，搭个大城堡。\n\n🎨 画面描述： 温馨的客厅地板上，奶牛猫乃禾正趴着玩积木，神情非常专注，嘴巴嘟嘟的。阳光洒在他黑白相间的毛上。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： cute cow cat named Naihe stacking colorful wooden blocks on a rug, focused expression, sunlight streaming through window, cozy living room background, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 2 页\n🔊 朗读文本：\n\n哎呀！手一抖，哗啦啦——城堡倒了，变成一堆乱木头。\n\n🎨 画面描述： 城堡瞬间崩塌，积木散落一地。乃禾保持着手伸出去的姿势，眼睛瞪得大大的，一脸震惊和不可置信。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： cute cow cat named Naihe looking shocked and surprised, eyes wide open, wooden blocks tumbling down around him, chaotic motion lines, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 3 页\n🔊 朗读文本：\n\n乃禾气得胡子翘！“我不玩了！” 咚！他抓起积木扔得远远的。\n\n🎨 画面描述： 乃禾眉毛倒竖，脸涨得通红，正在用力把一块积木扔向空中。背景可以带一点红色的愤怒线条。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： cute cow cat named Naihe with angry expression, fur bristling, throwing a wooden block in the air, red background accents indicating anger, dynamic pose, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 4 页\n🔊 朗读文本：\n\n嗖——积木飞出去，吓得窗边的小黄鸟扑棱棱，飞走了。\n\n🎨 画面描述： 积木在空中划出一道弧线。原本停在窗台看他玩耍的小黄鸟被吓得惊慌失措，飞向窗外。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： a wooden block flying through the air, a small yellow bird flying away in fear from the window sill, motion blur, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 5 页\n🔊 朗读文本：\n\n房间里静悄悄。乃禾肚子里有个大火球，滚呀滚，好热呀。\n\n🎨 画面描述： 乃禾孤零零地站在乱糟糟的房间里，双手捂着肚子，表情难受。他的头顶上方画着一个红色的、乱糟糟的线团（象征愤怒的大火球）。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： cute cow cat named Naihe standing alone amidst scattered blocks, holding his tummy looking uncomfortable, a scribbly red dry-brush tangle representing anger floating above his head, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 6 页\n🔊 朗读文本：\n\n乃禾闭上眼，吸一口气。呼——把大火球吹跑啦。\n\n🎨 画面描述： 特写镜头。乃禾闭着眼睛，嘴巴嘟起来做深呼吸的动作。头顶红色的线团正在被吹散，变成了蓝色的清风。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： Close up of cute cow cat named Naihe with eyes closed taking a deep breath, peaceful expression, blowing away the red scribbles which turn into blue breeze, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 7 页\n🔊 朗读文本：\n\n心里变凉快了。乃禾捡起积木，一块一块，轻轻搭。\n\n🎨 画面描述： 乃禾平静下来，脸上带着浅浅的微笑，正在收拾地上的积木，动作看起来很轻柔。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： cute cow cat named Naihe calmly picking up blocks, smiling gently, tidying up the room, warm yellow tones returning, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4\n\n第 8 页\n🔊 朗读文本：\n\n哇！新城堡搭好啦！小黄鸟飞回来，叽叽喳喳唱起歌。\n\n🎨 画面描述： 一座比之前更稳固、更漂亮的城堡搭好了。小黄鸟飞回来停在城堡尖顶上，乃禾开心地拍着手。\n\n🤖 AI绘画提示词 (Midjourney/Flux)： cute cow cat named Naihe proudly standing next to a tall stable block castle, small yellow bird perching on top singing, confetti effect, happy atmosphere, whimsical children book illustration, watercolor texture, soft lighting, --ar 3:4",
+  "scriptData": {
+    "story_name": "NH",
+    "story_analysis": {
+      "total_words": "约200字",
+      "estimated_pages": 10,
+      "pacing_strategy": "情感细腻型，重点拆解了情绪变化（专注->震惊->愤怒->平静->喜悦）和关键动作（城堡倒塌、扔积木、深呼吸、重建），利用翻页悬念强化情绪转折。"
+    },
+    "assets": [
+      {
+        "id": "NH-Char-01",
+        "type": "character",
+        "name": "奶牛猫乃禾",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，三视图，正面，侧面，背面，白底，全身照，角色设定图，一只黑白花纹的奶牛猫，大大的圆眼睛，有剪纸的拼接关节感，穿着红色的小肚兜，表情生动可爱。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "NH-Char-02",
+        "type": "character",
+        "name": "小黄鸟",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，三视图，正面，侧面，背面，白底，全身照，角色设定图，一只明黄色的小鸟，翅膀和尾巴有剪纸的锯齿状边缘，黑色的小圆眼睛，喙是橙色的，姿态灵动。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "NH-BG-01",
+        "type": "background",
+        "name": "温馨客厅",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，空镜头，无人物，环境概念图，广角，一个铺着彩色地毯的客厅，有木质的窗框，阳光从窗户斜射进来形成光柱，墙上有简单的剪纸风格花纹装饰，散落着几块积木，氛围温馨。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "NH-BG-02",
+        "type": "background",
+        "name": "窗台与天空",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，空镜头，无人物，环境概念图，广角，从室内看向窗外的视角，窗台上有一个小花盆，窗外是剪纸风格的蓝天和几朵白云，视野开阔。",
+        "image_url": null,
+        "locked": false
+      }
+    ],
+    "characters": [
+      {
+        "id": "NH-Char-01",
+        "type": "character",
+        "name": "奶牛猫乃禾",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，三视图，正面，侧面，背面，白底，全身照，角色设定图，一只黑白花纹的奶牛猫，大大的圆眼睛，有剪纸的拼接关节感，穿着红色的小肚兜，表情生动可爱。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "NH-Char-02",
+        "type": "character",
+        "name": "小黄鸟",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，三视图，正面，侧面，背面，白底，全身照，角色设定图，一只明黄色的小鸟，翅膀和尾巴有剪纸的锯齿状边缘，黑色的小圆眼睛，喙是橙色的，姿态灵动。",
+        "image_url": null,
+        "locked": false
+      }
+    ],
+    "backgrounds": [
+      {
+        "id": "NH-BG-01",
+        "type": "background",
+        "name": "温馨客厅",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，空镜头，无人物，环境概念图，广角，一个铺着彩色地毯的客厅，有木质的窗框，阳光从窗户斜射进来形成光柱，墙上有简单的剪纸风格花纹装饰，散落着几块积木，氛围温馨。",
+        "image_url": null,
+        "locked": false
+      },
+      {
+        "id": "NH-BG-02",
+        "type": "background",
+        "name": "窗台与天空",
+        "prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，空镜头，无人物，环境概念图，广角，从室内看向窗外的视角，窗台上有一个小花盆，窗外是剪纸风格的蓝天和几朵白云，视野开阔。",
+        "image_url": null,
+        "locked": false
+      }
+    ],
+    "pages": [
+      {
+        "page_index": 1,
+        "scene_id": "S-01",
+        "rationale": "开篇定场，介绍主角、环境和核心活动，建立温馨专注的氛围。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，全景镜头，画面中央是NH-Char-01(奶牛猫乃禾)，它正趴在地毯上，神情专注地搭着彩色积木城堡，阳光从左侧窗户洒下，照亮它黑白相间的毛发和彩色的积木，温暖宁静。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "平和叙述",
+            "text": "乃禾有一堆彩色的积木。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "轻快",
+            "text": "咔哒，咔哒，搭个大城堡。"
+          }
+        ],
+        "tts_text": "乃禾有一堆彩色的积木。咔哒，咔哒，搭个大城堡。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "乃禾有一堆彩色的积木。",
+            "emotion": "平和叙述"
+          },
+          {
+            "role": "旁白",
+            "text": "咔哒，咔哒，搭个大城堡。",
+            "emotion": "轻快"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 2,
+        "scene_id": "S-02",
+        "rationale": "动作序列与情绪突变。城堡倒塌是第一个戏剧性转折，需要单独一页来放大震惊感。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，中景镜头，NH-Char-01(奶牛猫乃禾)眼睛瞪得圆圆的，嘴巴微张，保持着手伸出的姿势，面前的积木城堡正在哗啦啦地散开，有几块积木飞在空中，用剪纸风格的弧线表示动态，背景有表示惊讶的放射状短线。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "惊讶",
+            "text": "哎呀！手一抖，哗啦啦——"
+          },
+          {
+            "role": "旁白",
+            "emotion": "陈述结果",
+            "text": "城堡倒了，变成一堆乱木头。"
+          }
+        ],
+        "tts_text": "哎呀！手一抖，哗啦啦——城堡倒了，变成一堆乱木头。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "哎呀！手一抖，哗啦啦——",
+            "emotion": "惊讶"
+          },
+          {
+            "role": "旁白",
+            "text": "城堡倒了，变成一堆乱木头。",
+            "emotion": "陈述结果"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 3,
+        "scene_id": "S-03",
+        "rationale": "情绪突变点。从震惊转为外显的愤怒，通过表情和台词强化情绪。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，特写镜头，NH-Char-01(奶牛猫乃禾)眉毛倒竖，脸涨得通红，胡子翘起，嘴巴张大叫喊，一个红色的对话气泡从它嘴边冒出，气泡内写着：'我不玩了！'，背景用剪纸风格的红色火焰纹样装饰，表示愤怒。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "NH-Char-01",
+            "emotion": "生气大喊",
+            "text": "乃禾气得胡子翘！“我不玩了！”"
+          }
+        ],
+        "tts_text": "乃禾气得胡子翘！“我不玩了！”",
+        "dialogues": [
+          {
+            "role": "NH-Char-01",
+            "text": "乃禾气得胡子翘！“我不玩了！”",
+            "emotion": "生气大喊"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 4,
+        "scene_id": "S-04",
+        "rationale": "动作序列拆分。展示愤怒的具体行为（扔积木），为下一页的后果做铺垫。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，中景镜头，NH-Char-01(奶牛猫乃禾)用力将一块红色积木扔向画面右上方，身体呈后仰的发力姿态，积木后方有剪纸风格的白色速度线，咚！的拟声字用剪纸风格字体出现在积木旁。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "强调动作",
+            "text": "咚！他抓起积木扔得远远的。"
+          }
+        ],
+        "tts_text": "咚！他抓起积木扔得远远的。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "咚！他抓起积木扔得远远的。",
+            "emotion": "强调动作"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 5,
+        "scene_id": "S-05",
+        "rationale": "动作序列与时空关联。积木飞向窗边，引出新角色和外部环境，制造连锁反应。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)与NH-BG-02(窗台与天空)结合，全景镜头，红色积木嗖地飞过画面，划出剪纸风格的弧形轨迹，窗边的NH-Char-02(小黄鸟)被吓得扑棱起翅膀，惊慌地看向积木，几片羽毛飘落，背景有表示惊吓的锯齿状短线。",
+        "asset_refs": [
+          "NH-Char-02",
+          "NH-BG-01",
+          "NH-BG-02"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "快速紧张",
+            "text": "嗖——积木飞出去，"
+          },
+          {
+            "role": "旁白",
+            "emotion": "模拟声音",
+            "text": "吓得窗边的小黄鸟扑棱棱，飞走了。"
+          }
+        ],
+        "tts_text": "嗖——积木飞出去，吓得窗边的小黄鸟扑棱棱，飞走了。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "嗖——积木飞出去，",
+            "emotion": "快速紧张"
+          },
+          {
+            "role": "旁白",
+            "text": "吓得窗边的小黄鸟扑棱棱，飞走了。",
+            "emotion": "模拟声音"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 6,
+        "scene_id": "S-06",
+        "rationale": "情绪转折与氛围营造。外部动作停止，转向内部感受，用静寂和象征物表现愤怒的持续。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，全景镜头，NH-Char-01(奶牛猫乃禾)孤零零地站在散乱的积木中间，低着头，双手捂着肚子，表情难受，它的头顶上方，画着一个由红色剪纸火焰纹样缠绕成的、乱糟糟的'大火球'，房间光线略显暗淡。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "低沉缓慢",
+            "text": "房间里静悄悄。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "比喻描述",
+            "text": "乃禾肚子里有个大火球，滚呀滚，好热呀。"
+          }
+        ],
+        "tts_text": "房间里静悄悄。乃禾肚子里有个大火球，滚呀滚，好热呀。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "房间里静悄悄。",
+            "emotion": "低沉缓慢"
+          },
+          {
+            "role": "旁白",
+            "text": "乃禾肚子里有个大火球，滚呀滚，好热呀。",
+            "emotion": "比喻描述"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 7,
+        "scene_id": "S-07",
+        "rationale": "关键动作与情绪转变点。特写深呼吸，可视化地表现情绪管理过程，是故事的核心教导环节。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，特写镜头，NH-Char-01(奶牛猫乃禾)闭着眼睛，嘴巴嘟成圆形，正在深深地吸气，神情专注平静，它头顶的红色'大火球'正在被一股蓝色的、剪纸风格的清风气流吹散，气流呈螺旋状。",
+        "asset_refs": [
+          "NH-Char-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "引导平静",
+            "text": "乃禾闭上眼，吸一口气。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "释放轻松",
+            "text": "呼——把大火球吹跑啦。"
+          }
+        ],
+        "tts_text": "乃禾闭上眼，吸一口气。呼——把大火球吹跑啦。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "乃禾闭上眼，吸一口气。",
+            "emotion": "引导平静"
+          },
+          {
+            "role": "旁白",
+            "text": "呼——把大火球吹跑啦。",
+            "emotion": "释放轻松"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 8,
+        "scene_id": "S-08",
+        "rationale": "情绪转变后的行为。展示内心平静如何外化为轻柔的动作，与之前的愤怒扔掷形成对比。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，中景镜头，NH-Char-01(奶牛猫乃禾)脸上带着浅浅的微笑，正蹲下身，用两只爪子轻轻地、小心地捡起地上的一块绿色积木，动作温柔，阳光重新变得明亮温暖。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "平和舒缓",
+            "text": "心里变凉快了。"
+          },
+          {
+            "role": "旁白",
+            "emotion": "轻柔叙述",
+            "text": "乃禾捡起积木，一块一块，轻轻搭。"
+          }
+        ],
+        "tts_text": "心里变凉快了。乃禾捡起积木，一块一块，轻轻搭。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "心里变凉快了。",
+            "emotion": "平和舒缓"
+          },
+          {
+            "role": "旁白",
+            "text": "乃禾捡起积木，一块一块，轻轻搭。",
+            "emotion": "轻柔叙述"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 9,
+        "scene_id": "S-09",
+        "rationale": "翻页悬念与成果展示。先展示新城堡的建成，制造翻页后朋友回归的惊喜。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，全景镜头，一座高大、稳固、色彩搭配漂亮的积木城堡矗立在画面中央，NH-Char-01(奶牛猫乃禾)站在城堡旁，双手叉腰，仰着头，脸上洋溢着自豪和开心的笑容，眼睛闪闪发亮。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "NH-Char-01",
+            "emotion": "惊喜自豪",
+            "text": "哇！新城堡搭好啦！"
+          }
+        ],
+        "tts_text": "哇！新城堡搭好啦！",
+        "dialogues": [
+          {
+            "role": "NH-Char-01",
+            "text": "哇！新城堡搭好啦！",
+            "emotion": "惊喜自豪"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      },
+      {
+        "page_index": 10,
+        "scene_id": "S-10",
+        "rationale": "圆满结局与情感呼应。朋友回归并歌唱，形成积极的闭环，画面充满欢乐与友谊。",
+        "jimeng_prompt": "儿童绘本风格，上海美术电影制片厂风格，中国传统剪纸艺术，皮影戏元素，关节清晰的纸偶感，民间艺术色彩，大红大绿的配色，装饰性纹样，平面舞台感，复古动画质感，NH-BG-01(温馨客厅)，欢快的全景镜头，NH-Char-02(小黄鸟)飞了回来，正站在新城堡的尖顶上，张着小嘴，NH-Char-01(奶牛猫乃禾)在下面开心地拍着手，背景有剪纸风格的音符和小花朵装饰，阳光明媚，色彩明快。",
+        "asset_refs": [
+          "NH-Char-01",
+          "NH-Char-02",
+          "NH-BG-01"
+        ],
+        "voice_script": [
+          {
+            "role": "旁白",
+            "emotion": "欢快",
+            "text": "小黄鸟飞回来，叽叽喳喳唱起歌。"
+          }
+        ],
+        "tts_text": "小黄鸟飞回来，叽叽喳喳唱起歌。",
+        "dialogues": [
+          {
+            "role": "旁白",
+            "text": "小黄鸟飞回来，叽叽喳喳唱起歌。",
+            "emotion": "欢快"
+          }
+        ],
+        "image_url": null,
+        "audio_url": null,
+        "status": "pending"
+      }
+    ],
+    "style": "paper_cut",
+    "analysisComplete": true
+  },
+  "activeRightTab": "storyboard",
+  "activeLeftTab": "script",
+  "settings": {
+    "aspectRatio": "16:9",
+    "resolution": "2k",
+    "language": "zh",
+    "pageCount": 8,
+    "enableSpeechBubble": true,
+    "bubbleLanguage": "zh",
+    "audioLanguage": "zh"
+  },
+  "story_analysis": {
+    "total_words": "约200字",
+    "estimated_pages": 10,
+    "pacing_strategy": "情感细腻型，重点拆解了情绪变化（专注->震惊->愤怒->平静->喜悦）和关键动作（城堡倒塌、扔积木、深呼吸、重建），利用翻页悬念强化情绪转折。"
+  }
+}

@@ -66,6 +66,7 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
             type: 'frame_complete',
             sequence: frame.sequence,
             imageUrl: result.data.imageUrl,
+            tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
             progress: progress,
             responseTime: responseTime
           })}\n\n`);
@@ -191,6 +192,7 @@ async function handleTraditionalGeneration(req, res, requestId, frames, referenc
         results.push({
           sequence: frame.sequence,
           imageUrl: result.data.imageUrl,
+          tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
           prompt: frame.prompt || frame.jimengPrompt,
           chineseDescription: frame.chineseDescription || frame.displayDescription,
           frameType: frame.frameType,

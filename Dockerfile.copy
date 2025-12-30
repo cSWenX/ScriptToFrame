@@ -13,8 +13,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN chmod +x /app/start.sh
-
 # 3. 安装 Python 依赖 (带判断逻辑)
 RUN if [ -f "requirements.txt" ]; then pip3 install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --break-system-packages;     elif [ -f "python-backend/requirements.txt" ]; then pip3 install --no-cache-dir -r python-backend/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --break-system-packages;     else echo "Warning: requirements.txt not found"; fi
 
@@ -27,4 +25,4 @@ RUN sed -i '/darwin-arm64/d' package.json &&     rm -f package-lock.json &&     
 RUN npm run build
 
 EXPOSE 3000
-CMD ["./start.sh"]
+CMD ["npm", "start"]

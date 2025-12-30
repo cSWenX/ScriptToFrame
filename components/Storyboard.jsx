@@ -54,15 +54,27 @@ const Storyboard = ({
     console.log('🖌️ [Storyboard] 开始AI修图:', {
       pageIndex: inpaintTarget.page_index,
       prompt,
-      strength
+      strength,
+      hasTosUrl: !!inpaintTarget.tos_url
     });
 
+    // 优先使用tos_url（即梦返回的公网URL），否则使用image_url
+    // tos_url是即梦生成图片时返回的TOS URL，可以直接作为参考图传给即梦API
+    const imageUrlForEdit = inpaintTarget.tos_url || inpaintTarget.image_url;
+
+    if (!imageUrlForEdit.startsWith('http')) {
+      // 本地URL（如 /generated/pages/page_1.png）无法作为即梦参考图
+      alert('⚠️ 修图功能需要使用即梦生成的图片，或配置外部存储（TOS）');
+      setIsEditing(false);
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:8081/api/edit-image', {
+      const response = await fetch('/api/edit-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          image_url: inpaintTarget.image_url,
+          image_url: imageUrlForEdit,  // 使用公网可访问的URL
           prompt: prompt,
           page_index: inpaintTarget.page_index,
           strength: strength
@@ -74,10 +86,11 @@ const Storyboard = ({
       if (result.success && result.data?.imageUrl) {
         console.log('✅ [Storyboard] AI修图成功:', result.data.imageUrl);
 
-        // 更新页面图片
+        // 更新页面图片，同时更新tos_url
         actions.updatePage({
           page_index: inpaintTarget.page_index,
           image_url: result.data.imageUrl,
+          tos_url: result.data.tosUrl,  // 新图片的TOS URL
           edit_prompt: prompt,
           edit_strength: strength,
           last_edited: new Date().toISOString()

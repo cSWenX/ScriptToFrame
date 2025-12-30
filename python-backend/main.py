@@ -64,6 +64,7 @@ class ImageGenerationRequest(BaseModel):
     prompt: str
     frame: Optional[dict] = None
     save_to_storage: bool = True  # 是否保存到存储（返回URL而非base64）
+    referenceImages: Optional[list] = None  # 参考图列表 [{index, name, type, url}]
 
 class ImageGenerationResponse(BaseModel):
     success: bool
@@ -148,13 +149,20 @@ ASPECT_RATIO_SIZES = {
     "2:3": {"width": 1080, "height": 1620},
 }
 
-async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ratio: str = "16:9") -> str:
+async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ratio: str = "16:9", reference_image_urls: list = None) -> dict:
     """使用官方SDK生成图片
 
     Args:
         prompt: 提示词
         request_id: 请求ID
         aspect_ratio: 画幅比例，支持 16:9, 4:3, 1:1, 3:4, 9:16 等
+        reference_image_urls: 参考图URL列表（即梦4.0的image_urls参数）
+
+    Returns:
+        dict: {
+            "image_data": str,  # base64 data URL 或 即梦TOS URL
+            "tos_url": str | None  # 即梦返回的原始TOS URL（用于后续修图）
+        }
     """
 
     if not request_id:
@@ -169,6 +177,7 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
         "prompt_length": len(prompt),
         "aspect_ratio": aspect_ratio,
         "size": f"{size_config['width']}x{size_config['height']}",
+        "reference_images": len(reference_image_urls) if reference_image_urls else 0,
         "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')
     })
 
@@ -178,7 +187,7 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
         await asyncio.sleep(2)  # 模拟处理时间
         demo_url = f"https://example.com/demo-image-{int(time.time())}.jpg"
         print(f"✅ [Python后端-{request_id}] 演示模式完成: {demo_url}")
-        return demo_url
+        return {"image_data": demo_url, "tos_url": demo_url}
 
     # 创建服务实例
     print(f"🔧 [Python后端-{request_id}] 初始化火山引擎SDK...")
@@ -204,7 +213,19 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
         }
     }
 
-    print(f"📤 [Python后端-{request_id}] 提交参数: {json.dumps(submit_form, indent=2, ensure_ascii=False)}")
+    # 如果有参考图，添加image_urls参数（即梦4.0特性）
+    if reference_image_urls and len(reference_image_urls) > 0:
+        submit_form["image_urls"] = reference_image_urls
+        print(f"🖼️ [Python后端-{request_id}] 添加参考图: {len(reference_image_urls)} 张")
+        for i, url in enumerate(reference_image_urls):
+            print(f"   图{i+1}: {url}")
+
+    # 打印完整的请求JSON（包括完整提示词和图片链接）
+    print(f"\n{'='*60}")
+    print(f"📤 [Python后端-{request_id}] 发送给即梦的完整请求:")
+    print(f"{'='*60}")
+    print(json.dumps(submit_form, indent=2, ensure_ascii=False))
+    print(f"{'='*60}\n")
 
     try:
         submit_start = time.time()
@@ -238,7 +259,7 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
         if submit_data.get('image_urls'):
             result_url = submit_data['image_urls'][0]
             print(f"✅ [Python后端-{request_id}] 同步成功 - 直接获得图片URL: {result_url}")
-            return result_url
+            return {"image_data": result_url, "tos_url": result_url}
 
         # 检查是否直接返回base64数据（即梦V4常见情况）
         if submit_data.get('binary_data_base64') and len(submit_data['binary_data_base64']) > 0:
@@ -248,7 +269,9 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
             # 将base64数据转换为data URL格式，前端可以直接使用
             data_url = f"data:image/png;base64,{base64_data}"
             print(f"✅ [Python后端-{request_id}] 转换完成 - 已转换为data URL格式")
-            return data_url
+            # 同时检查是否有TOS URL
+            tos_url = submit_data.get('image_urls', [None])[0] if submit_data.get('image_urls') else None
+            return {"image_data": data_url, "tos_url": tos_url}
 
         task_id = submit_data.get('task_id')
         if not task_id:
@@ -267,17 +290,19 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
             print(f"🔄 [Python后端-{request_id}] 轮询第 {i+1}/{MAX_POLL_TIMES} 次")
 
             # 查询任务状态
+            # 根据即梦4.0文档，return_url需要通过req_json参数传递
             query_form = {
                 "req_key": REQ_KEY,
                 "task_id": task_id,
-                # V4查询时需要传递这些参数才能获得URL而不是Base64
-                "return_url": True,
-                "logo_info": {
-                    "add_logo": False,
-                    "position": 0,
-                    "language": 0,
-                    "opacity": 1
-                }
+                "req_json": json.dumps({
+                    "return_url": True,
+                    "logo_info": {
+                        "add_logo": False,
+                        "position": 0,
+                        "language": 0,
+                        "opacity": 1
+                    }
+                })
             }
 
             query_start = time.time()
@@ -312,7 +337,7 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
             if query_data.get('image_urls') and len(query_data['image_urls']) > 0:
                 image_url = query_data['image_urls'][0]
                 print(f"🎉 [Python后端-{request_id}] 获得图片URL: {image_url}")
-                return image_url
+                return {"image_data": image_url, "tos_url": image_url}
 
             # 检查是否有 binary_data_base64 (即梦V4常见情况)
             if query_data.get('binary_data_base64') and len(query_data['binary_data_base64']) > 0:
@@ -322,7 +347,9 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
                 # 将base64数据转换为data URL格式，前端可以直接使用
                 data_url = f"data:image/png;base64,{base64_data}"
                 print(f"✅ [Python后端-{request_id}] 转换完成 - 已转换为data URL格式")
-                return data_url
+                # 同时检查是否有TOS URL
+                tos_url = query_data.get('image_urls', [None])[0] if query_data.get('image_urls') else None
+                return {"image_data": data_url, "tos_url": tos_url}
 
             # 检查任务状态
             if status == 1 or status == 10000 or status == "done":
@@ -346,7 +373,7 @@ async def generate_image_with_sdk(prompt: str, request_id: str = None, aspect_ra
 
                 if image_url:
                     print(f"🎉 [Python后端-{request_id}] 最终获得图片URL: {image_url}")
-                    return image_url
+                    return {"image_data": image_url, "tos_url": image_url}
                 else:
                     print(f"⏳ [Python后端-{request_id}] 状态成功但图片URL尚未生成，继续等待...")
 
@@ -416,7 +443,8 @@ async def generate_image(request: ImageGenerationRequest):
         "has_prompt": bool(request.prompt),
         "has_frame": bool(request.frame),
         "prompt_length": len(request.prompt) if request.prompt else 0,
-        "save_to_storage": request.save_to_storage
+        "save_to_storage": request.save_to_storage,
+        "reference_images": len(request.referenceImages) if request.referenceImages else 0
     })
 
     try:
@@ -432,10 +460,17 @@ async def generate_image(request: ImageGenerationRequest):
         if request.frame and request.frame.get('aspectRatio'):
             aspect_ratio = request.frame['aspectRatio']
 
+        # 提取参考图URL列表
+        reference_image_urls = []
+        if request.referenceImages:
+            for ref in request.referenceImages:
+                if ref.get('url'):
+                    reference_image_urls.append(ref['url'])
+
         print(f"📝 [Python后端-{request_id}] 解析参数:", {
             "final_prompt": f"{prompt[:50]}..." if prompt and len(prompt) > 50 else prompt,
             "aspect_ratio": aspect_ratio,
-            "frame_data": request.frame if request.frame else None,
+            "reference_images": len(reference_image_urls),
             "prompt_source": "request.prompt" if request.prompt else ("frame.prompt" if request.frame and request.frame.get('prompt') else ("frame.jimengPrompt" if request.frame and request.frame.get('jimengPrompt') else "none"))
         })
 
@@ -443,10 +478,18 @@ async def generate_image(request: ImageGenerationRequest):
             print(f"❌ [Python后端-{request_id}] 参数验证失败: 缺少提示词")
             raise HTTPException(status_code=400, detail="缺少必要参数: prompt")
 
-        print(f"🎨 [Python后端-{request_id}] 开始图片生成... 画幅: {aspect_ratio}")
+        print(f"🎨 [Python后端-{request_id}] 开始图片生成... 画幅: {aspect_ratio}, 参考图: {len(reference_image_urls)}张")
 
-        # 生成图片（返回base64或URL）
-        image_data = await generate_image_with_sdk(prompt.strip(), request_id, aspect_ratio)
+        # 生成图片（返回dict包含image_data和tos_url）
+        result = await generate_image_with_sdk(
+            prompt.strip(),
+            request_id,
+            aspect_ratio,
+            reference_image_urls if reference_image_urls else None
+        )
+
+        image_data = result["image_data"]
+        tos_url = result.get("tos_url")  # 即梦返回的原始TOS URL
 
         # 确定文件夹和文件名
         folder = ""
@@ -489,12 +532,14 @@ async def generate_image(request: ImageGenerationRequest):
             "url_type": "file_url" if not final_url.startswith("data:") else "data_url",
             "url_length": len(final_url),
             "is_demo": "example.com" in final_url,
+            "has_tos_url": bool(tos_url),
             **storage_info
         })
 
-        # 返回结果
+        # 返回结果，包含tosUrl用于后续修图
         response_data = {
             "imageUrl": final_url,
+            "tosUrl": tos_url,  # 即梦返回的原始TOS URL，用于修图时作为参考图
             "taskId": f"jimeng_v4_{request_id}",
             "prompt": prompt,
             "frame": request.frame,
@@ -504,7 +549,8 @@ async def generate_image(request: ImageGenerationRequest):
         print(f"📤 [Python后端-{request_id}] 构造响应:", {
             "success": True,
             "response_keys": list(response_data.keys()),
-            "url_preview": final_url[:100] + "..." if len(final_url) > 100 else final_url
+            "url_preview": final_url[:100] + "..." if len(final_url) > 100 else final_url,
+            "tos_url_preview": (tos_url[:100] + "...") if tos_url and len(tos_url) > 100 else tos_url
         })
 
         return ImageGenerationResponse(
@@ -597,71 +643,105 @@ async def generate_audio(request: AudioGenerationRequest):
             error=f"音频生成失败: {str(e)}"
         )
 
-async def edit_image_with_sdk(image_url: str, prompt: str, strength: float = 0.65, request_id: str = None) -> str:
-    """使用官方SDK进行图生图编辑"""
+async def edit_image_with_sdk(image_url: str, prompt: str, strength: float = 0.65, request_id: str = None) -> dict:
+    """使用即梦4.0文生图接口+image_urls参考图实现修图功能
+
+    原理：将原图URL通过image_urls参数传入即梦4.0接口，配合修改提示词生成新图
+    根据即梦4.0文档，image_urls参数用于传入参考图URL
+
+    Returns:
+        dict: {
+            "image_data": str,  # base64 data URL 或 即梦TOS URL
+            "tos_url": str | None  # 即梦返回的原始TOS URL（用于后续修图）
+        }
+    """
     import base64
     import httpx
 
     if not request_id:
         request_id = f"edit_{int(time.time())}"
 
-    print(f"\n🖌️ [Python后端-{request_id}] 图生图API启动")
+    print(f"\n🖌️ [Python后端-{request_id}] 修图API启动（使用即梦4.0 image_urls参考图模式）")
     print(f"📝 [Python后端-{request_id}] 编辑参数:", {
         "prompt": f"{prompt[:50]}..." if len(prompt) > 50 else prompt,
         "strength": strength,
-        "image_url_type": "base64" if image_url.startswith("data:") else "url",
+        "image_url": image_url[:100] if len(image_url) > 100 else image_url,
         "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')
     })
 
     if not SDK_AVAILABLE:
         print(f"⚠️ [Python后端-{request_id}] 演示模式: SDK未安装")
         await asyncio.sleep(2)
-        return f"https://example.com/demo-edited-{int(time.time())}.jpg"
+        demo_url = f"https://example.com/demo-edited-{int(time.time())}.jpg"
+        return {"image_data": demo_url, "tos_url": demo_url}
 
     # 创建服务实例
     print(f"🔧 [Python后端-{request_id}] 初始化火山引擎SDK...")
     visual_service = create_visual_service()
 
-    # 准备图片数据
-    binary_data = None
+    # 准备参考图URL
+    ref_image_url = None
 
-    if image_url.startswith("data:"):
-        # 从 data URL 提取 base64
-        try:
-            base64_part = image_url.split(",", 1)[1]
-            binary_data = base64_part
-            print(f"📷 [Python后端-{request_id}] 从data URL提取base64，长度: {len(binary_data)}")
-        except:
-            raise HTTPException(status_code=400, detail="无效的data URL格式")
-    elif image_url.startswith("http"):
-        # 下载图片并转为base64
-        print(f"📥 [Python后端-{request_id}] 下载原图: {image_url[:100]}...")
-        try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                resp = await client.get(image_url)
-                resp.raise_for_status()
-                binary_data = base64.b64encode(resp.content).decode('utf-8')
-                print(f"📷 [Python后端-{request_id}] 下载完成，base64长度: {len(binary_data)}")
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"无法下载原图: {str(e)}")
-    elif image_url.startswith("/"):
-        # 本地路径
-        local_file = Path(__file__).parent.parent / "public" / image_url.lstrip("/")
-        if local_file.exists():
-            with open(local_file, "rb") as f:
-                binary_data = base64.b64encode(f.read()).decode('utf-8')
-            print(f"📷 [Python后端-{request_id}] 读取本地文件: {local_file}")
+    if image_url.startswith("http"):
+        # 已经是HTTP URL，直接使用
+        ref_image_url = image_url
+        print(f"📷 [Python后端-{request_id}] 使用HTTP URL作为参考图: {ref_image_url[:100]}...")
+    elif image_url.startswith("/generated/") or image_url.startswith("/"):
+        # 本地路径 - 需要先上传到云存储获取公网URL
+        # 检查是否配置了外部可访问的存储
+        storage = get_storage_provider()
+
+        if storage.is_url_accessible_externally():
+            # 有外部存储，读取本地文件并上传
+            local_file = Path(__file__).parent.parent / "public" / image_url.lstrip("/")
+            if local_file.exists():
+                with open(local_file, "rb") as f:
+                    image_data = f"data:image/png;base64,{base64.b64encode(f.read()).decode('utf-8')}"
+
+                # 上传到云存储
+                _, ref_image_url = await storage.save_image(
+                    image_data,
+                    filename=f"ref_{request_id}",
+                    folder="temp"
+                )
+                print(f"📷 [Python后端-{request_id}] 已上传参考图到云存储: {ref_image_url}")
+            else:
+                raise HTTPException(status_code=400, detail=f"本地文件不存在: {image_url}")
         else:
-            raise HTTPException(status_code=400, detail=f"本地文件不存在: {image_url}")
+            # 没有外部存储，尝试使用本地服务器URL（仅限开发环境）
+            # 注意：这在生产环境中不会工作，因为即梦API无法访问localhost
+            print(f"⚠️ [Python后端-{request_id}] 警告: 本地存储模式，即梦API可能无法访问参考图")
+            # 构建本地URL (开发环境)
+            ref_image_url = f"http://localhost:8081{image_url}"
+            print(f"📷 [Python后端-{request_id}] 尝试使用本地URL: {ref_image_url}")
+    elif image_url.startswith("data:"):
+        # Base64数据 - 需要先保存再获取URL
+        storage = get_storage_provider()
+        if storage.is_url_accessible_externally():
+            _, ref_image_url = await storage.save_image(
+                image_url,
+                filename=f"ref_{request_id}",
+                folder="temp"
+            )
+            print(f"📷 [Python后端-{request_id}] 已上传base64图片到云存储: {ref_image_url}")
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="修图功能需要配置外部可访问的存储（如火山引擎TOS），或使用HTTP URL格式的图片"
+            )
     else:
         raise HTTPException(status_code=400, detail="不支持的图片URL格式")
 
-    # 构建图生图请求
+    # 使用即梦4.0文生图接口 + image_urls参考图
+    # strength 转换为参考图权重：strength越大改动越大，所以参考图权重 = 1 - strength
+    ref_strength = max(0.1, min(0.9, 1.0 - strength))
+
     submit_form = {
-        "req_key": REQ_KEY_I2I,
+        "req_key": REQ_KEY,  # 使用即梦4.0文生图模型 jimeng_t2i_v40
         "prompt": prompt,
-        "binary_data_base64": [binary_data],
-        "strength": strength,  # 控制修改程度
+        # 参考图配置 - 使用image_urls参数
+        "image_urls": [ref_image_url],
+        "strength": ref_strength,  # 参考图权重
         "return_url": True,
         "logo_info": {
             "add_logo": False,
@@ -671,7 +751,12 @@ async def edit_image_with_sdk(image_url: str, prompt: str, strength: float = 0.6
         }
     }
 
-    print(f"📤 [Python后端-{request_id}] 提交图生图任务...")
+    # 打印完整的修图请求JSON（包括完整提示词和图片链接）
+    print(f"\n{'='*60}")
+    print(f"📤 [Python后端-{request_id}] 修图 - 发送给即梦的完整请求:")
+    print(f"{'='*60}")
+    print(json.dumps(submit_form, indent=2, ensure_ascii=False))
+    print(f"{'='*60}\n")
 
     try:
         submit_start = time.time()
@@ -692,10 +777,14 @@ async def edit_image_with_sdk(image_url: str, prompt: str, strength: float = 0.6
 
         # 检查是否直接返回结果
         if submit_data.get('image_urls') and len(submit_data['image_urls']) > 0:
-            return submit_data['image_urls'][0]
+            result_url = submit_data['image_urls'][0]
+            return {"image_data": result_url, "tos_url": result_url}
 
         if submit_data.get('binary_data_base64') and len(submit_data['binary_data_base64']) > 0:
-            return f"data:image/png;base64,{submit_data['binary_data_base64'][0]}"
+            data_url = f"data:image/png;base64,{submit_data['binary_data_base64'][0]}"
+            # 同时检查是否有TOS URL
+            tos_url = submit_data.get('image_urls', [None])[0] if submit_data.get('image_urls') else None
+            return {"image_data": data_url, "tos_url": tos_url}
 
         task_id = submit_data.get('task_id')
         if not task_id:
@@ -707,37 +796,45 @@ async def edit_image_with_sdk(image_url: str, prompt: str, strength: float = 0.6
         for i in range(MAX_POLL_TIMES):
             await asyncio.sleep(POLL_INTERVAL)
 
+            # 根据即梦4.0文档，return_url需要通过req_json参数传递
             query_form = {
-                "req_key": REQ_KEY_I2I,
+                "req_key": REQ_KEY,
                 "task_id": task_id,
-                "return_url": True,
-                "logo_info": {"add_logo": False}
+                "req_json": json.dumps({
+                    "return_url": True,
+                    "logo_info": {"add_logo": False}
+                })
             }
 
             query_resp = visual_service.cv_sync2async_get_result(query_form)
             query_data = query_resp.get('data', {}) or query_resp.get('Result', {})
 
             if query_data.get('image_urls') and len(query_data['image_urls']) > 0:
-                print(f"🎉 [Python后端-{request_id}] 图生图完成!")
-                return query_data['image_urls'][0]
+                print(f"🎉 [Python后端-{request_id}] 修图完成!")
+                result_url = query_data['image_urls'][0]
+                return {"image_data": result_url, "tos_url": result_url}
 
             if query_data.get('binary_data_base64') and len(query_data['binary_data_base64']) > 0:
-                print(f"🎉 [Python后端-{request_id}] 图生图完成!")
-                return f"data:image/png;base64,{query_data['binary_data_base64'][0]}"
+                print(f"🎉 [Python后端-{request_id}] 修图完成!")
+                data_url = f"data:image/png;base64,{query_data['binary_data_base64'][0]}"
+                # 同时检查是否有TOS URL
+                tos_url = query_data.get('image_urls', [None])[0] if query_data.get('image_urls') else None
+                return {"image_data": data_url, "tos_url": tos_url}
 
             status = query_data.get('status')
             if status == 2 or status == -1 or status == "failed":
-                raise HTTPException(status_code=500, detail="图生图任务执行失败")
+                raise HTTPException(status_code=500, detail="修图任务执行失败")
 
             print(f"🔄 [Python后端-{request_id}] 轮询 {i+1}/{MAX_POLL_TIMES}，状态: {status}")
 
-        raise HTTPException(status_code=408, detail="图生图任务超时")
+        raise HTTPException(status_code=408, detail="修图任务超时")
 
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ [Python后端-{request_id}] 图生图错误: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"图生图失败: {str(e)}")
+        error_msg = str(e)
+        print(f"❌ [Python后端-{request_id}] 修图错误: {error_msg}")
+        raise HTTPException(status_code=500, detail=f"修图失败: {error_msg}")
 
 
 @app.post("/api/edit-image", response_model=ImageEditResponse)
@@ -761,13 +858,16 @@ async def edit_image(request: ImageEditRequest):
         if not request.image_url:
             raise HTTPException(status_code=400, detail="缺少原图")
 
-        # 执行图生图
-        image_data = await edit_image_with_sdk(
+        # 执行图生图（返回dict包含image_data和tos_url）
+        result = await edit_image_with_sdk(
             image_url=request.image_url,
             prompt=request.prompt.strip(),
             strength=request.strength,
             request_id=request_id
         )
+
+        image_data = result["image_data"]
+        tos_url = result.get("tos_url")  # 即梦返回的原始TOS URL
 
         # 保存结果
         final_url = image_data
@@ -798,6 +898,7 @@ async def edit_image(request: ImageEditRequest):
             success=True,
             data={
                 "imageUrl": final_url,
+                "tosUrl": tos_url,  # 即梦返回的原始TOS URL，用于后续修图
                 "prompt": request.prompt,
                 "pageIndex": request.page_index,
                 **storage_info
