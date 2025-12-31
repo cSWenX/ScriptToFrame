@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt, characterId, characterName } = req.body;
+    const { prompt, characterId, characterName, project_id } = req.body;
 
     if (!prompt) {
       return res.status(400).json({
@@ -25,6 +25,7 @@ export default async function handler(req, res) {
 
     console.log(`🎭 [角色生成-${requestId}] 开始生成: ${characterName || characterId}`);
     console.log(`📝 提示词: ${prompt.substring(0, 100)}...`);
+    console.log(`📂 项目ID: ${project_id || 'default'}`);
 
     // 调用Python后端
     const response = await fetch(`${PYTHON_BACKEND_URL}/api/generate-image`, {
@@ -32,6 +33,7 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt,
+        project_id: project_id || 'default',  // 添加项目ID
         frame: {
           type: 'character',
           characterId,

@@ -169,7 +169,8 @@ function IDEWorkspace() {
         body: JSON.stringify({
           characterId: asset.id,
           characterName: asset.name,
-          prompt: asset.prompt
+          prompt: asset.prompt,
+          project_id: project.id  // 添加项目ID
         })
       });
 
@@ -325,6 +326,7 @@ function IDEWorkspace() {
           refImages: refImages,  // 按asset_refs顺序的参考图片
           aspectRatio: project.settings.aspectRatio,
           resolution: project.settings.resolution,
+          project_id: project.id,  // 添加项目ID
           // 语言气泡设置
           enableSpeechBubble: project.settings.enableSpeechBubble,
           bubbleLanguage: project.settings.bubbleLanguage,
@@ -495,6 +497,7 @@ function IDEWorkspace() {
           body: JSON.stringify({
             text: finalText,
             page_index: page.page_index,
+            project_id: project.id,  // 添加项目ID
             speaker_id: 'child',
             speed_factor: '1.0',
             pitch_factor: '1.0',

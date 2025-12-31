@@ -62,6 +62,7 @@ app.mount("/audio", StaticFiles(directory=str(audio_path)), name="audio")
 # 请求模型
 class ImageGenerationRequest(BaseModel):
     prompt: str
+    project_id: str = "default"  # 项目ID，用于组织文件夹
     frame: Optional[dict] = None
     save_to_storage: bool = True  # 是否保存到存储（返回URL而非base64）
     referenceImages: Optional[list] = None  # 参考图列表 [{index, name, type, url}]
@@ -75,6 +76,7 @@ class ImageGenerationResponse(BaseModel):
 class AudioGenerationRequest(BaseModel):
     text: str
     page_index: Optional[int] = None
+    project_id: str = "default"  # 项目ID，用于组织文件夹
     speaker_id: str = "child"
     speed_factor: str = "1.0"
     pitch_factor: str = "1.0"
@@ -89,6 +91,7 @@ class ImageEditRequest(BaseModel):
     image_url: str  # 原图URL或base64
     prompt: str  # 修改提示词
     page_index: Optional[int] = None
+    project_id: str = "default"  # 项目ID，用于组织文件夹
     strength: float = 0.65  # 修改强度 0-1，越大改动越大
 
 class ImageEditResponse(BaseModel):
@@ -497,13 +500,17 @@ async def generate_image(request: ImageGenerationRequest):
         if request.frame:
             frame_type = request.frame.get('type', '')
             if frame_type == 'character':
-                folder = "characters"
+                # 使用项目ID组织文件夹: {project_id}/characters
+                folder = f"{request.project_id}/characters"
                 char_id = request.frame.get('characterId', request_id)
                 filename_prefix = f"char_{char_id}"
             elif frame_type == 'page':
-                folder = "pages"
+                # 使用项目ID组织文件夹: {project_id}/pages
+                folder = f"{request.project_id}/pages"
                 page_index = request.frame.get('pageIndex', 0)
                 filename_prefix = f"page_{page_index}"
+
+        print(f"📂 [Python后端-{request_id}] 保存路径: {folder}/{filename_prefix}")
 
         # 如果需要保存到存储
         final_url = image_data
@@ -594,15 +601,18 @@ async def generate_audio(request: AudioGenerationRequest):
         # 获取音频Provider
         audio_provider = get_audio_provider()
 
-        # 生成文件名
+        # 生成文件名和文件夹路径
         if request.page_index is not None:
             filename = f"page_{request.page_index}"
-            folder = "pages"
+            # 使用项目ID组织文件夹: {project_id}/pages
+            folder = f"{request.project_id}/pages"
         else:
             filename = f"audio_{request_id}"
-            folder = ""
+            # 使用项目ID组织文件夹
+            folder = request.project_id
 
         print(f"🎤 [Python后端-{request_id}] 开始音频合成...")
+        print(f"📂 保存路径: {folder}/{filename}")
 
         # 合成并保存音频
         local_path, audio_url = await audio_provider.synthesize_and_save(
@@ -877,8 +887,11 @@ async def edit_image(request: ImageEditRequest):
             print(f"💾 [Python后端-{request_id}] 保存编辑后的图片...")
             storage = get_storage_provider()
 
-            folder = "pages"
+            # 使用项目ID组织文件夹: {project_id}/pages
+            folder = f"{request.project_id}/pages"
             filename_prefix = f"edited_{request.page_index}" if request.page_index else f"edited_{request_id}"
+
+            print(f"📂 [Python后端-{request_id}] 保存路径: {folder}/{filename_prefix}")
 
             local_path, public_url = await storage.save_image(
                 image_data,

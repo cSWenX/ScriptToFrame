@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text, page_index, speaker_id, speed_factor, pitch_factor, language } = req.body;
+    const { text, page_index, speaker_id, speed_factor, pitch_factor, language, project_id } = req.body;
 
     if (!text || !text.trim()) {
       return res.status(400).json({
@@ -26,6 +26,7 @@ export default async function handler(req, res) {
     console.log(`🔊 [音频代理-${requestId}] 转发请求到Python后端`);
     console.log(`📝 文本: ${text.substring(0, 50)}...`);
     console.log(`🌍 语言: ${language || 'zh'}`);
+    console.log(`📂 项目ID: ${project_id || 'default'}`);
 
     // 转发请求到Python后端
     const response = await fetch(`${PYTHON_BACKEND_URL}/api/generate-audio`, {
@@ -34,6 +35,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         text,
         page_index,
+        project_id: project_id || 'default',  // 添加项目ID
         speaker_id: speaker_id || 'child',
         speed_factor: speed_factor || '1.0',
         pitch_factor: pitch_factor || '1.0',

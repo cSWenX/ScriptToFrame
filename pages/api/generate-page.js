@@ -66,7 +66,8 @@ export default async function handler(req, res) {
       // 语言气泡设置
       enableSpeechBubble = false,
       bubbleLanguage = 'zh',
-      voiceScript = null
+      voiceScript = null,
+      project_id         // 项目ID，用于组织文件夹
     } = req.body;
 
     if (!jimengPrompt) {
@@ -80,6 +81,7 @@ export default async function handler(req, res) {
     console.log(`🎨 风格: ${styleId}, 画幅: ${aspectRatio}, 分辨率: ${resolution}`);
     console.log(`🖼️ 参考图片数量: ${refImages.length}`);
     console.log(`💬 语言气泡: ${enableSpeechBubble ? `启用 (${bubbleLanguage})` : '关闭'}`);
+    console.log(`📂 项目ID: ${project_id || 'default'}`);
 
     // 获取风格后缀
     const styleSuffix = getStyleSuffix(styleId);
@@ -106,6 +108,7 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: fullPrompt,
+        project_id: project_id || 'default',  // 添加项目ID
         referenceImages: referenceImages,  // 按顺序的参考图片
         frame: {
           type: 'page',

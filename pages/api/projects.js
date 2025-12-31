@@ -11,6 +11,16 @@ import path from 'path';
 // 项目存储目录
 const PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
 
+// 生成随机项目ID（8位字母+数字组合）
+function generateProjectId() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 8; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return id;
+}
+
 // 确保目录存在
 function ensureDir() {
   if (!fs.existsSync(PROJECTS_DIR)) {
@@ -107,7 +117,7 @@ export default async function handler(req, res) {
         }
 
         // 生成或使用现有ID
-        const projectId = project.id || `project_${Date.now()}`;
+        const projectId = project.id || generateProjectId();
         const now = new Date().toISOString();
 
         const projectData = {

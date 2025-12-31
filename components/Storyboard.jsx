@@ -77,7 +77,8 @@ const Storyboard = ({
           image_url: imageUrlForEdit,  // 使用公网可访问的URL
           prompt: prompt,
           page_index: inpaintTarget.page_index,
-          strength: strength
+          strength: strength,
+          project_id: project.id  // 添加项目ID
         })
       });
 
