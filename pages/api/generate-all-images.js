@@ -13,7 +13,7 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
+  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
   const validFrames = frames.filter(frame => frame.prompt || frame.jimengPrompt);
 
   console.log(`🎨 [批量生成-${requestId}] 开始SSE流式批量生成，共${validFrames.length}帧`);
@@ -141,7 +141,7 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
  * 传统JSON响应处理函数（保留原有逻辑）
  */
 async function handleTraditionalGeneration(req, res, requestId, frames, referenceImage, config) {
-  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
+  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
   const validFrames = frames.filter(frame => frame.prompt || frame.jimengPrompt);
 
   if (validFrames.length === 0) {

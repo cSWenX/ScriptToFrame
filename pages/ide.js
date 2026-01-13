@@ -33,7 +33,14 @@ function IDEWorkspace() {
    * AI智能规划分镜数量 + 生成分镜脚本 + 提取角色
    */
   const handleAnalyzeStory = useCallback(async () => {
-    const { rawStory, style_preset } = project;
+    const { rawStory, style_preset, story_name } = project;
+
+    // 验证绘本名称（必填）
+    if (!story_name || !story_name.trim()) {
+      alert('请先输入绘本名称');
+      actions.setLeftTab('input');
+      return;
+    }
 
     if (!rawStory || rawStory.trim().length < 50) {
       alert('请先输入至少50个字符的故事');

@@ -117,6 +117,61 @@ const Storyboard = ({
     setSelectedPage(page);
   };
 
+  // 处理推送远程
+  const handlePushToRemote = async (page) => {
+    if (!page.image_url) {
+      alert('⚠️ 没有图片可以推送');
+      return;
+    }
+
+    // 检查是否已经是远程URL
+    if (page.image_url.startsWith('http://61.155.227.20') || page.remote_url) {
+      alert('✅ 图片已在远程存储中');
+      return;
+    }
+
+    const confirmed = confirm(`确定要将第 ${page.page_index} 页图片推送到远程存储吗？`);
+    if (!confirmed) return;
+
+    try {
+      console.log('☁️ [Storyboard] 开始推送图片到远程:', {
+        pageIndex: page.page_index,
+        imageUrl: page.image_url.substring(0, 100)
+      });
+
+      const response = await fetch('/api/push-to-remote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: page.image_url,
+          pageIndex: page.page_index
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.data?.remoteUrl) {
+        console.log('✅ [Storyboard] 推送成功:', result.data.remoteUrl);
+
+        // 更新页面信息：用远程URL覆盖本地URL
+        actions.updatePage({
+          page_index: page.page_index,
+          image_url: result.data.remoteUrl,
+          remote_url: result.data.remoteUrl,
+          remote_id: result.data.remoteId,
+          pushed_at: new Date().toISOString()
+        });
+
+        alert(`✅ 推送成功！\n远程URL已保存并覆盖本地URL`);
+      } else {
+        throw new Error(result.error || '推送失败');
+      }
+    } catch (error) {
+      console.error('❌ [Storyboard] 推送远程失败:', error);
+      alert('❌ 推送失败: ' + error.message);
+    }
+  };
+
   // 计算生成进度
   const completedCount = pages.filter(p => p.image_url).length;
   const totalCount = pages.length;
@@ -330,6 +385,16 @@ const PageCard = ({
                 className="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-bold hover:bg-orange-600"
               >
                 🔄 重生成
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePushToRemote(page);
+                }}
+                className="px-3 py-2 bg-green-500 text-white rounded-lg text-sm font-bold hover:bg-green-600"
+                title="推送到远程存储"
+              >
+                ☁️ 推送远程
               </button>
             </div>
           </>

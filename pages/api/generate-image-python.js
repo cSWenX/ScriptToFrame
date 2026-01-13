@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     console.log(`🎨 [API代理-${requestId}] 提示词: "${actualPrompt.substring(0, 50)}..."`);
 
     // 代理到Python后端
-    const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
+    const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
     console.log(`🔗 [API代理-${requestId}] Python后端地址:`, PYTHON_BACKEND_URL);
 
     // 创建超时控制器，设置10分钟超时
@@ -135,7 +135,7 @@ export default async function handler(req, res) {
       console.error(`🔌 [API代理-${requestId}] 连接被拒绝，Python后端可能未启动`);
       res.status(503).json({
         success: false,
-        error: 'Python后端服务未启动，请先启动Python服务 (端口8081)'
+        error: 'Python后端服务未启动，请先启动Python服务 (端口8082)'
       });
     } else if (error.name === 'AbortError') {
       // 超时错误

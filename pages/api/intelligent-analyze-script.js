@@ -18,7 +18,7 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
 
 ## 1. 任务目标
 你将接收一个"故事文本"和一个"用户选择的风格"。你需要先进行智能分镜规划，然后按顺序完成资产建立、脚本编写，最后输出为标准的JSON格式。
-你的核心目标是：打破固定页数限制，完全根据故事的内在节奏，制作一本**"图文音"节奏完美的少儿绘本**。
+你的核心目标是：**严格按照故事字数生成固定页数的分镜**，制作一本**"图文音"节奏完美的少儿绘本**。
 
 ## 2. 全局风格
 用户选择的风格：{STYLE_NAME}
@@ -27,24 +27,27 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
 
 ---
 
-## 阶段零：智能分镜规划 (Intelligent Segmentation Logic)
+## 阶段零：页数限制规则（⚠️ 强制执行）
 
-**核心原则：形式服从内容 (Form Follows Content)**
-请勿使用固定的页数限制。请根据以下**"视觉节拍 (Visual Beats)"**逻辑，将故事自动划分为最合理的页数。每一页必须只承载一个核心视觉状态。
+**根据故事字数，严格遵守以下页数限制：**
+- **1000字以下**：生成 **5页** 分镜
+- **1000~2000字**：生成 **8页** 分镜
+- **2000字以上**：生成 **10页** 分镜
 
-**强制分页触发条件：**
-1. **时空切换**：一旦出现地点变化（如：室内->室外）或时间显著流逝（如：第二天），必须分页。
-2. **动作序列**：如果一段文字包含连续的复杂动作（如："他先穿好衣服，然后冲出门，最后跳进河里"），必须拆分为多页，每页展示一个动作阶段。
-3. **情绪突变**：当氛围发生重大转折（如：从平静变惊恐），必须分页以制造视觉冲击。
-4. **信息浓度**：单页文字不宜过密。如果对话过长，请拆分为"全景（交代环境）"和"特写（聚焦表情）"两页。
-5. **翻页悬念**：在秘密揭晓或惊讶时刻前分页，利用翻页动作制造惊喜。
+**分镜策略：在固定页数内合理分配故事情节**
+- 开篇定场（1页）：介绍主角和初始场景
+- 故事发展（根据剩余页数）：选择最关键的情节节点
+- 高潮部分（1-2页）：故事转折或关键时刻
+- 结尾收束（1页）：温暖或开放式的结局
+
+**⚠️ 重要提示：不要生成超出指定页数的内容！严格控制在上述页数范围内。**
 
 ---
 
 ## 阶段一：建立资产库 (Asset Library)
 
 **规则：**
-1. 根据阶段零的规划，提取所有出场的关键角色和背景。
+1. 根据页数限制规划，提取所有出场的关键角色和背景。
 2. **命名规范**：
    - 角色：\`{故事名缩写}-角色名-编号(01,02...)\`
    - 背景：\`{故事名缩写}-环境名-编号(01,02...)\`
@@ -56,7 +59,7 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
 ## 阶段二：分镜与语音脚本 (Storyboard & Audio Script)
 
 **核心指令：**
-根据阶段零拆分出的页数，逐页生成内容。
+根据阶段零确定的页数，逐页生成内容。
 
 **1. 语音脚本生成规则 (Voiceover) —— 唯一真理：**
 - **内容**：将原故事转化为适合TTS朗读的脚本，句子要短，多用拟声词。
@@ -86,13 +89,13 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
 ## Output Format (输出格式 - JSON)
 
 请严格按照以下JSON格式输出，不要输出任何Markdown代码块标记之外的文字，确保可以直接被代码解析。
-**pages 数组的长度由你根据"阶段零"的逻辑自动决定。**
+**⚠️ pages 数组长度必须严格遵守阶段零的页数限制！**
 
 \`\`\`json
 {
   "story_analysis": {
     "total_words": "原故事字数",
-    "estimated_pages": "AI计算出的总页数",
+    "estimated_pages": "根据字数确定的总页数（5/8/10）",
     "pacing_strategy": "简述分镜策略（如：动作密集型、情感细腻型）"
   },
   "story_name": "故事名称缩写",
@@ -160,7 +163,7 @@ async function callDeepSeek(prompt, requestId) {
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 8192,
+        max_tokens: 8192,  // DeepSeek API 最大限制
         temperature: 0.7
       }),
       signal: controller.signal
@@ -181,7 +184,9 @@ async function callDeepSeek(prompt, requestId) {
       throw new Error('API返回内容为空');
     }
 
+    // 打印完整原始响应用于调试
     console.log(`✅ [智能分析-${requestId}] DeepSeek响应成功，耗时: ${responseTime}ms，内容长度: ${content.length}`);
+    console.log(`📤 [智能分析-${requestId}] 原始响应内容:\n${content}`);
     return content;
 
   } catch (error) {
@@ -193,25 +198,185 @@ async function callDeepSeek(prompt, requestId) {
   }
 }
 
+/**
+ * 清理和修复AI返回的JSON字符串
+ * 处理常见的格式问题：末尾逗号、注释、控制字符、数组缺少逗号等
+ */
+function cleanJsonString(jsonStr) {
+  if (!jsonStr) return jsonStr;
+
+  let cleaned = jsonStr;
+
+  // 1. 移除JavaScript风格的单行注释 // ... (但要保护URL中的//)
+  cleaned = cleaned.replace(/([^:])\/\/.*$/gm, '$1');
+
+  // 2. 移除多行注释 /* ... */
+  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  // 3. 修复末尾逗号问题 (如 { "a": 1, } -> { "a": 1 })
+  cleaned = cleaned.replace(/,\s*([}\]])/g, '$1');
+
+  // 4. 修复数组/对象元素之间缺少逗号的问题
+  // 处理 "value" { 或 "value" [ 或 ] { 或 } {
+  cleaned = cleaned.replace(/"\s+{/g, '", {');
+  cleaned = cleaned.replace(/"\s+\[/g, '", [');
+  cleaned = cleaned.replace(/]\s*{/g, '], {');
+  cleaned = cleaned.replace(/}\s*\[/g, ', [');
+  cleaned = cleaned.replace(/}\s*{/g, ', {');
+
+  // 处理数字后跟 { 或 [ (如 123 { -> 123, {)
+  cleaned = cleaned.replace(/(\d+)\s*{/g, '$1, {');
+  cleaned = cleaned.replace(/(\d+)\s*\[/g, '$1, [');
+
+  // 处理 true/false/null 后跟 { 或 [
+  cleaned = cleaned.replace(/\b(true|false|null)\s*{/gi, '$1, {');
+  cleaned = cleaned.replace(/\b(true|false|null)\s*\[/gi, '$1, [');
+
+  // 处理 ] 后跟 } (数组结束对象继续)
+  cleaned = cleaned.replace(/]\s*}/g, ']}');
+  // 但如果 ] 后跟 " (数组元素后跟另一个对象的键)，需要逗号
+  cleaned = cleaned.replace(/]\s*"/g, '], "');
+
+  // 5. 移除可能存在的控制字符（除了换行、制表符等）
+  cleaned = cleaned.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+
+  // 6. 移除字符串内的特殊问题字符（如智能引号）
+  cleaned = cleaned.replace(/[\u2018\u2019\u201C\u201D]/g, "'");
+
+  // 7. 处理可能的布尔值大小写问题 (true/TRUE -> true)
+  cleaned = cleaned.replace(/\b(TRUE|FALSE)\b/g, (match) => match.toLowerCase());
+
+  // 8. 处理 null 大小写
+  cleaned = cleaned.replace(/\bNULL\b/g, 'null');
+
+  console.log('🧹 JSON清理完成，长度变化:', jsonStr.length, '->', cleaned.length);
+  return cleaned;
+}
+
+/**
+ * 修复被截断的JSON字符串
+ * 当AI输出因token限制被截断时，尝试补全结尾
+ */
+function fixTruncatedJson(jsonStr) {
+  if (!jsonStr) return jsonStr;
+
+  const trimmed = jsonStr.trim();
+
+  // 检查是否以预期的结尾结束
+  if (trimmed.endsWith('}') || trimmed.endsWith(']')) {
+    return trimmed;  // 看起来完整
+  }
+
+  console.warn('⚠️ 检测到JSON可能被截断，尝试修复...');
+
+  let fixed = trimmed;
+
+  // 计算未闭合的括号
+  let openBraces = 0;
+  let openBrackets = 0;
+
+  for (const char of fixed) {
+    if (char === '{') openBraces++;
+    else if (char === '}') openBraces--;
+    else if (char === '[') openBrackets++;
+    else if (char === ']') openBrackets--;
+  }
+
+  // 补全未闭合的括号
+  while (openBrackets > 0) {
+    fixed += ']';
+    openBrackets--;
+  }
+  while (openBraces > 0) {
+    fixed += '}';
+    openBraces--;
+  }
+
+  // 如果字符串在中间截断（如 "prompt": "儿童绘本风格，透），需要清理
+  // 查找最后一个完整的对象或属性
+  const lastCommaBeforeBrace = fixed.lastIndexOf(',', fixed.length - 50);
+  if (lastCommaBeforeBrace !== -1) {
+    // 检查最后50个字符是否有未完成的结构
+    const tail = fixed.slice(-50);
+    const hasIncompleteString = tail.includes('"') && !tail.slice(tail.lastIndexOf('"')).includes('"');
+    const hasIncompleteObject = tail.includes('{') && !tail.includes('}');
+
+    if (hasIncompleteString || hasIncompleteObject) {
+      console.warn('⚠️ 检测到未完成的属性，尝试移除不完整的部分...');
+      // 移除最后一个逗号之后的内容
+      fixed = fixed.substring(0, lastCommaBeforeBrace);
+      // 重新计算括号
+      openBraces = 0;
+      openBrackets = 0;
+      for (const char of fixed) {
+        if (char === '{') openBraces++;
+        else if (char === '}') openBraces--;
+        else if (char === '[') openBrackets++;
+        else if (char === ']') openBrackets--;
+      }
+      while (openBrackets > 0) {
+        fixed += ']';
+        openBrackets--;
+      }
+      while (openBraces > 0) {
+        fixed += '}';
+        openBraces--;
+      }
+    }
+  }
+
+  if (fixed !== trimmed) {
+    console.log('✅ JSON修复完成，长度变化:', trimmed.length, '->', fixed.length);
+  }
+
+  return fixed;
+}
+
 // 解析AI返回的JSON结果
 function parseAIResponse(responseText, styleId) {
   console.log('🔍 解析AI响应，内容长度:', responseText.length);
+  console.log('📄 原始响应预览:', responseText.substring(0, 300));
 
-  // 尝试提取JSON部分
-  let jsonStr = responseText;
+  // ============ 策略1: 尝试从markdown代码块提取 ============
+  let jsonStr = null;
 
-  // 移除markdown代码块标记
-  const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
-  if (jsonMatch) {
-    jsonStr = jsonMatch[1];
-  } else {
-    // 尝试找到JSON对象
-    const startIndex = responseText.indexOf('{');
-    const endIndex = responseText.lastIndexOf('}');
-    if (startIndex !== -1 && endIndex !== -1) {
-      jsonStr = responseText.substring(startIndex, endIndex + 1);
+  // 匹配 ```json ... ```
+  let match = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+  if (match) {
+    jsonStr = match[1].trim();
+    console.log('✅ 策略1成功: 找到 ```json 代码块');
+  }
+
+  // 匹配 ``` ... ``` (无语言标记)
+  if (!jsonStr) {
+    match = responseText.match(/```\s*([\s\S]*?)\s*```/);
+    if (match) {
+      jsonStr = match[1].trim();
+      console.log('✅ 策略1b成功: 找到 ``` 代码块');
     }
   }
+
+  // ============ 策略2: 提取最外层的完整JSON对象 ============
+  if (!jsonStr) {
+    const startIndex = responseText.indexOf('{');
+    const endIndex = responseText.lastIndexOf('}');
+    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+      jsonStr = responseText.substring(startIndex, endIndex + 1);
+      console.log('✅ 策略2成功: 提取最外层JSON对象');
+    }
+  }
+
+  // ============ 策略3: 尝试直接解析整个响应 ============
+  if (!jsonStr) {
+    jsonStr = responseText.trim();
+    console.log('⚠️ 策略3: 直接解析整个响应');
+  }
+
+  // ============ 清理和修复常见的JSON问题 ============
+  jsonStr = cleanJsonString(jsonStr);
+
+  // ============ 检测并修复JSON被截断的问题 ============
+  jsonStr = fixTruncatedJson(jsonStr);
 
   try {
     const data = JSON.parse(jsonStr);
@@ -271,8 +436,87 @@ function parseAIResponse(responseText, styleId) {
 
   } catch (error) {
     console.error('❌ JSON解析失败:', error.message);
-    console.log('原始内容:', jsonStr.substring(0, 500));
-    throw new Error('AI返回格式解析失败，请重试');
+    console.error('错误位置:', error.stack?.split('\n')[1]?.trim());
+
+    // 输出更多调试信息
+    console.error('📋 提取的JSON字符串长度:', jsonStr?.length);
+    console.error('📋 JSON开头 (200字符):', jsonStr?.substring(0, 200));
+    console.error('📋 JSON结尾 (200字符):', jsonStr?.substring(Math.max(0, jsonStr?.length - 200)));
+
+    // 尝试定位JSON语法错误
+    if (error.message.includes('position')) {
+      const posMatch = error.message.match(/position (\d+)/);
+      if (posMatch) {
+        const errorPos = parseInt(posMatch[1]);
+        const contextStart = Math.max(0, errorPos - 50);
+        const contextEnd = Math.min(jsonStr.length, errorPos + 50);
+        console.error('🔍 错误位置上下文:', jsonStr.substring(contextStart, contextEnd));
+        console.error('🔍 错误指示:', ' '.repeat(Math.min(50, errorPos - contextStart)) + '^^^^^');
+      }
+    }
+
+    // ============ 降级方案: 尝试使用更宽松的解析 ============
+    console.warn('⚠️ 尝试降级解析方案...');
+
+    try {
+      // 尝试使用 eval 解析（在受控环境下，AI生成的数据相对安全）
+      // 这可以容忍更多格式问题，如缺少逗号等
+      const data = eval(`(${jsonStr})`);
+
+      console.log('✅ 降级解析成功！');
+
+      // 重新执行数据处理逻辑
+      const storyAnalysis = data.story_analysis || {
+        total_words: '未知',
+        estimated_pages: data.pages?.length || 0,
+        pacing_strategy: '默认策略'
+      };
+
+      const assets = (data.assets || []).map((asset, index) => ({
+        id: asset.id || `asset_${Date.now()}_${index}`,
+        type: asset.type,
+        name: asset.name,
+        prompt: asset.prompt,
+        image_url: null,
+        locked: false
+      }));
+
+      const characters = assets.filter(a => a.type === 'character');
+      const backgrounds = assets.filter(a => a.type === 'background');
+
+      const pages = (data.pages || []).map((page, index) => ({
+        page_index: page.page_index || index + 1,
+        scene_id: page.scene_id || `S-${String(index + 1).padStart(2, '0')}`,
+        rationale: page.rationale || '',
+        jimeng_prompt: page.jimeng_prompt || '',
+        asset_refs: page.asset_refs || [],
+        voice_script: page.voice_script || [],
+        tts_text: page.tts_text || '',
+        dialogues: (page.voice_script || []).map(v => ({
+          role: v.role === '旁白' ? '旁白' : v.role,
+          text: v.text,
+          emotion: v.emotion
+        })),
+        image_url: null,
+        audio_url: null,
+        status: 'pending'
+      }));
+
+      console.log(`✅ 降级解析完成: ${characters.length}个角色, ${backgrounds.length}个背景, ${pages.length}页`);
+
+      return {
+        story_name: data.story_name || 'Story',
+        story_analysis,
+        assets,
+        characters,
+        backgrounds,
+        pages
+      };
+
+    } catch (fallbackError) {
+      console.error('❌ 降级解析也失败了:', fallbackError.message);
+      throw new Error(`AI返回格式解析失败: ${error.message}`);
+    }
   }
 }
 
@@ -319,7 +563,33 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
     // 解析结果
     const { story_name, story_analysis, assets, characters, backgrounds, pages } = parseAIResponse(aiResponse, styleId);
 
-    sendProgress(80, `AI规划了 ${pages.length} 页分镜...`);
+    // ============ 添加封面页 ============
+    // 封面页在 pages 数组最前面，page_index 为 0
+    const coverPage = {
+      page_index: 0,
+      scene_id: 'COVER',
+      rationale: '绘本封面',
+      jimeng_prompt: `儿童绘本封面，${styleDescription}，绘本标题"${story_name}"，温馨梦幻的童话风格，精美插画，高清画质`,
+      asset_refs: [],
+      voice_script: [{ role: '旁白', text: story_name, emotion: '平静' }],
+      tts_text: story_name,
+      dialogues: [{ role: '旁白', text: story_name, emotion: '平静' }],
+      image_url: null,
+      audio_url: null,
+      status: 'pending',
+      is_cover: true  // 标记为封面
+    };
+
+    // 调整所有分镜页的 page_index（从1开始）
+    const adjustedPages = pages.map((page, index) => ({
+      ...page,
+      page_index: index + 1  // 原来的第1页变成第2页，以此类推
+    }));
+
+    // 将封面页放在最前面
+    const finalPages = [coverPage, ...adjustedPages];
+
+    sendProgress(80, `AI规划了 ${pages.length} 页分镜（含封面）...`);
     await sleep(400);
 
     sendProgress(85, '验证页面数据...');
@@ -339,7 +609,7 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
         assets,          // 完整资产列表（角色+背景）
         characters,      // 仅角色
         backgrounds,     // 仅背景
-        pages,
+        pages: finalPages,  // 包含封面的最终分镜页
         style: styleId,
         analysisComplete: true
       }
@@ -348,7 +618,7 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
 
     sendProgress(100, `✅ 分析完成 - ${story_analysis.pacing_strategy}`);
 
-    console.log(`✅ [智能分析-${requestId}] 流式分析完成，共 ${pages.length} 页`);
+    console.log(`✅ [智能分析-${requestId}] 流式分析完成，共 ${finalPages.length} 页（含封面）`);
     res.end();
 
   } catch (error) {

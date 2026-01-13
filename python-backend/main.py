@@ -4,10 +4,19 @@
 """
 
 import os
+import sys
 import json
 import asyncio
 import time
+import httpx
 from typing import Optional
+
+# 修复 Windows 下的编码问题
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -17,6 +26,9 @@ from pathlib import Path
 
 # 加载环境变量
 load_dotenv()
+
+# 远程存储配置
+REMOTE_STORAGE_URL = "http://61.155.227.20:19092/chatAI/book/api/file/save"
 
 # 导入图片存储模块
 from image_storage import get_storage_provider
@@ -104,6 +116,57 @@ REQ_KEY = "jimeng_t2i_v40"  # 即梦V4模型
 REQ_KEY_I2I = "jimeng_high_aes_i2i"  # 即梦图生图模型
 MAX_POLL_TIMES = 150  # 最大轮询次数
 POLL_INTERVAL = 2  # 轮询间隔(秒)
+
+
+async def save_to_remote_storage(base64_data: str, file_type: str = "0") -> dict:
+    """
+    保存文件到远程存储服务器
+
+    Args:
+        base64_data: base64编码的数据（带前缀，如 data:image/png;base64,xxx）
+        file_type: '0' 图片, '1' 音频
+
+    Returns:
+        dict: {id: str, url: str}
+    """
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            payload = {
+                "pictureUrl": "",
+                "pictureBase64": "",
+                "audioBase64": "",
+                "type": file_type
+            }
+
+            if file_type == "0":
+                payload["pictureBase64"] = base64_data
+            else:
+                payload["audioBase64"] = base64_data
+
+            response = await client.post(
+                REMOTE_STORAGE_URL,
+                json=payload
+            )
+
+            if response.status_code == 200:
+                result = response.json()
+                if result.get("code") == 10000 and result.get("data"):
+                    print(f"✅ 远程存储成功: ID={result['data'].get('id')}, URL={result['data'].get('url')}")
+                    return {
+                        "id": result["data"]["id"],
+                        "url": result["data"]["url"]
+                    }
+                else:
+                    print(f"⚠️ 远程存储返回错误: {result.get('msg')}")
+            else:
+                print(f"⚠️ 远程存储HTTP错误: {response.status_code}")
+
+    except Exception as e:
+        print(f"❌ 远程存储异常: {e}")
+
+    # 失败时返回None，让调用者决定如何处理
+    return None
+
 
 def create_visual_service():
     """创建并配置火山引擎视觉服务实例"""
@@ -515,6 +578,7 @@ async def generate_image(request: ImageGenerationRequest):
         # 如果需要保存到存储
         final_url = image_data
         storage_info = {}
+        remote_info = {}  # 远程存储信息
 
         if request.save_to_storage and image_data.startswith("data:"):
             print(f"💾 [Python后端-{request_id}] 保存图片到存储...")
@@ -533,24 +597,38 @@ async def generate_image(request: ImageGenerationRequest):
                 "external_accessible": storage.is_url_accessible_externally()
             }
 
-            print(f"💾 [Python后端-{request_id}] 存储完成: {public_url}")
+            print(f"💾 [Python后端-{request_id}] 本地存储完成: {public_url}")
+
+            # 保存到远程存储
+            print(f"☁️ [Python后端-{request_id}] 保存图片到远程存储...")
+            remote_result = await save_to_remote_storage(image_data, "0")
+            if remote_result:
+                remote_info = {
+                    "remote_id": remote_result["id"],
+                    "remote_url": remote_result["url"]
+                }
+                print(f"☁️ [Python后端-{request_id}] 远程存储完成: {remote_result['url']}")
+            else:
+                print(f"⚠️ [Python后端-{request_id}] 远程存储失败，使用本地URL")
 
         print(f"✅ [Python后端-{request_id}] 图片生成完成:", {
             "url_type": "file_url" if not final_url.startswith("data:") else "data_url",
             "url_length": len(final_url),
             "is_demo": "example.com" in final_url,
             "has_tos_url": bool(tos_url),
+            "has_remote": bool(remote_info),
             **storage_info
         })
 
-        # 返回结果，包含tosUrl用于后续修图
+        # 返回结果，包含tosUrl用于后续修图，以及远程存储信息
         response_data = {
             "imageUrl": final_url,
             "tosUrl": tos_url,  # 即梦返回的原始TOS URL，用于修图时作为参考图
             "taskId": f"jimeng_v4_{request_id}",
             "prompt": prompt,
             "frame": request.frame,
-            **storage_info
+            **storage_info,
+            **remote_info  # 添加远程存储信息
         }
 
         print(f"📤 [Python后端-{request_id}] 构造响应:", {
@@ -629,6 +707,26 @@ async def generate_audio(request: AudioGenerationRequest):
             "local_path": local_path
         })
 
+        # 保存音频到远程存储
+        remote_info = {}
+        try:
+            # 读取音频文件并转换为base64
+            with open(local_path, 'rb') as f:
+                audio_bytes = f.read()
+                import base64
+                audio_base64 = f"data:audio/wav;base64,{base64.b64encode(audio_bytes).decode('utf-8')}"
+
+            print(f"☁️ [Python后端-{request_id}] 保存音频到远程存储...")
+            remote_result = await save_to_remote_storage(audio_base64, "1")
+            if remote_result:
+                remote_info = {
+                    "remote_id": remote_result["id"],
+                    "remote_url": remote_result["url"]
+                }
+                print(f"☁️ [Python后端-{request_id}] 远程存储完成: {remote_result['url']}")
+        except Exception as e:
+            print(f"⚠️ [Python后端-{request_id}] 音频远程存储失败: {e}")
+
         return AudioGenerationResponse(
             success=True,
             data={
@@ -636,7 +734,8 @@ async def generate_audio(request: AudioGenerationRequest):
                 "localPath": local_path,
                 "text": request.text,
                 "pageIndex": request.page_index,
-                "speakerId": request.speaker_id
+                "speakerId": request.speaker_id,
+                **remote_info  # 添加远程存储信息
             }
         )
 

@@ -84,6 +84,61 @@ const AssetLab = ({ onGenerateCharacter, onGenerateAllCharacters, isGeneratingCh
     setEditingId(newAsset.id);
   };
 
+  // 处理推送远程
+  const handlePushToRemote = async (asset) => {
+    if (!asset.image_url) {
+      alert('⚠️ 没有图片可以推送');
+      return;
+    }
+
+    // 检查是否已经是远程URL
+    if (asset.image_url.startsWith('http://61.155.227.20') || asset.remote_url) {
+      alert('✅ 图片已在远程存储中');
+      return;
+    }
+
+    const confirmed = confirm(`确定要将 ${asset.name} 推送到远程存储吗？`);
+    if (!confirmed) return;
+
+    try {
+      console.log('☁️ [AssetLab] 开始推送资产到远程:', {
+        assetId: asset.id,
+        assetName: asset.name,
+        imageUrl: asset.image_url.substring(0, 100)
+      });
+
+      const response = await fetch('/api/push-to-remote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: asset.image_url
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.data?.remoteUrl) {
+        console.log('✅ [AssetLab] 推送成功:', result.data.remoteUrl);
+
+        // 更新资产信息：用远程URL覆盖本地URL
+        actions.updateAsset({
+          id: asset.id,
+          image_url: result.data.remoteUrl,
+          remote_url: result.data.remoteUrl,
+          remote_id: result.data.remoteId,
+          pushed_at: new Date().toISOString()
+        });
+
+        alert(`✅ 推送成功！\n远程URL已保存并覆盖本地URL`);
+      } else {
+        throw new Error(result.error || '推送失败');
+      }
+    } catch (error) {
+      console.error('❌ [AssetLab] 推送远程失败:', error);
+      alert('❌ 推送失败: ' + error.message);
+    }
+  };
+
   // 计算状态
   const allGenerated = assets.length > 0 && assets.every(a => a.image_url);
   const allLocked = assets.length > 0 && assets.every(a => a.locked);
@@ -251,6 +306,7 @@ const AssetLab = ({ onGenerateCharacter, onGenerateAllCharacters, isGeneratingCh
                 onGenerate={() => handleGenerateSingle(asset)}
                 onUpload={() => handleUpload(asset.id)}
                 onImageClick={() => setViewerImage({ url: asset.image_url, title: asset.name })}
+                onPushToRemote={() => handlePushToRemote(asset)}
               />
             ))}
           </div>
@@ -309,7 +365,8 @@ const AssetCard = ({
   onLock,
   onGenerate,
   onUpload,
-  onImageClick
+  onImageClick,
+  onPushToRemote
 }) => {
   const [editPrompt, setEditPrompt] = useState(asset.prompt || '');
   const [editName, setEditName] = useState(asset.name || '');
@@ -480,6 +537,13 @@ const AssetCard = ({
                         className="px-2 py-1 bg-white text-gray-700 rounded text-xs font-bold hover:bg-gray-100"
                       >
                         📤 上传
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onPushToRemote(); }}
+                        className="px-2 py-1 bg-green-500 text-white rounded text-xs font-bold hover:bg-green-600"
+                        title="推送到远程存储"
+                      >
+                        ☁️ 推送
                       </button>
                     </div>
                   )}

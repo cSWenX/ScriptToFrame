@@ -9,7 +9,7 @@
 import { getStyleSuffix } from '../../config/styles';
 
 // Python后端地址
-const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
+const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
 
 /**
  * 生成语言气泡提示词

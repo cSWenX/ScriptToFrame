@@ -4,7 +4,7 @@
  */
 
 // Python后端地址（通过环境变量配置，默认localhost）
-const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
+const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
 
 export default async function handler(req, res) {
   const requestId = Date.now();
