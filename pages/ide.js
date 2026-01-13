@@ -588,17 +588,41 @@ function IDEWorkspace() {
       if (result.success) {
         const { results, stats } = result.data;
 
-        // 更新每个页面的远程音频信息
-        results.forEach((audioResult, index) => {
-          if (audioResult.remote_url && audioResult.remote_id) {
-            const page = pagesWithAudio[audioResult.index];
+        // 构建更新后的项目数据（直接操作，不依赖状态更新）
+        const updatedPages = project.pages.map(page => {
+          // 查找这个页面是否有对应的音频推送结果
+          const audioResult = results.find(r => {
+            const matchedPage = pagesWithAudio[r.index];
+            return matchedPage && matchedPage.page_index === page.page_index;
+          });
+
+          if (audioResult && audioResult.remote_url && audioResult.remote_id) {
+            // 更新页面的远程音频信息
             actions.updatePage({
               page_index: page.page_index,
               remote_audio_url: audioResult.remote_url,
               remote_audio_id: audioResult.remote_id
             });
+
+            // 同时返回更新后的页面数据
+            return {
+              ...page,
+              remote_audio_url: audioResult.remote_url,
+              remote_audio_id: audioResult.remote_id
+            };
           }
+
+          return page;
         });
+
+        // 直接传入更新后的完整项目数据保存，避免竞态条件
+        const projectToSave = {
+          ...project,
+          pages: updatedPages
+        };
+
+        // 保存项目到文件（使用 projectOverride 参数，不依赖状态）
+        await actions.saveProject('published', projectToSave);
 
         actions.setProgress({
           value: 100,
@@ -609,7 +633,7 @@ function IDEWorkspace() {
           actions.setProgress({ visible: false });
         }, 1500);
 
-        console.log(`✅ [IDE] 音频推送完成:`, stats);
+        console.log(`✅ [IDE] 音频推送完成并已保存:`, stats);
         alert(`✅ 音频推送完成！\n成功: ${stats.success}/${stats.total}\n失败: ${stats.failed}`);
       } else {
         throw new Error(result.error);

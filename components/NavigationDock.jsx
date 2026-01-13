@@ -86,41 +86,44 @@ const NavigationDock = () => {
   };
 
   // 检查项目是否已发布（通过从项目列表中查找）
+  // 方法1: 检查项目是否在 published 数组中
+  // 方法2: 检查项目对象的 _type 字段
   const isProjectPublished = () => {
-    const projInList = projectList.find(p => p.id === project.id);
+    // 首先检查项目列表中的 published 数组
+    if (projectList.published && projectList.published.some(p => p.id === project.id)) {
+      return true;
+    }
+    // 兼容：检查 _type 字段
+    const projInList = [...(projectList.drafts || []), ...(projectList.published || [])]
+      .find(p => p.id === project.id);
     return projInList?._type === 'published';
   };
 
-  // 验证资源是否都有远程URL
+  // 验证资源是否都有远程ID
   const validateRemoteResources = () => {
     const missingResources = [];
 
-    // 检查封面（第一页图片作为封面）
+    // 检查封面（第一页）
     const coverPage = project.pages[0];
-    if (coverPage) {
-      if (!coverPage.remote_url && !coverPage.image_url?.startsWith('http://61.155.227.20')) {
-        missingResources.push(`封面（第1页）`);
-      }
-    } else {
+    if (!coverPage) {
       missingResources.push('封面');
+    } else if (!coverPage.remote_id) {
+      missingResources.push(`封面（第1页）`);
     }
 
     // 检查所有分镜图片
     project.pages.forEach((page, index) => {
-      if (!page.remote_url && !page.image_url?.startsWith('http://61.155.227.20')) {
+      if (!page.remote_id) {
         missingResources.push(`第${page.page_index || index + 1}页图片`);
       }
     });
 
-    // 检查音频
-    const pagesWithAudio = project.pages.filter(p => p.audio_url);
-    if (pagesWithAudio.length > 0) {
-      pagesWithAudio.forEach((page, index) => {
-        if (!page.remote_audio_url && !page.audio_url?.startsWith('http://61.155.227.20')) {
-          missingResources.push(`第${page.page_index || index + 1}页音频`);
-        }
-      });
-    }
+    // 检查音频（如果存在）
+    project.pages.forEach((page, index) => {
+      if (page.audio_url && !page.remote_audio_id) {
+        missingResources.push(`第${page.page_index || index + 1}页音频`);
+      }
+    });
 
     return missingResources;
   };
@@ -503,7 +506,7 @@ const NavigationDock = () => {
 
             {/* 项目列表 */}
             <div className="p-4 space-y-3 overflow-y-auto storybook-scrollbar" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-              {projectList.length === 0 ? (
+              {(!projectList.drafts || projectList.drafts.length === 0) && (!projectList.published || projectList.published.length === 0) ? (
                 <div className="text-center py-10">
                   <span className="text-5xl mb-4 block">📭</span>
                   <p className="text-gray-500" style={{ fontFamily: "'Nunito', sans-serif" }}>
@@ -514,7 +517,8 @@ const NavigationDock = () => {
                   </p>
                 </div>
               ) : (
-                projectList.map((proj) => (
+                // 合并 drafts 和 published，已发布的在前
+                [...(projectList.published || []), ...(projectList.drafts || [])].map((proj) => (
                   <div
                     key={proj.id}
                     className="

@@ -64,10 +64,12 @@ export default async function handler(req, res) {
         const { type } = req.query; // 'draft' | 'published' | 'all'
         const index = readIndex();
 
-        let projects = [];
-
-        if (type === 'draft' || type === 'all' || !type) {
-          // 读取草稿
+        // 根据是否指定 type，返回不同格式
+        // type=all 或 未指定时：返回 {drafts: [], published: []} 格式
+        // type=draft 或 type=published 时：返回具体数组
+        if (type === 'draft') {
+          // 返回草稿数组
+          const projects = [];
           for (const item of index.drafts) {
             const projectPath = getProjectPath(item.id);
             if (fs.existsSync(projectPath)) {
@@ -79,10 +81,13 @@ export default async function handler(req, res) {
               });
             }
           }
+          projects.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+          return res.status(200).json({ success: true, data: projects });
         }
 
-        if (type === 'published' || type === 'all') {
-          // 读取成品
+        if (type === 'published') {
+          // 返回成品数组
+          const projects = [];
           for (const item of index.published) {
             const projectPath = getProjectPath(item.id);
             if (fs.existsSync(projectPath)) {
@@ -94,14 +99,47 @@ export default async function handler(req, res) {
               });
             }
           }
+          projects.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+          return res.status(200).json({ success: true, data: projects });
+        }
+
+        // type=all 或 未指定：返回 {drafts: [], published: []} 格式
+        const result = {
+          drafts: [],
+          published: []
+        };
+
+        for (const item of index.drafts) {
+          const projectPath = getProjectPath(item.id);
+          if (fs.existsSync(projectPath)) {
+            const project = JSON.parse(fs.readFileSync(projectPath, 'utf-8'));
+            result.drafts.push({
+              ...project,
+              _type: 'draft',
+              _meta: item
+            });
+          }
+        }
+
+        for (const item of index.published) {
+          const projectPath = getProjectPath(item.id);
+          if (fs.existsSync(projectPath)) {
+            const project = JSON.parse(fs.readFileSync(projectPath, 'utf-8'));
+            result.published.push({
+              ...project,
+              _type: 'published',
+              _meta: item
+            });
+          }
         }
 
         // 按更新时间排序
-        projects.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        result.drafts.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        result.published.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
         return res.status(200).json({
           success: true,
-          data: projects
+          data: result
         });
       }
 

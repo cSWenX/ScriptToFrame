@@ -40,6 +40,7 @@ export default async function handler(req, res) {
 
   console.log(`🚀 [产品推送-${requestId}] 收到请求:`, {
     method: req.method,
+    body: req.body,
     timestamp: new Date().toISOString()
   });
 
@@ -51,6 +52,7 @@ export default async function handler(req, res) {
     const { projectId } = req.body;
 
     if (!projectId) {
+      console.error(`❌ [产品推送-${requestId}] 缺少 projectId, req.body =`, req.body);
       return res.status(400).json({
         success: false,
         error: '缺少 projectId 参数'
@@ -97,7 +99,7 @@ export default async function handler(req, res) {
       }
 
       return {
-        pictureTxt: page.chineseDescription || page.displayDescription || `第${page.page_index || index + 1}页`,
+        pictureTxt: page.tts_text,
         pictureId: pictureId,
         audioId: audioId || ''
       };
@@ -127,12 +129,21 @@ export default async function handler(req, res) {
       desLength: des.length
     });
 
-    // 调用远程API
+    // 输出完整的请求数据（方便调试）
+    console.log(`📤 [产品推送-${requestId}] 完整请求数据:`, JSON.stringify(requestData, null, 2));
+
+    // 调用远程API（设置30秒超时）
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
     const response = await fetch(REMOTE_PRODUCT_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestData)
+      body: JSON.stringify(requestData),
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     const result = await response.json();
 
@@ -161,12 +172,15 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error(`❌ [产品推送-${requestId}] 请求失败:`, {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
+      name: error.name,
+      cause: error.cause
     });
 
     return res.status(500).json({
       success: false,
-      error: error.message || '产品推送失败'
+      error: error.message || '产品推送失败',
+      details: error.stack
     });
   }
 }

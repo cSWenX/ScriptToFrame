@@ -22,15 +22,33 @@ async function fetchAudioAsBase64(url) {
     return url;
   }
 
-  // 本地路径，通过Next.js的public目录访问
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3002';
-  const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
+  // 如果已经是完整URL，直接使用
+  if (url.startsWith('http')) {
+    return await fetchAndConvertToBase64(url);
+  }
 
-  console.log(`📥 [音频推送] 正在获取音频:`, fullUrl.substring(0, 100));
+  // 本地相对路径，尝试多个可能的端口
+  const ports = ['3000', '3001', '3002'];
+  let lastError = null;
 
+  for (const port of ports) {
+    const fullUrl = `http://localhost:${port}${url}`;
+    try {
+      console.log(`📥 [音频推送] 尝试端口 ${port}:`, fullUrl);
+      return await fetchAndConvertToBase64(fullUrl);
+    } catch (error) {
+      console.log(`⚠️ [音频推送] 端口 ${port} 失败:`, error.message);
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error(`无法获取音频: ${url}`);
+}
+
+async function fetchAndConvertToBase64(fullUrl) {
   const response = await fetch(fullUrl);
   if (!response.ok) {
-    throw new Error(`Failed to fetch audio: ${response.statusText}`);
+    throw new Error(`Failed to fetch audio: ${response.statusText} (${fullUrl})`);
   }
 
   // 获取ArrayBuffer并转换为base64
@@ -50,6 +68,7 @@ export default async function handler(req, res) {
 
   console.log(`🎵 [音频推送-${requestId}] 收到请求:`, {
     method: req.method,
+    body: req.body,
     timestamp: new Date().toISOString()
   });
 
@@ -61,6 +80,7 @@ export default async function handler(req, res) {
     const { audioUrls } = req.body; // 音频URL数组
 
     if (!audioUrls || !Array.isArray(audioUrls) || audioUrls.length === 0) {
+      console.error(`❌ [音频推送-${requestId}] 参数错误, req.body:`, req.body);
       return res.status(400).json({
         success: false,
         error: '缺少 audioUrls 参数或格式不正确'
@@ -75,10 +95,9 @@ export default async function handler(req, res) {
 
     for (let i = 0; i < audioUrls.length; i++) {
       const audioUrl = audioUrls[i];
-      const progress = Math.round(((i + 1) / audioUrls.length) * 100);
 
       try {
-        console.log(`📤 [音频推送-${requestId}] 处理第 ${i + 1}/${audioUrls.length} 个音频`);
+        console.log(`📤 [音频推送-${requestId}] 处理第 ${i + 1}/${audioUrls.length} 个音频:`, audioUrl.substring(0, 80));
 
         // 获取音频base64数据
         let base64Data;
@@ -91,7 +110,8 @@ export default async function handler(req, res) {
             index: i,
             originalUrl: audioUrl,
             alreadyRemote: true,
-            remote_url: audioUrl
+            remote_url: audioUrl,
+            remote_id: null  // 远程URL无法获取ID
           });
           successCount++;
           continue;
@@ -100,6 +120,11 @@ export default async function handler(req, res) {
         }
 
         // 推送到远程存储
+        console.log(`📤 [音频推送-${requestId}] 正在上传第 ${i + 1} 个音频到远程...`);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+
         const response = await fetch(REMOTE_FILE_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -108,10 +133,16 @@ export default async function handler(req, res) {
             pictureBase64: '',
             audioBase64: base64Data,
             type: '1'  // 1表示音频
-          })
+          }),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
+
+        console.log(`📥 [音频推送-${requestId}] 远程响应状态:`, response.status);
+
         const result = await response.json();
+        console.log(`📥 [音频推送-${requestId}] 远程响应数据:`, result);
 
         if (response.ok && result.code === 10000 && result.data) {
           console.log(`✅ [音频推送-${requestId}] 第 ${i + 1} 个音频推送成功:`, result.data.url);
@@ -123,7 +154,7 @@ export default async function handler(req, res) {
           });
           successCount++;
         } else {
-          console.error(`❌ [音频推送-${requestId}] 第 ${i + 1} 个音频推送失败:`, result.msg);
+          console.error(`❌ [音频推送-${requestId}] 第 ${i + 1} 个音频推送失败:`, result.msg || '未知错误');
           results.push({
             index: i,
             originalUrl: audioUrl,
@@ -133,7 +164,10 @@ export default async function handler(req, res) {
         }
 
       } catch (error) {
-        console.error(`❌ [音频推送-${requestId}] 第 ${i + 1} 个音频处理异常:`, error.message);
+        console.error(`❌ [音频推送-${requestId}] 第 ${i + 1} 个音频处理异常:`, {
+          message: error.message,
+          name: error.name
+        });
         results.push({
           index: i,
           originalUrl: audioUrl,

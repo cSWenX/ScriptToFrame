@@ -38,6 +38,12 @@ const PhaseController = ({
   const allPagesGenerated = pages.length > 0 && pages.every(p => p.image_url);
   const isPhase3Complete = phaseStatus[3] === 'completed';
 
+  // 计算音频推送状态
+  const pagesWithAudio = pages.filter(p => p.audio_url);
+  const hasAudioPages = pagesWithAudio.length > 0;
+  const allAudioPushed = hasAudioPages && pagesWithAudio.every(p => p.remote_audio_url);
+  const audioPushNeeded = hasAudioPages && !allAudioPushed;
+
   // 阶段配置
   const phases = [
     {
@@ -207,6 +213,8 @@ const PhaseController = ({
               isActive={currentPhase === phase.id}
               onClick={() => handlePhaseClick(phase)}
               onUnlock={handleUnlockPhase}
+              allAudioPushed={allAudioPushed}
+              audioPushNeeded={audioPushNeeded}
             />
             {/* 连接线 */}
             {index < phases.length - 1 && (
@@ -312,7 +320,7 @@ const GlobalSettings = ({ style_preset, settings, onStyleChange, onSettingsChang
 /**
  * 阶段卡片组件
  */
-const PhaseCard = ({ phase, isActive, onClick, onUnlock }) => {
+const PhaseCard = ({ phase, isActive, onClick, onUnlock, allAudioPushed, audioPushNeeded }) => {
   const getStatusStyle = () => {
     if (phase.locked) {
       return {
@@ -592,24 +600,22 @@ const PhaseCard = ({ phase, isActive, onClick, onUnlock }) => {
       )}
 
       {/* 远程音频状态指示 */}
-      {phase.id === 4 && phase.status === 'completed' && pages && pages.length > 0 && (() => {
-        const pagesWithAudio = pages.filter(p => p.audio_url);
-        const allPushed = pagesWithAudio.length > 0 && pagesWithAudio.every(p => p.remote_audio_url);
-
-        if (pagesWithAudio.length === 0) return null;
-
-        return allPushed ? (
+      {phase.id === 4 && phase.status === 'completed' && allAudioPushed && (
+        <div className="px-3 pb-2">
           <div className="bg-green-50 border border-green-200 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
             <span className="text-green-500">☁️</span>
             <span className="text-xs font-bold text-green-600">远程音频</span>
           </div>
-        ) : (
+        </div>
+      )}
+      {phase.id === 4 && phase.status === 'completed' && audioPushNeeded && (
+        <div className="px-3 pb-2">
           <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
             <span className="text-orange-500">⚠️</span>
             <span className="text-xs text-orange-600">音频未推送</span>
           </div>
-        );
-      })()}
+        </div>
+      )}
     </div>
   );
 };

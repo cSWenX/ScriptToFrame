@@ -60,8 +60,8 @@ const initialState = {
   // 当前项目
   project: { ...initialProject },
 
-  // 项目列表
-  projectList: [],
+  // 项目列表（与 index.json 格式一致：{drafts: [], published: []}）
+  projectList: { drafts: [], published: [] },
 
   // UI 状态
   isNavExpanded: false,
@@ -425,15 +425,19 @@ export function ProjectProvider({ children }) {
     }, []),
 
     // 保存项目到服务器
-    saveProject: useCallback(async (type = 'draft') => {
+    saveProject: useCallback(async (type = 'draft', projectOverride = null) => {
       try {
         dispatch({ type: ActionTypes.SET_LOADING, payload: { loading: true, message: '保存中...' } });
+
+        // 如果传入了 projectOverride，使用它而不是 state.project
+        // 这样可以避免竞态条件：不需要等待状态更新完成
+        const projectToSave = projectOverride || state.project;
 
         const response = await fetch('/api/projects', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            project: state.project,
+            project: projectToSave,
             type
           })
         });
@@ -441,11 +445,13 @@ export function ProjectProvider({ children }) {
         const result = await response.json();
 
         if (result.success) {
-          // 更新项目ID
-          dispatch({
-            type: ActionTypes.UPDATE_PROJECT,
-            payload: { id: result.data.id }
-          });
+          // 更新项目ID（仅当使用 state.project 时才更新本地状态）
+          if (!projectOverride) {
+            dispatch({
+              type: ActionTypes.UPDATE_PROJECT,
+              payload: { id: result.data.id }
+            });
+          }
           return { success: true, data: result.data };
         } else {
           throw new Error(result.error);
@@ -485,10 +491,14 @@ export function ProjectProvider({ children }) {
         const result = await response.json();
 
         if (result.success) {
-          // 从列表中移除
+          // 从列表中移除（projectList 现在是 {drafts: [], published: []} 格式）
+          const updatedList = {
+            drafts: (state.projectList.drafts || []).filter(p => p.id !== projectId),
+            published: (state.projectList.published || []).filter(p => p.id !== projectId)
+          };
           dispatch({
             type: ActionTypes.SET_PROJECT_LIST,
-            payload: state.projectList.filter(p => p.id !== projectId)
+            payload: updatedList
           });
           return { success: true };
         } else {
