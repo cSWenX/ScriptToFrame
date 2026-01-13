@@ -7,9 +7,16 @@ import os
 import sys
 import json
 import asyncio
+import base64
 import time
-import httpx
 from typing import Optional
+try:
+    import httpx
+    HAS_HTTPX = True
+except ImportError:
+    HAS_HTTPX = False
+    import urllib.request
+    import urllib.error
 
 # 修复 Windows 下的编码问题
 if sys.platform == 'win32':
@@ -580,36 +587,75 @@ async def generate_image(request: ImageGenerationRequest):
         storage_info = {}
         remote_info = {}  # 远程存储信息
 
-        if request.save_to_storage and image_data.startswith("data:"):
-            print(f"💾 [Python后端-{request_id}] 保存图片到存储...")
-            storage = get_storage_provider()
-
-            local_path, public_url = await storage.save_image(
-                image_data,
-                filename=filename_prefix,
-                folder=folder
-            )
-
-            final_url = public_url
-            storage_info = {
-                "storage_provider": type(storage).__name__,
-                "local_path": local_path,
-                "external_accessible": storage.is_url_accessible_externally()
-            }
-
-            print(f"💾 [Python后端-{request_id}] 本地存储完成: {public_url}")
-
-            # 保存到远程存储
-            print(f"☁️ [Python后端-{request_id}] 保存图片到远程存储...")
-            remote_result = await save_to_remote_storage(image_data, "0")
-            if remote_result:
-                remote_info = {
-                    "remote_id": remote_result["id"],
-                    "remote_url": remote_result["url"]
-                }
-                print(f"☁️ [Python后端-{request_id}] 远程存储完成: {remote_result['url']}")
+        if request.save_to_storage:
+            # 如果image_data是URL格式，先下载为base64
+            if not image_data.startswith("data:"):
+                print(f"📥 [Python后端-{request_id}] 图片是URL格式，正在下载转换为base64...")
+                try:
+                    # 使用 httpx 或 urllib 下载图片
+                    if HAS_HTTPX:
+                        import httpx
+                        async with httpx.AsyncClient(timeout=30.0) as client:
+                            response = await client.get(image_data)
+                            if response.status_code == 200:
+                                content_type = response.headers.get('content-type', 'image/png')
+                                ext = 'png' if 'png' in content_type else 'jpg' if 'jpeg' in content_type else 'png'
+                                base64_data = base64.b64encode(response.content).decode('utf-8')
+                                image_data = f"data:image/{ext};base64,{base64_data}"
+                                print(f"✅ [Python后端-{request_id}] 下载完成，已转换为base64格式，大小: {len(image_data)} 字符")
+                            else:
+                                print(f"⚠️ [Python后端-{request_id}] 下载图片失败: HTTP {response.status_code}")
+                                raise Exception(f"下载图片失败: HTTP {response.status_code}")
+                    else:
+                        # 使用 urllib 下载
+                        import urllib.request
+                        req = urllib.request.Request(image_data)
+                        with urllib.request.urlopen(req, timeout=30) as response:
+                            content = response.read()
+                            # 尝试获取 content-type，默认为 png
+                            content_type = response.headers.get('Content-Type', 'image/png')
+                            ext = 'png' if 'png' in content_type else 'jpg' if 'jpeg' in content_type else 'png'
+                            base64_data = base64.b64encode(content).decode('utf-8')
+                            image_data = f"data:image/{ext};base64,{base64_data}"
+                            print(f"✅ [Python后端-{request_id}] 下载完成(urllib)，已转换为base64格式，大小: {len(image_data)} 字符")
+                except Exception as e:
+                    print(f"⚠️ [Python后端-{request_id}] 下载图片异常: {e}")
+                    # 下载失败时，跳过存储，直接使用原始URL
+                    final_url = image_data
             else:
-                print(f"⚠️ [Python后端-{request_id}] 远程存储失败，使用本地URL")
+                print(f"💾 [Python后端-{request_id}] 图片已是base64格式")
+
+            # 保存到本地存储
+            if image_data.startswith("data:"):
+                print(f"💾 [Python后端-{request_id}] 保存图片到本地存储...")
+                storage = get_storage_provider()
+
+                local_path, public_url = await storage.save_image(
+                    image_data,
+                    filename=filename_prefix,
+                    folder=folder
+                )
+
+                final_url = public_url
+                storage_info = {
+                    "storage_provider": type(storage).__name__,
+                    "local_path": local_path,
+                    "external_accessible": storage.is_url_accessible_externally()
+                }
+
+                print(f"💾 [Python后端-{request_id}] 本地存储完成: {public_url}")
+
+                # 保存到远程存储
+                print(f"☁️ [Python后端-{request_id}] 保存图片到远程存储...")
+                remote_result = await save_to_remote_storage(image_data, "0")
+                if remote_result:
+                    remote_info = {
+                        "remote_id": remote_result["id"],
+                        "remote_url": remote_result["url"]
+                    }
+                    print(f"☁️ [Python后端-{request_id}] 远程存储完成: {remote_result['url']}")
+                else:
+                    print(f"⚠️ [Python后端-{request_id}] 远程存储失败，使用本地URL")
 
         print(f"✅ [Python后端-{request_id}] 图片生成完成:", {
             "url_type": "file_url" if not final_url.startswith("data:") else "data_url",

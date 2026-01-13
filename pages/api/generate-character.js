@@ -4,7 +4,7 @@
  */
 
 // Python后端地址
-const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
+const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
 
 export default async function handler(req, res) {
   const requestId = Date.now();
@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         prompt,
         project_id: project_id || 'default',  // 添加项目ID
+        save_to_storage: true,  // 启用自动推送远程存储
         frame: {
           type: 'character',
           characterId,
@@ -49,13 +50,25 @@ export default async function handler(req, res) {
     }
 
     console.log(`✅ [角色生成-${requestId}] 生成成功: ${characterName || characterId}`);
+    console.log(`📦 [角色生成-${requestId}] 返回数据:`, {
+      has_image_url: !!result.data.imageUrl,
+      has_tos_url: !!result.data.tosUrl,
+      has_remote_url: !!result.data.remote_url,
+      has_remote_id: !!result.data.remote_id
+    });
+
+    // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
+    const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
     res.status(200).json({
       success: true,
       data: {
         characterId,
         characterName,
-        image_url: result.data.imageUrl
+        image_url: finalImageUrl,  // 优先使用远程URL
+        tos_url: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
+        remote_url: result.data.remote_url,  // 远程存储URL
+        remote_id: result.data.remote_id  // 远程存储ID
       }
     });
 

@@ -229,28 +229,34 @@ const Flipbook = () => {
    * - 翻过第1页后：左边=第2页文字，右边=第2页图片
    *
    * 实现方式：
-   * - 封面：front=封面，back=第1页文字
+   * - 封面：front=封面（如果有封面图片则显示），back=第1页文字
    * - 第i页：front=第i页图片，back=第i+1页文字（或结束页）
    * - 封底：front=封底，back=空白
    */
   const bookPages = [];
 
+  // 分离封面页和内容页
+  const coverPage = validPages.find(p => p.is_cover);
+  const contentPages = validPages.filter(p => !p.is_cover);
+
   // 封面页
-  // front: 封面（右侧显示）
+  // front: 封面（如果有封面图片则显示图片，否则显示默认封面）
   // back: 第1页的文字（翻开后在左侧显示）
   bookPages.push({
     type: 'cover',
-    front: { type: 'cover' },
-    back: validPages.length > 0
-      ? { type: 'text', page: validPages[0], pageNumber: 1 }
+    front: coverPage && coverPage.image_url
+      ? { type: 'image', page: coverPage, pageNumber: 0, isCover: true }
+      : { type: 'cover' },
+    back: contentPages.length > 0
+      ? { type: 'text', page: contentPages[0], pageNumber: 1 }
       : { type: 'empty' }
   });
 
   // 内容页
-  for (let i = 0; i < validPages.length; i++) {
-    const currentValidPage = validPages[i];
-    const nextValidPage = validPages[i + 1];
-    const isLast = i === validPages.length - 1;
+  for (let i = 0; i < contentPages.length; i++) {
+    const currentValidPage = contentPages[i];
+    const nextValidPage = contentPages[i + 1];
+    const isLast = i === contentPages.length - 1;
 
     // 第i张内容纸：
     // front: 第i页图片（右侧显示，与左侧的第i页文字配对）
@@ -282,22 +288,22 @@ const Flipbook = () => {
     // currentPage 表示已翻过的页数
     // currentPage = 1 时，显示第1页的字幕
     const pageIndex = currentPage - 1;
-    if (pageIndex >= 0 && pageIndex < validPages.length) {
-      return getSubtitleText(validPages[pageIndex]);
+    if (pageIndex >= 0 && pageIndex < contentPages.length) {
+      return getSubtitleText(contentPages[pageIndex]);
     }
     return '';
-  }, [currentPage, validPages]);
+  }, [currentPage, contentPages]);
 
   // 获取当前页的音频URL
   const getCurrentAudioUrl = useCallback(() => {
     // currentPage 表示已翻过的页数
     // currentPage = 1 时，显示第1页（封面翻过，显示第1页图文）
     const pageIndex = currentPage - 1;
-    if (pageIndex >= 0 && pageIndex < validPages.length) {
-      return validPages[pageIndex]?.audio_url;
+    if (pageIndex >= 0 && pageIndex < contentPages.length) {
+      return contentPages[pageIndex]?.audio_url;
     }
     return null;
-  }, [currentPage, validPages]);
+  }, [currentPage, contentPages]);
 
   // 翻页时自动播放音频
   // 核心逻辑：
@@ -421,6 +427,40 @@ const Flipbook = () => {
     // 不再自动翻页，用户需要手动翻页
   }, []);
 
+  // 下载项目
+  const handleDownload = async () => {
+    try {
+      const response = await fetch('/api/download-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: project.id })
+      });
+
+      if (response.ok) {
+        const projectName = project.story_name || project.title || '未命名绘本';
+        const fileName = `${project.id}-${projectName}.zip`;
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        console.log(`✅ 下载绘本: ${fileName}`);
+      } else {
+        const error = await response.json();
+        alert('下载失败: ' + (error.error || '未知错误'));
+      }
+    } catch (error) {
+      console.error('下载绘本失败:', error);
+      alert('下载失败: ' + error.message);
+    }
+  };
+
   // 翻页
   const nextPage = () => {
     if (currentPage < totalBookPages - 1) {
@@ -531,6 +571,17 @@ const Flipbook = () => {
           {title || '未命名绘本'}
         </h2>
         <div className="flex items-center gap-3">
+          {/* 下载按钮 */}
+          <button
+            onClick={handleDownload}
+            className="p-1.5 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-all shadow-sm"
+            title="下载绘本"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
+
           {/* 播放/暂停 互斥按钮 */}
           {!isPlaying ? (
             // 显示播放按钮

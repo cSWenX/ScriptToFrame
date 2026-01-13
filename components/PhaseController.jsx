@@ -12,10 +12,12 @@ const PhaseController = ({
   onLockAllCharacters,
   onGenerateAllPages,
   onGenerateAllAudio,
+  onPushAllAudio, // 新增：推送所有音频
   isAnalyzing,
   isGeneratingCharacters,
   isGeneratingPages,
-  isGeneratingAudio
+  isGeneratingAudio,
+  isPushingAudio // 新增：是否正在推送音频
 }) => {
   const { state, actions } = useProject();
   const { project } = state;
@@ -142,7 +144,14 @@ const PhaseController = ({
         bubbleLanguage: settings.bubbleLanguage, // 用于显示默认值来源
         enableSpeechBubble: settings.enableSpeechBubble,
         onLanguageChange: (lang) => actions.updateSettings({ audioLanguage: lang })
-      }
+      },
+      // 远程推送按钮（只在音频生成完成后显示）
+      extraAction: phaseStatus[4] === 'completed' && pages.some(p => p.audio_url) ? {
+        label: isPushingAudio ? '推送中...' : '远程推送',
+        icon: isPushingAudio ? '⏳' : '☁️',
+        disabled: isPushingAudio,
+        onClick: onPushAllAudio
+      } : null
     }
   ];
 
@@ -556,6 +565,51 @@ const PhaseCard = ({ phase, isActive, onClick, onUnlock }) => {
           </button>
         </div>
       )}
+
+      {/* 额外操作按钮（如远程推送）- 显示在已完成状态下 */}
+      {phase.extraAction && !phase.locked && phase.status === 'completed' && (
+        <div className="px-3 pb-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              phase.extraAction.onClick?.();
+            }}
+            disabled={phase.extraAction.disabled}
+            className={`
+              w-full py-2 px-3 rounded-lg text-xs font-bold
+              flex items-center justify-center gap-1.5
+              transition-all duration-200
+              ${phase.extraAction.disabled
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-cyan-500 text-white hover:bg-cyan-600'
+              }
+            `}
+          >
+            <span>{phase.extraAction.icon}</span>
+            <span>{phase.extraAction.label}</span>
+          </button>
+        </div>
+      )}
+
+      {/* 远程音频状态指示 */}
+      {phase.id === 4 && phase.status === 'completed' && pages && pages.length > 0 && (() => {
+        const pagesWithAudio = pages.filter(p => p.audio_url);
+        const allPushed = pagesWithAudio.length > 0 && pagesWithAudio.every(p => p.remote_audio_url);
+
+        if (pagesWithAudio.length === 0) return null;
+
+        return allPushed ? (
+          <div className="bg-green-50 border border-green-200 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
+            <span className="text-green-500">☁️</span>
+            <span className="text-xs font-bold text-green-600">远程音频</span>
+          </div>
+        ) : (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
+            <span className="text-orange-500">⚠️</span>
+            <span className="text-xs text-orange-600">音频未推送</span>
+          </div>
+        );
+      })()}
     </div>
   );
 };

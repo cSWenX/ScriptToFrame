@@ -27,6 +27,7 @@ function IDEWorkspace() {
   const [isGeneratingCharacters, setIsGeneratingCharacters] = useState(false);
   const [isGeneratingPages, setIsGeneratingPages] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [isPushingAudio, setIsPushingAudio] = useState(false);
 
   /**
    * 阶段1: AI 分析故事
@@ -185,7 +186,10 @@ function IDEWorkspace() {
       if (result.success) {
         actions.updateAsset({
           id: asset.id,
-          image_url: result.data.image_url
+          image_url: result.data.image_url,
+          tos_url: result.data.tos_url,  // 保存即梦返回的原始TOS URL
+          remote_url: result.data.remote_url,  // 远程存储URL
+          remote_id: result.data.remote_id  // 远程存储ID
         });
         console.log(`✅ [IDE] 角色 ${asset.name} 三视图生成成功`);
       } else {
@@ -301,7 +305,8 @@ function IDEWorkspace() {
             id: refId,
             name: asset.name,
             type: asset.type,
-            image_url: asset.image_url
+            image_url: asset.image_url,
+            tos_url: asset.tos_url  // 添加tos_url，即梦API需要公网可访问的URL
           });
         }
       });
@@ -348,6 +353,8 @@ function IDEWorkspace() {
           page_index: pageIndex,
           image_url: result.data.image_url,
           tos_url: result.data.tos_url,  // 保存即梦返回的原始TOS URL，用于修图
+          remote_url: result.data.remote_url,  // 远程存储URL
+          remote_id: result.data.remote_id,  // 远程存储ID
           status: 'ready'
         });
         console.log(`✅ [IDE] 第 ${pageIndex} 页生成成功`);
@@ -547,6 +554,76 @@ function IDEWorkspace() {
   }, [project.pages, project.settings.audioLanguage, actions]);
 
   /**
+   * 推送所有音频到远程存储
+   */
+  const handlePushAllAudio = useCallback(async () => {
+    const pagesWithAudio = project.pages.filter(p => p.audio_url);
+
+    if (pagesWithAudio.length === 0) {
+      alert('没有需要推送的音频');
+      return;
+    }
+
+    console.log(`🎵 [IDE] 开始推送 ${pagesWithAudio.length} 个音频文件到远程存储`);
+    setIsPushingAudio(true);
+    actions.setProgress({
+      visible: true,
+      value: 0,
+      title: '推送音频',
+      subtitle: `准备中...`
+    });
+
+    try {
+      // 收集所有音频URL
+      const audioUrls = pagesWithAudio.map(p => p.audio_url);
+
+      const response = await fetch('/api/push-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audioUrls })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const { results, stats } = result.data;
+
+        // 更新每个页面的远程音频信息
+        results.forEach((audioResult, index) => {
+          if (audioResult.remote_url && audioResult.remote_id) {
+            const page = pagesWithAudio[audioResult.index];
+            actions.updatePage({
+              page_index: page.page_index,
+              remote_audio_url: audioResult.remote_url,
+              remote_audio_id: audioResult.remote_id
+            });
+          }
+        });
+
+        actions.setProgress({
+          value: 100,
+          subtitle: '推送完成'
+        });
+
+        setTimeout(() => {
+          actions.setProgress({ visible: false });
+        }, 1500);
+
+        console.log(`✅ [IDE] 音频推送完成:`, stats);
+        alert(`✅ 音频推送完成！\n成功: ${stats.success}/${stats.total}\n失败: ${stats.failed}`);
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error('音频推送失败:', error);
+      alert('音频推送失败: ' + error.message);
+      actions.setProgress({ visible: false });
+    } finally {
+      setIsPushingAudio(false);
+    }
+  }, [project.pages, actions]);
+
+  /**
    * 局部修图
    */
   const handleInpaint = useCallback(async (page, maskData, prompt) => {
@@ -688,10 +765,12 @@ function IDEWorkspace() {
                     onLockAllCharacters={handleLockAllCharacters}
                     onGenerateAllPages={handleGenerateAllPages}
                     onGenerateAllAudio={handleGenerateAllAudio}
+                    onPushAllAudio={handlePushAllAudio}
                     isAnalyzing={isAnalyzing}
                     isGeneratingCharacters={isGeneratingCharacters}
                     isGeneratingPages={isGeneratingPages}
                     isGeneratingAudio={isGeneratingAudio}
+                    isPushingAudio={isPushingAudio}
                   />
                 </div>
               }

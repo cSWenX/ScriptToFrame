@@ -16,6 +16,7 @@ const NavigationDock = () => {
   const [projectName, setProjectName] = useState('');
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [editingName, setEditingName] = useState('');
+  const [isPushingToRemote, setIsPushingToRemote] = useState(false);
 
   // 打开项目列表时加载数据
   useEffect(() => {
@@ -84,6 +85,88 @@ const NavigationDock = () => {
     openSaveDialog('published');
   };
 
+  // 检查项目是否已发布（通过从项目列表中查找）
+  const isProjectPublished = () => {
+    const projInList = projectList.find(p => p.id === project.id);
+    return projInList?._type === 'published';
+  };
+
+  // 验证资源是否都有远程URL
+  const validateRemoteResources = () => {
+    const missingResources = [];
+
+    // 检查封面（第一页图片作为封面）
+    const coverPage = project.pages[0];
+    if (coverPage) {
+      if (!coverPage.remote_url && !coverPage.image_url?.startsWith('http://61.155.227.20')) {
+        missingResources.push(`封面（第1页）`);
+      }
+    } else {
+      missingResources.push('封面');
+    }
+
+    // 检查所有分镜图片
+    project.pages.forEach((page, index) => {
+      if (!page.remote_url && !page.image_url?.startsWith('http://61.155.227.20')) {
+        missingResources.push(`第${page.page_index || index + 1}页图片`);
+      }
+    });
+
+    // 检查音频
+    const pagesWithAudio = project.pages.filter(p => p.audio_url);
+    if (pagesWithAudio.length > 0) {
+      pagesWithAudio.forEach((page, index) => {
+        if (!page.remote_audio_url && !page.audio_url?.startsWith('http://61.155.227.20')) {
+          missingResources.push(`第${page.page_index || index + 1}页音频`);
+        }
+      });
+    }
+
+    return missingResources;
+  };
+
+  // 远程推送按钮点击
+  const handlePushToRemote = async () => {
+    // 检查是否已发布
+    if (!isProjectPublished()) {
+      alert('请先点击"发布成品"后再进行远程推送');
+      return;
+    }
+
+    // 验证所有资源是否都有远程URL
+    const missingResources = validateRemoteResources();
+    if (missingResources.length > 0) {
+      alert(`以下资源尚未推送到远程存储，无法完成产品推送：\n\n${missingResources.slice(0, 5).join('\n')}${missingResources.length > 5 ? '\n...' : ''}\n\n请先生成图片/音频，确保自动推送到远程成功。`);
+      return;
+    }
+
+    const confirmed = confirm(`确定要将《${project.title}》推送到远程平台吗？\n\n这将创建一个新的产品记录。`);
+    if (!confirmed) return;
+
+    setIsPushingToRemote(true);
+    try {
+      const response = await fetch('/api/push-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('✅ 产品推送成功！');
+      } else {
+        alert('❌ 推送失败: ' + result.error);
+      }
+    } catch (error) {
+      console.error('远程推送失败:', error);
+      alert('❌ 推送失败: ' + error.message);
+    } finally {
+      setIsPushingToRemote(false);
+    }
+  };
+
   // 删除项目
   const handleDeleteProject = async (e, proj) => {
     e.stopPropagation();
@@ -132,6 +215,45 @@ const NavigationDock = () => {
     setEditingProjectId(null);
   };
 
+  // 下载项目
+  const handleDownloadProject = async (e, proj) => {
+    e.stopPropagation();
+
+    // 调用下载API
+    try {
+      const response = await fetch('/api/download-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: proj.id })
+      });
+
+      if (response.ok) {
+        // 获取文件名
+        const projectName = proj.story_name || proj.title || '未命名绘本';
+        const fileName = `${proj.id}-${projectName}.zip`;
+
+        // 创建下载链接
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        console.log(`✅ 下载项目: ${fileName}`);
+      } else {
+        const error = await response.json();
+        alert('下载失败: ' + (error.error || '未知错误'));
+      }
+    } catch (error) {
+      console.error('下载项目失败:', error);
+      alert('下载失败: ' + error.message);
+    }
+  };
+
   const navItems = [
     {
       icon: '➕',
@@ -158,6 +280,13 @@ const NavigationDock = () => {
       onClick: handlePublish,
       color: 'text-purple-500',
       disabled: project.phaseStatus[3] !== 'completed' || isSaving
+    },
+    {
+      icon: isPushingToRemote ? '⏳' : '☁️',
+      label: isPushingToRemote ? '推送中...' : '远程推送',
+      onClick: handlePushToRemote,
+      color: 'text-cyan-500',
+      disabled: isPushingToRemote || !isProjectPublished()
     }
   ];
 
@@ -409,6 +538,16 @@ const NavigationDock = () => {
                       `}>
                         {proj._type === 'published' ? '已发布' : '草稿'}
                       </span>
+                      {/* 下载按钮 */}
+                      <button
+                        onClick={(e) => handleDownloadProject(e, proj)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity
+                          w-6 h-6 rounded-full bg-purple-100 text-purple-500
+                          hover:bg-purple-200 flex items-center justify-center text-xs"
+                        title="下载项目"
+                      >
+                        ⬇️
+                      </button>
                       {/* 重命名按钮 */}
                       <button
                         onClick={(e) => handleStartRename(e, proj)}

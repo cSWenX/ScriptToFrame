@@ -9,7 +9,7 @@
 import { getStyleSuffix } from '../../config/styles';
 
 // Python后端地址
-const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
+const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
 
 /**
  * 生成语言气泡提示词
@@ -95,11 +95,12 @@ export default async function handler(req, res) {
     console.log(`📝 完整提示词: ${fullPrompt.substring(0, 300)}...`);
 
     // 准备参考图片数据（按顺序）
+    // 优先使用tos_url（即梦云存储，公网可访问），fallback到image_url
     const referenceImages = refImages.map(img => ({
       index: img.index,
       name: img.name,
       type: img.type,
-      url: img.image_url
+      url: img.tos_url || img.image_url  // tos_url是公网可访问的，即梦API需要
     }));
 
     // 调用Python后端
@@ -110,6 +111,7 @@ export default async function handler(req, res) {
         prompt: fullPrompt,
         project_id: project_id || 'default',  // 添加项目ID
         referenceImages: referenceImages,  // 按顺序的参考图片
+        save_to_storage: true,  // 启用自动推送远程存储
         frame: {
           type: 'page',
           pageIndex,
@@ -130,13 +132,24 @@ export default async function handler(req, res) {
     }
 
     console.log(`✅ [页面生成-${requestId}] 第 ${pageIndex} 页生成成功`);
+    console.log(`📦 [页面生成-${requestId}] 返回数据:`, {
+      has_image_url: !!result.data.imageUrl,
+      has_tos_url: !!result.data.tosUrl,
+      has_remote_url: !!result.data.remote_url,
+      has_remote_id: !!result.data.remote_id
+    });
+
+    // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
+    const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
     res.status(200).json({
       success: true,
       data: {
         pageIndex,
-        image_url: result.data.imageUrl,
-        tos_url: result.data.tosUrl  // 即梦返回的原始TOS URL，用于修图
+        image_url: finalImageUrl,  // 优先使用远程URL
+        tos_url: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
+        remote_url: result.data.remote_url,  // 远程存储URL
+        remote_id: result.data.remote_id  // 远程存储ID
       }
     });
 

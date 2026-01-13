@@ -110,27 +110,67 @@ const StoryEngine = () => {
 /**
  * 故事输入Tab
  */
-const StoryInputTab = ({ rawStory, wordCount, isValid, onChange }) => (
-  <div className="h-full flex flex-col p-4">
-    {/* 状态栏 */}
-    <div className="flex justify-between items-center mb-3">
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-orange-500 font-medium">
-          📊 字数: <span className="text-blue-500 font-bold">{wordCount}</span>
-        </span>
-        <div className={`w-2 h-2 rounded-full ${isValid ? 'bg-green-500' : 'bg-amber-500'}`} />
-      </div>
-      <span className={`text-xs ${isValid ? 'text-green-500' : 'text-amber-500'}`}>
-        {isValid ? '✅ 可以分析' : '⚠️ 至少50字'}
-      </span>
-    </div>
+const StoryInputTab = ({ rawStory, wordCount, isValid, onChange }) => {
+  const { state, actions } = useProject();
+  const { project } = state;
+  const [storyName, setStoryName] = useState(project.story_name || '');
+  const [nameError, setNameError] = useState('');
 
-    {/* 文本输入区 */}
-    <textarea
-      value={rawStory}
-      onChange={onChange}
-      className="storybook-textarea flex-1 storybook-scrollbar resize-none"
-      placeholder={`✨ 在这里粘贴或输入你的童话故事...
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    setStoryName(value);
+    actions.updateProject({ story_name: value });
+    if (value.trim()) {
+      setNameError('');
+    }
+  };
+
+  const canAnalyze = isValid && storyName.trim();
+
+  return (
+    <div className="h-full flex flex-col p-4">
+      {/* 小说名称输入框 */}
+      <div className="mb-3">
+        <label className="text-sm font-bold text-orange-600 flex items-center gap-2 mb-2">
+          <span>📖</span>
+          <span>绘本名称</span>
+          <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={storyName}
+          onChange={handleNameChange}
+          className={`w-full px-3 py-2 border-2 rounded-lg text-sm focus:outline-none transition-colors ${
+            nameError
+              ? 'border-red-300 bg-red-50'
+              : 'border-orange-200 bg-white focus:border-orange-400'
+          }`}
+          placeholder="请输入绘本名称（必填）"
+        />
+        {nameError && (
+          <p className="text-xs text-red-500 mt-1">⚠️ 请先输入绘本名称</p>
+        )}
+      </div>
+
+      {/* 状态栏 */}
+      <div className="flex justify-between items-center mb-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-orange-500 font-medium">
+            📊 字数: <span className="text-blue-500 font-bold">{wordCount}</span>
+          </span>
+          <div className={`w-2 h-2 rounded-full ${isValid ? 'bg-green-500' : 'bg-amber-500'}`} />
+        </div>
+        <span className={`text-xs ${canAnalyze ? 'text-green-500' : 'text-amber-500'}`}>
+          {canAnalyze ? '✅ 可以分析' : '⚠️ 需要名称和至少50字'}
+        </span>
+      </div>
+
+      {/* 文本输入区 */}
+      <textarea
+        value={rawStory}
+        onChange={onChange}
+        className="storybook-textarea flex-1 storybook-scrollbar resize-none"
+        placeholder={`✨ 在这里粘贴或输入你的童话故事...
 
 📖 示例故事：
 
@@ -145,17 +185,18 @@ const StoryInputTab = ({ rawStory, wordCount, isValid, onChange }) => (
 就这样，小白和小松鼠成为了好朋友，一起在森林里度过了快乐的一天。
 
 🌟 提示：故事越详细，生成的绘本效果越好！`}
-    />
+      />
 
-    {/* 提示信息 */}
-    <div className="mt-3 p-3 bg-blue-50 rounded-xl border-2 border-blue-200">
-      <p className="text-xs text-blue-600 flex items-center gap-2">
-        <span>💡</span>
-        输入故事后，在右侧指挥塔点击"开始AI分析"
-      </p>
+      {/* 提示信息 */}
+      <div className="mt-3 p-3 bg-blue-50 rounded-xl border-2 border-blue-200">
+        <p className="text-xs text-blue-600 flex items-center gap-2">
+          <span>💡</span>
+          输入故事后，在右侧指挥塔点击"开始AI分析"
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /**
  * 分镜脚本展示Tab（显示画面提示词和资产引用）

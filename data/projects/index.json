@@ -1,16 +1,16 @@
 {
   "drafts": [
     {
-      "id": "project_1767085862682",
+      "id": "n7qaf40j",
       "title": "未命名绘本",
-      "updated_at": "2025-12-30T09:21:29.779Z",
-      "pageCount": 10,
-      "coverImage": "https://p9-aiop-sign.byteimg.com/tos-cn-i-vuqhorh59i/202512301716429C96F0B5E739CF334216-4375-0~tplv-vuqhorh59i-image-v1.image?rk3s=7f9e702d&x-expires=1767172602&x-signature=kBNItY4hruaX%2FjwRrGxhDhFlZWg%3D",
+      "updated_at": "2026-01-13T08:16:56.369Z",
+      "pageCount": 9,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/20260113155439bdf7a0e99e197a68.png",
       "phaseStatus": {
         "1": "completed",
-        "2": "in_progress",
+        "2": "completed",
         "3": "completed",
-        "4": "pending"
+        "4": "in_progress"
       }
     },
     {
@@ -22,32 +22,6 @@
       "phaseStatus": {
         "1": "completed",
         "2": "completed",
-        "3": "completed",
-        "4": "completed"
-      }
-    },
-    {
-      "id": "project_1767059664342",
-      "title": "未命名绘本",
-      "updated_at": "2025-12-30T01:54:24.342Z",
-      "pageCount": 8,
-      "coverImage": "/generated/pages/page_1.png",
-      "phaseStatus": {
-        "1": "completed",
-        "2": "completed",
-        "3": "completed",
-        "4": "pending"
-      }
-    },
-    {
-      "id": "project_1766709681367",
-      "title": "未命名绘本",
-      "updated_at": "2025-12-26T08:17:41.100Z",
-      "pageCount": 8,
-      "coverImage": "/generated/pages/page_1.png",
-      "phaseStatus": {
-        "1": "completed",
-        "2": "in_progress",
         "3": "completed",
         "4": "completed"
       }

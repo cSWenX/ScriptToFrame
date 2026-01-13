@@ -13,7 +13,7 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
+  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
   const validFrames = frames.filter(frame => frame.prompt || frame.jimengPrompt);
 
   console.log(`🎨 [批量生成-${requestId}] 开始SSE流式批量生成，共${validFrames.length}帧`);
@@ -42,7 +42,8 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
         const requestData = {
           prompt: frame.prompt || frame.jimengPrompt,
           frame: frame,
-          config: config
+          config: config,
+          save_to_storage: true  // 启用自动推送远程存储
         };
 
         console.log(`📤 [批量生成-${requestId}] 发送到Python后端 (第${i + 1}/${validFrames.length}):`, {
@@ -61,12 +62,17 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
         const result = await response.json();
 
         if (response.ok && result.success) {
+          // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
+          const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
+
           // 推送单帧完成事件
           res.write(`data: ${JSON.stringify({
             type: 'frame_complete',
             sequence: frame.sequence,
-            imageUrl: result.data.imageUrl,
+            imageUrl: finalImageUrl,  // 优先使用远程URL
             tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
+            remote_url: result.data.remote_url,  // 远程存储URL
+            remote_id: result.data.remote_id,  // 远程存储ID
             progress: progress,
             responseTime: responseTime
           })}\n\n`);
@@ -141,7 +147,7 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
  * 传统JSON响应处理函数（保留原有逻辑）
  */
 async function handleTraditionalGeneration(req, res, requestId, frames, referenceImage, config) {
-  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
+  const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
   const validFrames = frames.filter(frame => frame.prompt || frame.jimengPrompt);
 
   if (validFrames.length === 0) {
@@ -174,7 +180,8 @@ async function handleTraditionalGeneration(req, res, requestId, frames, referenc
       const requestData = {
         prompt: frame.prompt || frame.jimengPrompt,
         frame: frame,
-        config: config
+        config: config,
+        save_to_storage: true  // 启用自动推送远程存储
       };
 
       const startTime = Date.now();
@@ -189,10 +196,15 @@ async function handleTraditionalGeneration(req, res, requestId, frames, referenc
       const result = await response.json();
 
       if (response.ok && result.success) {
+        // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
+        const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
+
         results.push({
           sequence: frame.sequence,
-          imageUrl: result.data.imageUrl,
+          imageUrl: finalImageUrl,  // 优先使用远程URL
           tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
+          remote_url: result.data.remote_url,  // 远程存储URL
+          remote_id: result.data.remote_id,  // 远程存储ID
           prompt: frame.prompt || frame.jimengPrompt,
           chineseDescription: frame.chineseDescription || frame.displayDescription,
           frameType: frame.frameType,
