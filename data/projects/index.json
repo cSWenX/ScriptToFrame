@@ -1,6 +1,45 @@
 {
   "drafts": [
     {
+      "id": "project_1768389502589",
+      "title": "彩虹小猪",
+      "updated_at": "2026-01-14T13:04:24.054Z",
+      "pageCount": 9,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/202601142004439c1a50c8c73c0f53.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768382507278",
+      "title": "门帘后的那束光",
+      "updated_at": "2026-01-14T11:17:36.409Z",
+      "pageCount": 11,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/20260114183942aec072f92ed91916.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768386061363",
+      "title": "停在第三枚硬币上的时间",
+      "updated_at": "2026-01-14T10:38:50.376Z",
+      "pageCount": 9,
+      "coverImage": null,
+      "phaseStatus": {
+        "1": "completed",
+        "2": "pending",
+        "3": "locked",
+        "4": "locked"
+      }
+    },
+    {
       "id": "project_1767076115529",
       "title": "泥巴青蛙",
       "updated_at": "2025-12-30T09:22:47.178Z",

@@ -152,7 +152,7 @@ const PhaseController = ({
         onLanguageChange: (lang) => actions.updateSettings({ audioLanguage: lang })
       },
       // 远程推送按钮（只在音频生成完成后显示）
-      extraAction: phaseStatus[4] === 'completed' && pages.some(p => p.audio_url) ? {
+      extraAction: phaseStatus[4] === 'completed' && pages.some(p => p.remote_audio_url) ? {
         label: isPushingAudio ? '推送中...' : '远程推送',
         icon: isPushingAudio ? '⏳' : '☁️',
         disabled: isPushingAudio,

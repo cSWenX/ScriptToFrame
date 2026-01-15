@@ -523,9 +523,14 @@ function IDEWorkspace() {
         if (result.success) {
           actions.updatePage({
             page_index: page.page_index,
-            audio_url: result.data.audioUrl
+            audio_url: result.data.audioUrl,
+            remote_audio_url: result.data.remote_url,
+            remote_audio_id: result.data.remote_id
           });
-          console.log(`✅ [IDE] 第 ${page.page_index} 页配音完成: ${result.data.audioUrl}`);
+          console.log(`✅ [IDE] 第 ${page.page_index} 页配音完成: ${result.data.audioUrl}`, {
+            has_remote_url: !!result.data.remote_url,
+            has_remote_id: !!result.data.remote_id
+          });
         } else {
           console.error(`❌ [IDE] 第 ${page.page_index} 页配音失败:`, result.error);
         }
