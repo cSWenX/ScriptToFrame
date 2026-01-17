@@ -24,3 +24,7 @@ out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Project copy directory
+ScriptToFrame/
+.DS_Store
