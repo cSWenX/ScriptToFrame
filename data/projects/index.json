@@ -55,6 +55,136 @@
   ],
   "published": [
     {
+      "id": "project_1768755825713",
+      "title": "树叶鸟",
+      "updated_at": "2026-01-18T17:15:12.819Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/2026011901142091e8687e49e054c3.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768754927021",
+      "title": "兔兔邮局",
+      "updated_at": "2026-01-18T17:03:17.782Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/202601190055049ce6aff6d27be1a5.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768754348339",
+      "title": "会动的房子",
+      "updated_at": "2026-01-18T16:48:29.651Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/202601190047428d660b19ae2e8cde.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768753608518",
+      "title": "肚子上的“鬼脸”",
+      "updated_at": "2026-01-18T16:38:56.272Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/20260119003746851fb7f1febba376.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768753005309",
+      "title": "小精灵的秋天",
+      "updated_at": "2026-01-18T16:26:02.508Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/20260119002046b08e288e4d49c1b0.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768751322974",
+      "title": "晚安我的星星",
+      "updated_at": "2026-01-18T16:06:00.523Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/202601190005109358c1c1432461df.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768750726131",
+      "title": "阿土的蜡烛",
+      "updated_at": "2026-01-18T15:48:28.298Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/2026011823472987a2707ff1e89d34.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768750126521",
+      "title": "云朵变的小羊",
+      "updated_at": "2026-01-18T15:38:26.645Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/20260118233304b74937cb9d248020.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "project_1768748538356",
+      "title": "珍珠和贝壳",
+      "updated_at": "2026-01-18T15:27:40.282Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/20260118231705ada58c5ed6b5c8e9.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
+      "id": "ucmmjlg8",
+      "title": "绿星",
+      "updated_at": "2026-01-18T15:00:38.674Z",
+      "pageCount": 6,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/202601182257118b0145643241db3c.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
+    {
       "id": "n7qaf40j",
       "title": "青蛙王子",
       "updated_at": "2026-01-13T11:54:17.145Z",

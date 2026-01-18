@@ -3,8 +3,6 @@
  * 将项目的图片、音频、文字打包成 ZIP 文件下载
  */
 
-import { createZip } from '../../lib/zip-utils';
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });

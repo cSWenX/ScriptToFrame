@@ -257,6 +257,7 @@ const Storyboard = ({
                 onRegenerate={() => handleGeneratePage(page.page_index)}
                 onInpaint={() => handleOpenInpaint(page)}
                 onUpdatePrompt={handleUpdatePrompt}
+                onPushToRemote={handlePushToRemote}
               />
             ))}
           </div>
@@ -308,7 +309,8 @@ const PageCard = ({
   onPreview,
   onRegenerate,
   onInpaint,
-  onUpdatePrompt
+  onUpdatePrompt,
+  onPushToRemote
 }) => {
   const [isEditingPrompt, setIsEditingPrompt] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState(page.jimeng_prompt || '');
@@ -389,7 +391,7 @@ const PageCard = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handlePushToRemote(page);
+                  onPushToRemote?.(page);
                 }}
                 className="px-3 py-2 bg-green-500 text-white rounded-lg text-sm font-bold hover:bg-green-600"
                 title="推送到远程存储"
