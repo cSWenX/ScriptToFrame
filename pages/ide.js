@@ -112,11 +112,6 @@ function IDEWorkspace() {
                     });
                   });
 
-                  // 保存故事名称和分析信息
-                  if (result.story_name) {
-                    actions.updateProject({ story_name: result.story_name });
-                  }
-
                   // 保存故事分析信息
                   if (result.story_analysis) {
                     actions.updateProject({ story_analysis: result.story_analysis });

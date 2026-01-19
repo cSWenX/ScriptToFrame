@@ -1,0 +1,1 @@
+npm run dev > logs/frontend.log 2>&1 &

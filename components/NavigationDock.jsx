@@ -58,7 +58,10 @@ const NavigationDock = () => {
       const result = await actions.saveProject(saveType);
       if (result.success) {
         setShowSaveDialog(false);
+
+        // 如果是发布成品，重新加载项目列表以解锁远程推送按钮
         if (saveType === 'published') {
+          await actions.loadProjectList();
           alert('🎉 绘本已发布！');
         } else {
           alert('✅ 草稿已保存！');
