@@ -25,14 +25,14 @@ const STORYBOARD_PROMPT_TEMPLATE = `# Role: 少儿绘本导演 & AIGC提示词�
 风格描述词（生成画面提示词时，置于句首）：
 {STYLE_DESCRIPTION}
 
+**用户输入的绘本标题（重要）：** {USER_STORY_NAME}
+
 ---
 
 ## 阶段零：页数限制规则（⚠️ 强制执行）
 
-**根据故事字数，严格遵守以下页数限制：**
-- **1000字以下**：生成 **5页** 分镜
-- **1000~2000字**：生成 **8页** 分镜
-- **2000字以上**：生成 **10页** 分镜
+**根据故事情节，严格遵守以下页数限制：**
+请根据故事的情节进行页数的划分，最少9页，但是最多限制在11页
 
 **分镜策略：在固定页数内合理分配故事情节**
 - 开篇定场（1页）：介绍主角和初始场景
@@ -521,7 +521,7 @@ function parseAIResponse(responseText, styleId) {
 }
 
 // SSE流式响应处理
-async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
+async function handleStreamingAnalysis(req, res, requestId, story, styleId, userStoryName) {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -541,10 +541,11 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
     const styleName = STYLE_CONFIG[styleId]?.name || '经典水彩风';
     const styleDescription = getStyleDescription(styleId);
 
-    // 构建提示词（不再需要PAGE_COUNT）
+    // 构建提示词
     const prompt = STORYBOARD_PROMPT_TEMPLATE
       .replace('{STYLE_NAME}', styleName)
       .replace('{STYLE_DESCRIPTION}', styleDescription)
+      .replace('{USER_STORY_NAME}', userStoryName || '未命名故事')
       .replace('{STORY_CONTENT}', story);
 
     sendProgress(5, '准备Claude/DeepSeek连接...');
@@ -565,15 +566,17 @@ async function handleStreamingAnalysis(req, res, requestId, story, styleId) {
 
     // ============ 添加封面页 ============
     // 封面页在 pages 数组最前面，page_index 为 0
+    // 重要：使用用户输入的题目作为封面标题
+    const coverTitle = userStoryName || story_name;
     const coverPage = {
       page_index: 0,
       scene_id: 'COVER',
       rationale: '绘本封面',
-      jimeng_prompt: `儿童绘本封面，${styleDescription}，绘本标题"${story_name}"，温馨梦幻的童话风格，精美插画，高清画质`,
+      jimeng_prompt: `儿童绘本封面，${styleDescription}，绘本标题"${coverTitle}"，温馨梦幻的童话风格，精美插画，高清画质`,
       asset_refs: [],
-      voice_script: [{ role: '旁白', text: story_name, emotion: '平静' }],
-      tts_text: story_name,
-      dialogues: [{ role: '旁白', text: story_name, emotion: '平静' }],
+      voice_script: [{ role: '旁白', text: coverTitle, emotion: '平静' }],
+      tts_text: coverTitle,
+      dialogues: [{ role: '旁白', text: coverTitle, emotion: '平静' }],
       image_url: null,
       audio_url: null,
       status: 'pending',
@@ -635,7 +638,7 @@ function sleep(ms) {
 }
 
 // 传统JSON响应处理
-async function handleTraditionalAnalysis(req, res, requestId, story, styleId) {
+async function handleTraditionalAnalysis(req, res, requestId, story, styleId, userStoryName) {
   try {
     const styleName = STYLE_CONFIG[styleId]?.name || '经典水彩风';
     const styleDescription = getStyleDescription(styleId);
@@ -643,6 +646,7 @@ async function handleTraditionalAnalysis(req, res, requestId, story, styleId) {
     const prompt = STORYBOARD_PROMPT_TEMPLATE
       .replace('{STYLE_NAME}', styleName)
       .replace('{STYLE_DESCRIPTION}', styleDescription)
+      .replace('{USER_STORY_NAME}', userStoryName || '未命名故事')
       .replace('{STORY_CONTENT}', story);
 
     const aiResponse = await callDeepSeek(prompt, requestId);
@@ -681,7 +685,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { script, style = 'watercolor' } = req.body;
+    const { script, style = 'watercolor', story_name: userStoryName } = req.body;
 
     if (!script || script.trim().length < 50) {
       return res.status(400).json({
@@ -693,9 +697,9 @@ export default async function handler(req, res) {
     const { stream } = req.query;
 
     if (stream === 'true') {
-      return await handleStreamingAnalysis(req, res, requestId, script, style);
+      return await handleStreamingAnalysis(req, res, requestId, script, style, userStoryName);
     } else {
-      return await handleTraditionalAnalysis(req, res, requestId, script, style);
+      return await handleTraditionalAnalysis(req, res, requestId, script, style, userStoryName);
     }
 
   } catch (error) {

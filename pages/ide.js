@@ -65,7 +65,8 @@ function IDEWorkspace() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           script: rawStory,
-          style: style_preset
+          style: style_preset,
+          story_name: story_name  // 传递用户输入的绘本名称
         })
       });
 

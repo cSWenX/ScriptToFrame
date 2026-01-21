@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useProject } from '../contexts/ProjectContext';
 
 /**
@@ -7,6 +8,7 @@ import { useProject } from '../contexts/ProjectContext';
  * 宽度: 60px (收起) / 240px (展开)
  */
 const NavigationDock = () => {
+  const router = useRouter();
   const { state, actions } = useProject();
   const { isNavExpanded, project, projectList, isLoading } = state;
   const [showProjectDrawer, setShowProjectDrawer] = useState(false);
@@ -18,6 +20,9 @@ const NavigationDock = () => {
   const [editingName, setEditingName] = useState('');
   const [isPushingToRemote, setIsPushingToRemote] = useState(false);
 
+  // 判断当前是否在批量工厂页面
+  const isBatchFactoryPage = router.pathname === '/batch-factory';
+
   // 打开项目列表时加载数据
   useEffect(() => {
     if (showProjectDrawer) {
@@ -26,6 +31,13 @@ const NavigationDock = () => {
   }, [showProjectDrawer]);
 
   const handleNewProject = () => {
+    // 如果在批量工厂页面，跳转到IDE页面
+    if (isBatchFactoryPage) {
+      router.push('/ide');
+      return;
+    }
+
+    // 如果在IDE页面，执行原来的新建项目逻辑
     if (project.rawStory || project.pages.length > 0) {
       if (confirm('创建新项目将清空当前内容，是否继续？')) {
         actions.newProject();
@@ -272,6 +284,16 @@ const NavigationDock = () => {
       label: '项目列表',
       onClick: () => setShowProjectDrawer(true),
       color: 'text-blue-500'
+    },
+    {
+      icon: '🏭',
+      label: '批量工厂',
+      onClick: () => {
+        if (!isBatchFactoryPage) {
+          router.push('/batch-factory');
+        }
+      },
+      color: 'text-indigo-500'
     },
     {
       icon: isSaving ? '⏳' : '💾',
