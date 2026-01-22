@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 export default function BatchLogsModal({ batchId, onClose }) {
   const [logs, setLogs] = useState([]);
   const [summary, setSummary] = useState(null);
-  const [autoRefresh, setAutoRefresh] = true;
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   const fetchLogs = async () => {
     try {

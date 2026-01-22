@@ -293,7 +293,8 @@ const NavigationDock = () => {
           router.push('/batch-factory');
         }
       },
-      color: 'text-indigo-500'
+      color: 'text-indigo-500',
+      disabled: true  // 暂未开放
     },
     {
       icon: isSaving ? '⏳' : '💾',
