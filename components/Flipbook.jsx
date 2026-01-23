@@ -300,7 +300,9 @@ const Flipbook = () => {
     // currentPage = 1 时，显示第1页（封面翻过，显示第1页图文）
     const pageIndex = currentPage - 1;
     if (pageIndex >= 0 && pageIndex < contentPages.length) {
-      return contentPages[pageIndex]?.audio_url;
+      const page = contentPages[pageIndex];
+      // 优先使用 remote_audio_url，如果没有则使用 audio_url
+      return page?.remote_audio_url || page?.audio_url;
     }
     return null;
   }, [currentPage, contentPages]);

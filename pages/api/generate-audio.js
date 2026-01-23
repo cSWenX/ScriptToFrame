@@ -55,9 +55,18 @@ export default async function handler(req, res) {
 
     console.log(`✅ [音频代理-${requestId}] 音频生成成功: ${result.data?.audioUrl}`);
 
+    // 如果返回的是相对路径，则添加 SITE_URL 前缀
+    let audioUrl = result.data.audioUrl;
+    if (audioUrl && audioUrl.startsWith('/')) {
+      audioUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}${audioUrl}`;
+    }
+
     res.status(200).json({
       success: true,
-      data: result.data
+      data: {
+        ...result.data,
+        audioUrl  // 返回完整URL
+      }
     });
 
   } catch (error) {
