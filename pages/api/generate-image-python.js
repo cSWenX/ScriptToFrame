@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     console.log(`🎨 [API代理-${requestId}] 提示词: "${actualPrompt.substring(0, 50)}..."`);
 
     // 代理到Python后端
-    const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8082';
+    const PYTHON_BACKEND_URL = process.env.PYTHON_BACKEND_URL || 'http://localhost:8081';
     console.log(`🔗 [API代理-${requestId}] Python后端地址:`, PYTHON_BACKEND_URL);
 
     // 创建超时控制器，设置10分钟超时

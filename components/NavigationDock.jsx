@@ -20,8 +20,9 @@ const NavigationDock = () => {
   const [editingName, setEditingName] = useState('');
   const [isPushingToRemote, setIsPushingToRemote] = useState(false);
 
-  // 判断当前是否在批量工厂页面
+  // 判断当前是否在批量工厂页面或首页
   const isBatchFactoryPage = router.pathname === '/batch-factory';
+  const isHomePage = router.pathname === '/';
 
   // 打开项目列表时加载数据
   useEffect(() => {
@@ -31,8 +32,8 @@ const NavigationDock = () => {
   }, [showProjectDrawer]);
 
   const handleNewProject = () => {
-    // 如果在批量工厂页面，跳转到IDE页面
-    if (isBatchFactoryPage) {
+    // 如果在批量工厂页面或首页，跳转到IDE页面
+    if (isBatchFactoryPage || isHomePage) {
       router.push('/ide');
       return;
     }
@@ -274,6 +275,16 @@ const NavigationDock = () => {
 
   const navItems = [
     {
+      icon: '🏠',
+      label: '首页',
+      onClick: () => {
+        if (router.pathname !== '/') {
+          router.push('/');
+        }
+      },
+      color: 'text-pink-500'
+    },
+    {
       icon: '➕',
       label: '新建故事',
       onClick: handleNewProject,
@@ -294,7 +305,7 @@ const NavigationDock = () => {
         }
       },
       color: 'text-indigo-500',
-      disabled: true  // 暂未开放
+      disabled: false
     },
     {
       icon: isSaving ? '⏳' : '💾',
