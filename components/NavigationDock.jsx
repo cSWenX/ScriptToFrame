@@ -567,6 +567,10 @@ const NavigationDock = () => {
                     onClick={() => {
                       actions.loadProject(proj);
                       setShowProjectDrawer(false);
+                      // 跳转到IDE页面
+                      if (router.pathname !== '/ide') {
+                        router.push('/ide');
+                      }
                     }}
                   >
                     {/* 类型标签和操作按钮 */}
