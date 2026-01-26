@@ -65,14 +65,23 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
           // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
           const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
+          // 生成代理URL
+          const characterId = frame.characterId || frame.id || `sequence_${frame.sequence}`;
+          const proxyImageUrl = `/api/proxy/image?characterId=${characterId}`;
+
           // 推送单帧完成事件
           res.write(`data: ${JSON.stringify({
             type: 'frame_complete',
             sequence: frame.sequence,
-            imageUrl: finalImageUrl,  // 优先使用远程URL
+            image_url: proxyImageUrl,  // ✅ 使用代理URL
+            original_image_url: finalImageUrl,  // 原始URL
+            imageUrl: proxyImageUrl,  // 向后兼容
             tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
             remote_url: result.data.remote_url,  // 远程存储URL
             remote_id: result.data.remote_id,  // 远程存储ID
+            local_path: result.data.local_path,  // 本地路径
+            storage_provider: result.data.storage_provider,  // 存储提供者
+            external_accessible: result.data.external_accessible,  // 是否可外网访问
             progress: progress,
             responseTime: responseTime
           })}\n\n`);
@@ -199,12 +208,21 @@ async function handleTraditionalGeneration(req, res, requestId, frames, referenc
         // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
         const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
+        // 生成代理URL
+        const characterId = frame.characterId || frame.id || `sequence_${frame.sequence}`;
+        const proxyImageUrl = `/api/proxy/image?characterId=${characterId}`;
+
         results.push({
           sequence: frame.sequence,
-          imageUrl: finalImageUrl,  // 优先使用远程URL
+          image_url: proxyImageUrl,  // ✅ 使用代理URL
+          original_image_url: finalImageUrl,  // 原始URL
+          imageUrl: proxyImageUrl,  // 向后兼容
           tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
           remote_url: result.data.remote_url,  // 远程存储URL
           remote_id: result.data.remote_id,  // 远程存储ID
+          local_path: result.data.local_path,  // 本地路径
+          storage_provider: result.data.storage_provider,  // 存储提供者
+          external_accessible: result.data.external_accessible,  // 是否可外网访问
           prompt: frame.prompt || frame.jimengPrompt,
           chineseDescription: frame.chineseDescription || frame.displayDescription,
           frameType: frame.frameType,

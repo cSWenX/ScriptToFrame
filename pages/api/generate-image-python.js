@@ -120,6 +120,18 @@ export default async function handler(req, res) {
       imageUrlLength: result.data?.imageUrl ? result.data.imageUrl.length : 0
     });
 
+    // 如果是分镜图（有sequence字段），添加代理URL
+    if (result.success && result.data && result.data.frame) {
+      const frame = result.data.frame;
+      const sequence = frame.sequence || frame.page_index;
+
+      // 生成分镜图的代理URL
+      if (sequence !== undefined && frame.characterId) {
+        result.data.imageUrl = `/api/proxy/image?characterId=${frame.characterId}`;
+        console.log(`🔗 [API代理-${requestId}] 添加分镜图代理URL: ${result.data.imageUrl}`);
+      }
+    }
+
     res.status(200).json(result);
 
   } catch (error) {

@@ -111,17 +111,37 @@ export default async function handler(req, res) {
 
     console.log(`✅ [音频代理-${requestId}] 音频生成成功: ${result.data?.audioUrl}`);
 
-    // 如果返回的是相对路径，则添加 SITE_URL 前缀
-    let audioUrl = result.data.audioUrl;
-    if (audioUrl && audioUrl.startsWith('/')) {
-      audioUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}${audioUrl}`;
+    // 生成代理URL
+    const pageId = result.data.pageIndex || page_index;
+    const projectId = result.data.projectId || project_id || 'default';
+    const proxyAudioUrl = `/api/proxy/audio?pageId=${pageId}&projectId=${projectId}`;
+
+    // 如果返回的是相对路径，则添加 SITE_URL 前缀（保留用于信息展示）
+    let originalAudioUrl = result.data.audioUrl;
+    if (originalAudioUrl && originalAudioUrl.startsWith('/')) {
+      originalAudioUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}${originalAudioUrl}`;
     }
+
+    console.log(`🔗 [音频代理-${requestId}] 代理URL: ${proxyAudioUrl}`);
+    console.log(`📊 [音频代理-${requestId}] 远程推送状态:`, {
+      has_remote_url: !!result.data.remote_url,
+      has_remote_id: !!result.data.remote_id,
+      remote_url: result.data.remote_url
+    });
 
     res.status(200).json({
       success: true,
       data: {
-        ...result.data,
-        audioUrl  // 返回完整URL
+        audio_url: proxyAudioUrl,  // ✅ 使用代理URL（新字段名，统一使用下划线）
+        original_audio_url: originalAudioUrl,  // 原始URL（完整URL）
+        audioUrl: proxyAudioUrl,  // 向后兼容
+        text: result.data.text,
+        pageIndex: result.data.pageIndex,
+        speakerId: result.data.speakerId,
+        page_id: result.data.pageId,  // 页面ID
+        remote_url: result.data.remote_url,  // 远程存储URL
+        remote_id: result.data.remote_id,  // 远程存储ID
+        local_path: result.data.localPath  // 本地路径
       }
     });
 

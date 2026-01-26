@@ -1,6 +1,84 @@
 {
   "drafts": [
     {
+      "id": "project_1769269956857",
+      "title": "古井的礼物3",
+      "updated_at": "2026-01-24T15:55:58.670Z",
+      "pageCount": 12,
+      "coverImage": null,
+      "phaseStatus": {
+        "1": "completed",
+        "2": "in_progress",
+        "3": "locked",
+        "4": "locked"
+      }
+    },
+    {
+      "id": "ux5bu91c",
+      "title": "古井的故事",
+      "updated_at": "2026-01-24T14:33:15.392Z",
+      "pageCount": 12,
+      "coverImage": null,
+      "phaseStatus": {
+        "1": "completed",
+        "2": "pending",
+        "3": "locked",
+        "4": "locked"
+      }
+    },
+    {
+      "id": "project_1769163991068",
+      "title": "古井的故事2",
+      "updated_at": "2026-01-23T10:47:40.911Z",
+      "pageCount": 11,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/2026012318382694798a9e8b3de273.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "pending"
+      }
+    },
+    {
+      "id": "07yk7619",
+      "title": "未命名绘本",
+      "updated_at": "2026-01-23T10:22:17.409Z",
+      "pageCount": 0,
+      "coverImage": null,
+      "phaseStatus": {
+        "1": "in_progress",
+        "2": "locked",
+        "3": "locked",
+        "4": "locked"
+      }
+    },
+    {
+      "id": "r3i0gtuq",
+      "title": "未命名绘本",
+      "updated_at": "2026-01-21T10:48:12.882Z",
+      "pageCount": 0,
+      "coverImage": null,
+      "phaseStatus": {
+        "1": "pending",
+        "2": "locked",
+        "3": "locked",
+        "4": "locked"
+      }
+    },
+    {
+      "id": "gtv20uve",
+      "title": "未命名绘本",
+      "updated_at": "2026-01-21T10:47:40.577Z",
+      "pageCount": 0,
+      "coverImage": null,
+      "phaseStatus": {
+        "1": "pending",
+        "2": "locked",
+        "3": "locked",
+        "4": "locked"
+      }
+    },
+    {
       "id": "project_1768389502589",
       "title": "彩虹小猪",
       "updated_at": "2026-01-14T13:04:24.054Z",
@@ -54,6 +132,19 @@
     }
   ],
   "published": [
+    {
+      "id": "5dgfn5fi",
+      "title": "古井的礼物",
+      "updated_at": "2026-01-21T10:38:28.545Z",
+      "pageCount": 11,
+      "coverImage": "http://61.155.227.35:9000/chatai/aiBookPicture/202601211830578e4cc49ed32bcd31.png",
+      "phaseStatus": {
+        "1": "completed",
+        "2": "completed",
+        "3": "completed",
+        "4": "completed"
+      }
+    },
     {
       "id": "project_1768755825713",
       "title": "树叶鸟",

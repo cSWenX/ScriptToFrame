@@ -60,12 +60,18 @@ export default async function handler(req, res) {
     // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
     const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
+    // 生成代理URL（前端统一使用代理URL访问图片）
+    const imageProxyUrl = `/api/proxy/image?characterId=${characterId}`;
+
+    console.log(`🔗 [角色生成-${requestId}] 代理URL: ${imageProxyUrl}`);
+
     res.status(200).json({
       success: true,
       data: {
         characterId,
         characterName,
-        image_url: finalImageUrl,  // 优先使用远程URL
+        image_url: imageProxyUrl,  // 使用代理URL（前端统一使用）
+        original_image_url: finalImageUrl,  // 保留原始URL（如果需要）
         tos_url: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
         remote_url: result.data.remote_url,  // 远程存储URL
         remote_id: result.data.remote_id  // 远程存储ID

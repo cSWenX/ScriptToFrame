@@ -8,6 +8,66 @@ import { useProject } from '../contexts/ProjectContext';
  * 支持音频自动播放和翻页
  */
 
+// ============ 代理URL转换函数 ============
+
+/**
+ * 获取图片URL
+ * 优先使用代理URL，如果没有则使用原始URL
+ * 注意：生成图片时已经返回代理URL，所以这里直接使用即可
+ */
+const getImageUrl = (page) => {
+  if (!page?.image_url) return null;
+
+  // 如果image_url已经是代理URL（以/api/proxy开头），直接使用
+  if (page.image_url.startsWith('/api/proxy/')) {
+    return page.image_url;
+  }
+
+  // 如果有characterId，使用代理接口
+  if (page.characterId) {
+    return `/api/proxy/image?characterId=${page.characterId}`;
+  }
+
+  // 如果是本地路径，不需要代理（Next.js静态文件服务）
+  if (page.image_url.startsWith('/generated/') || page.image_url.startsWith('/audio/')) {
+    return page.image_url;
+  }
+
+  // 其他情况（远程URL但没有characterId），直接返回
+  // 这部分图片可能无法访问，但保留向后兼容
+  return page.image_url;
+};
+
+/**
+ * 获取音频代理URL
+ * 通过代理接口获取音频，优先使用远程音频
+ */
+const getAudioProxyUrl = (page, projectId) => {
+  if (!page) return null;
+
+  // 优先使用remote_audio_url，如果没有则使用audio_url
+  const audioUrl = page.remote_audio_url || page.audio_url;
+  if (!audioUrl) return null;
+
+  // 如果有pageId（或page_index），使用代理接口
+  const pageId = page.pageId || page.page_index?.toString() || page.id;
+  if (pageId) {
+    const params = new URLSearchParams({ pageId });
+    if (projectId) params.set('projectId', projectId);
+    return `/api/proxy/audio?${params.toString()}`;
+  }
+
+  // 如果是本地路径，不需要代理
+  if (audioUrl.startsWith('/audio/')) {
+    return audioUrl;
+  }
+
+  // 远程URL但没有pageId，直接返回
+  return audioUrl;
+};
+
+// ============ 原有辅助函数 ============
+
 // 从dialogues提取显示文本（方案C：带角色名）
 const getPageText = (page) => {
   if (!page) return '';
@@ -44,7 +104,9 @@ const BackCoverContent = () => (
 
 // 图片页内容
 const ImagePageContent = ({ page, pageNumber }) => {
-  if (!page?.image_url) {
+  const imageUrl = getImageUrl(page);
+
+  if (!imageUrl) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-stone-100">
         <span className="text-5xl opacity-20">🖼️</span>
@@ -55,7 +117,7 @@ const ImagePageContent = ({ page, pageNumber }) => {
   return (
     <div className="w-full h-full relative bg-stone-50 flex items-center justify-center">
       <img
-        src={page.image_url}
+        src={imageUrl}
         alt={`第${pageNumber}页`}
         className="max-w-full max-h-full object-contain"
         draggable={false}
@@ -301,11 +363,11 @@ const Flipbook = () => {
     const pageIndex = currentPage - 1;
     if (pageIndex >= 0 && pageIndex < contentPages.length) {
       const page = contentPages[pageIndex];
-      // 优先使用 remote_audio_url，如果没有则使用 audio_url
-      return page?.remote_audio_url || page?.audio_url;
+      // 使用代理URL获取音频
+      return getAudioProxyUrl(page, project.id);
     }
     return null;
-  }, [currentPage, contentPages]);
+  }, [currentPage, contentPages, project.id]);
 
   // 翻页时自动播放音频
   // 核心逻辑：

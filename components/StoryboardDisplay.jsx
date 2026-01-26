@@ -4,6 +4,33 @@ import { useState } from 'react';
  * 分镜图显示组件 - 儿童绘本风格
  * 功能: 卡片式布局、图片预览、标注信息、重新生成
  */
+
+/**
+ * 获取图片显示URL
+ * 支持代理URL、本地路径、远程URL
+ */
+const getImageDisplayUrl = (frame) => {
+  if (!frame?.imageUrl) return null;
+
+  // 情况1：已经是代理URL
+  if (frame.imageUrl.startsWith('/api/proxy/')) {
+    return frame.imageUrl;
+  }
+
+  // 情况2：有characterId，使用代理
+  if (frame.characterId) {
+    return `/api/proxy/image?characterId=${frame.characterId}`;
+  }
+
+  // 情况3：本地路径
+  if (frame.imageUrl.startsWith('/generated/') || frame.imageUrl.startsWith('/audio/')) {
+    return frame.imageUrl;
+  }
+
+  // 情况4：远程URL或base64，直接返回
+  return frame.imageUrl;
+};
+
 const StoryboardDisplay = ({
   frames = [],
   onRegenerateFrame,
@@ -167,7 +194,7 @@ const StoryboardDisplay = ({
                       ) : frame.imageUrl ? (
                         <>
                           <img
-                            src={frame.imageUrl}
+                            src={getImageDisplayUrl(frame)}
                             alt={`绘本插图 ${index + 1}`}
                             className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                             onClick={() => openImageModal(frame)}
@@ -317,7 +344,7 @@ const StoryboardDisplay = ({
 
             <div className="relative bg-white rounded-2xl p-4 border-4 border-yellow-300 shadow-2xl">
               <img
-                src={selectedFrame.imageUrl}
+                src={getImageDisplayUrl(selectedFrame)}
                 alt={`绘本插图 ${frames.findIndex(f => f.id === selectedFrame.id) + 1}`}
                 className="max-w-full max-h-[75vh] object-contain rounded-xl"
               />
