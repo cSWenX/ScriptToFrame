@@ -1,9 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+/* 🎨 儿童绘本风格全局样式 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* 🎨 儿童绘本风格全局样式 */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700;800&display=swap');
 
 * {
   box-sizing: border-box;

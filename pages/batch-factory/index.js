@@ -83,6 +83,15 @@ function BatchFactoryContent() {
         alert('✅ 故事创建成功！');
         setShowAddModal(false);
         loadStories();
+
+        // 询问用户是否跳转到IDE编辑
+        const shouldGoToIDE = confirm(
+          '故事已创建成功！\n\n是否立即跳转到编辑页面开始创作？\n\n• 点击"确定"跳转到编辑页面\n• 点击"取消"留在批量工厂'
+        );
+
+        if (shouldGoToIDE) {
+          router.push(`/ide?projectId=${result.data.id}`);
+        }
       } else {
         alert('创建失败: ' + result.error);
       }
@@ -314,6 +323,73 @@ function BatchFactoryContent() {
     }
   };
 
+  // 处理删除单个故事
+  const handleDeleteStory = async (story) => {
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/batch-factory/stories/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storyId: story.id })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`✅ 故事 "${story.title}" 已删除`);
+        loadStories();
+      } else {
+        alert('删除失败: ' + result.error);
+      }
+    } catch (error) {
+      alert('删除失败: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 处理批量删除
+  const handleBatchDelete = async () => {
+    if (selectedStories.length === 0) {
+      alert('请先选择要删除的故事');
+      return;
+    }
+
+    const storyIds = selectedStories.map(s => s.id);
+    const titles = selectedStories.map(s => s.title).join(', ');
+
+    const confirmed = confirm(
+      `⚠️ 确定要删除以下 ${storyIds.length} 个故事吗？\n\n${titles}\n\n此操作将永久删除这些故事及其所有资源（图片、音频等），无法恢复！`
+    );
+
+    if (!confirmed) return;
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/batch-factory/stories/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storyIds })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`✅ 成功删除 ${result.data.deleted} 个故事${result.data.failed > 0 ? `，${result.data.failed} 个失败` : ''}`);
+        loadStories();
+        setSelectedStories([]);
+      } else {
+        alert('批量删除失败: ' + result.error);
+      }
+    } catch (error) {
+      alert('批量删除失败: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -352,6 +428,14 @@ function BatchFactoryContent() {
                   disabled={loading}
                 >
                   📝 新增故事
+                </button>
+
+                <button
+                  onClick={handleBatchDelete}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 disabled:opacity-50"
+                  disabled={loading || selectedStories.length === 0}
+                >
+                  🗑️ 批量删除
                 </button>
 
                 <button
@@ -429,6 +513,7 @@ function BatchFactoryContent() {
               onContinueStory={handleContinueStory}
               onEditStory={handleEditStory}
               onPushStory={handlePushStory}
+              onDeleteStory={handleDeleteStory}
               loading={loading}
             />
           </div>

@@ -6,7 +6,7 @@ import { getStatusDisplayInfo } from '../../lib/status-utils';
 import StoryStatusBadge from './StoryStatusBadge';
 import { calculateStatus } from '../../lib/status-utils';
 
-export default function StoryTable({ stories, selectedStories, onSelectStory, onContinueStory, onEditStory, onPushStory, loading }) {
+export default function StoryTable({ stories, selectedStories, onSelectStory, onContinueStory, onEditStory, onPushStory, onDeleteStory, loading }) {
   // 处理选择单个故事
   const handleSelect = (story) => {
     onSelectStory(story);
@@ -119,6 +119,19 @@ export default function StoryTable({ stories, selectedStories, onSelectStory, on
                           ✏️ 编辑
                         </button>
                       ) : null}
+
+                      {/* 删除按钮 */}
+                      <button
+                        onClick={() => {
+                          if (confirm(`确定要删除故事 "${story.title}" 吗？\n\n此操作将永久删除该故事及其所有资源，无法恢复。`)) {
+                            onDeleteStory(story);
+                          }
+                        }}
+                        className="px-2 py-1 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600"
+                        title="删除故事"
+                      >
+                        🗑️ 删除
+                      </button>
 
                       {/* 继续生成按钮 */}
                       {!displayInfo.icon.includes('generating') &&

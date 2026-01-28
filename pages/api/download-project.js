@@ -76,10 +76,8 @@ export default async function handler(req, res) {
           else if (page.image_url.startsWith('/')) {
             const imagePath = path.join(process.cwd(), 'public', page.image_url);
             try {
-              if (await fs.access(imagePath).then(() => true).catch(() => false))) {
-                imageBuffer = await fs.readFile(imagePath);
-                console.log(`✅ [下载] 本地图片读取成功: ${fileName}`);
-              }
+              imageBuffer = await fs.readFile(imagePath);
+              console.log(`✅ [下载] 本地图片读取成功: ${fileName}`);
             } catch (e) {
               console.error(`❌ [下载] 本地图片读取失败: ${imagePath}`, e);
             }

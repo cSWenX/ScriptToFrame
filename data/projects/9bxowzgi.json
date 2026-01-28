@@ -1,0 +1,30 @@
+{
+  "id": "9bxowzgi",
+  "title": "未命名绘本",
+  "story_name": "南柯一梦",
+  "style_preset": "watercolor",
+  "created_at": "2026-01-27T11:27:38.761Z",
+  "updated_at": "2026-01-27T11:27:38.761Z",
+  "assets": [],
+  "pages": [],
+  "currentPhase": 1,
+  "phaseStatus": {
+    "1": "pending",
+    "2": "locked",
+    "3": "locked",
+    "4": "locked"
+  },
+  "rawStory": "唐代有个叫淳于棼（fén）的人，喜欢喝酒，家住广陵（今扬州）。他家院子有棵大槐树，夏夜他常树荫下乘凉。\n一天他过生日，喝得大醉，被两个朋友扶到东廊下休息。朦胧中，他看见两个穿紫衣的人来到跟前，跪下称：\"槐安国王派小臣来邀请您。\"\n淳于棼跟着上了车，出了大槐树洞，来到一个奇异的世界——槐安国。这里山川秀丽，城池宏伟。\n国王见了淳于棼非常高兴，把公主嫁给了他，封他为南柯太守。淳于棼到任后政绩卓著，深受百姓爱戴，还生了五男二女，享尽荣华富贵。就这样过了二十年。\n后来邻国檀萝国入侵，淳于棼领兵出征，却打了败仗。公主也病逝了。他备受打击，请求罢官归乡，国王准许了。\n回到京城，国王设宴为他饯行。他再次坐上来时的车，出了大槐树洞，回到自己家中。\n淳于棼猛然惊醒，发现太阳还没落山，自己仍躺在廊下。两个朋友正在洗脚，饭菜还在桌上。\n他惊异之余，与友人循着梦境寻找，发现大槐树下果然有个巨大的蚁穴，旁有小洞通往南枝——正是所谓的\"槐安国\"和\"南柯郡\"。\n",
+  "scriptData": null,
+  "activeRightTab": "assets",
+  "activeLeftTab": "input",
+  "settings": {
+    "aspectRatio": "16:9",
+    "resolution": "2k",
+    "language": "zh",
+    "pageCount": 8,
+    "enableSpeechBubble": false,
+    "bubbleLanguage": "zh",
+    "audioLanguage": "zh"
+  }
+}

@@ -60,8 +60,29 @@ export default async function handler(req, res) {
   try {
     switch (method) {
       case 'GET': {
+        const { type, projectId } = req.query;
+
+        // 如果指定了projectId，加载单个项目
+        if (projectId) {
+          const projectPath = getProjectPath(projectId);
+
+          if (!fs.existsSync(projectPath)) {
+            return res.status(404).json({
+              success: false,
+              error: '项目不存在'
+            });
+          }
+
+          const projectData = JSON.parse(fs.readFileSync(projectPath, 'utf-8'));
+          console.log(`📂 [Projects] 加载单个项目: ${projectId}`);
+
+          return res.status(200).json({
+            success: true,
+            data: projectData
+          });
+        }
+
         // 获取项目列表
-        const { type } = req.query; // 'draft' | 'published' | 'all'
         const index = readIndex();
 
         // 根据是否指定 type，返回不同格式

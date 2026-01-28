@@ -145,7 +145,21 @@ function projectReducer(state, action) {
     case ActionTypes.LOAD_PROJECT:
       return {
         ...state,
-        project: action.payload
+        project: {
+          ...initialProject,  // 先使用默认值
+          ...action.payload,   // 然后用加载的数据覆盖
+          // 确保 settings 字段完整
+          settings: {
+            aspectRatio: '16:9',
+            resolution: '2k',
+            language: 'zh',
+            pageCount: 8,
+            enableSpeechBubble: false,
+            bubbleLanguage: 'zh',
+            audioLanguage: 'zh',
+            ...action.payload.settings  // 用加载的设置覆盖
+          }
+        }
       };
 
     case ActionTypes.UPDATE_PROJECT:

@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { ProjectProvider, useProject } from '../contexts/ProjectContext';
 import NavigationDock from '../components/NavigationDock';
 import StoryEngine from '../components/StoryEngine';
@@ -332,14 +333,14 @@ function IDEWorkspace() {
           jimengPrompt: modifiedPrompt,
           styleId: project.style_preset,
           refImages: refImages,  // 按asset_refs顺序的参考图片
-          aspectRatio: project.settings.aspectRatio,
-          resolution: project.settings.resolution,
+          aspectRatio: project.settings?.aspectRatio || '16:9',
+          resolution: project.settings?.resolution || '2k',
           project_id: project.id,  // 添加项目ID
           // 语言气泡设置
-          enableSpeechBubble: project.settings.enableSpeechBubble,
-          bubbleLanguage: project.settings.bubbleLanguage,
+          enableSpeechBubble: project.settings?.enableSpeechBubble || false,
+          bubbleLanguage: project.settings?.bubbleLanguage || 'zh',
           // 如果启用气泡，传递语音脚本用于生成气泡文字
-          voiceScript: project.settings.enableSpeechBubble ? page.voice_script : null
+          voiceScript: project.settings?.enableSpeechBubble ? page.voice_script : null
         })
       });
 
@@ -439,7 +440,7 @@ function IDEWorkspace() {
 
     try {
       // 检查是否需要翻译（音频语言不是中文）
-      const audioLanguage = project.settings.audioLanguage || 'zh';
+      const audioLanguage = project.settings?.audioLanguage || project.settings?.language || 'zh';
       const needTranslation = audioLanguage !== 'zh';
 
       for (let i = 0; i < project.pages.length; i++) {
@@ -552,7 +553,7 @@ function IDEWorkspace() {
     } finally {
       setIsGeneratingAudio(false);
     }
-  }, [project.pages, project.settings.audioLanguage, actions]);
+  }, [project.pages, project.settings?.audioLanguage, actions]);
 
   /**
    * 推送所有音频到远程存储
@@ -821,12 +822,96 @@ function IDEWorkspace() {
 }
 
 /**
+ * IDE页面包裹器 - 处理URL参数和项目加载
+ */
+function IDEPageWrapper() {
+  const router = useRouter();
+  const { actions } = useProject();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // 检查URL中是否有projectId参数
+    const { projectId } = router.query;
+
+    if (projectId) {
+      console.log(`📂 [IDE] 从URL加载项目: ${projectId}`);
+      loadProjectById(projectId);
+    } else {
+      console.log('🆕 [IDE] 新建项目模式');
+      setLoading(false);
+    }
+  }, [router.query]);
+
+  const loadProjectById = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log(`🔄 [IDE] 开始加载项目: ${id}`);
+
+      // 从服务器加载项目数据
+      const response = await fetch(`/api/projects?projectId=${id}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      console.log(`📦 [IDE] API响应:`, result);
+
+      if (result.success && result.data) {
+        console.log(`✅ [IDE] 项目加载成功:`, {
+          id: result.data.id,
+          title: result.data.title || result.data.story_name,
+          hasRawStory: !!result.data.rawStory,
+          rawStoryLength: result.data.rawStory?.length || 0
+        });
+
+        // 将项目数据加载到context中
+        actions.loadProject(result.data);
+
+        // 等待一小段时间确保状态更新完成
+        setTimeout(() => {
+          setLoading(false);
+          console.log(`🎉 [IDE] 项目加载完成，已进入编辑模式`);
+        }, 100);
+      } else {
+        throw new Error(result.error || '加载失败');
+      }
+    } catch (err) {
+      console.error(`❌ [IDE] 加载项目失败:`, err);
+      setError(err.message);
+      setLoading(false);
+
+      // 显示错误并询问是否新建项目
+      alert(`❌ 加载项目失败: ${err.message}\n\n将为您创建一个新项目。`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-yellow-50">
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce">📖</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">正在加载项目...</h2>
+          <p className="text-gray-600">请稍候</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <IDEWorkspace />;
+}
+
+/**
  * 页面入口 - 包裹 Provider
  */
 export default function IDEPage() {
   return (
     <ProjectProvider>
-      <IDEWorkspace />
+      <IDEPageWrapper />
     </ProjectProvider>
   );
 }
