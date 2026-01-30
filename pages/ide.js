@@ -95,6 +95,57 @@ function IDEWorkspace() {
                     value: data.progress,
                     subtitle: data.message
                   });
+
+                  // 处理第一步完成（资产提取完成）
+                  if (data.step === 'step1_complete') {
+                    console.log('📊 [IDE] 第一步完成，实时更新资产库...');
+                    // 清空旧资产
+                    actions.clearAssets();
+
+                    // 添加角色和背景
+                    const assets = data.assets || [];
+                    assets.forEach(asset => {
+                      actions.addAsset({
+                        id: asset.id,
+                        type: asset.type,
+                        name: asset.name,
+                        prompt: asset.prompt,
+                        image_url: null,
+                        locked: false
+                      });
+                    });
+
+                    console.log(`✅ [IDE] 资产库已更新: ${data.characters?.length || 0}个角色, ${data.backgrounds?.length || 0}个背景`);
+                  }
+
+                  // 处理第二步完成（剧本切片完成）
+                  if (data.step === 'step2_complete') {
+                    console.log('📊 [IDE] 第二步完成，剧本已切片为', data.segments?.length || 0, '个片段');
+                  }
+
+                  // 处理批次完成（每批分镜生成完成）
+                  if (data.batch_complete && data.batchIndex) {
+                    console.log(`📊 [IDE] 第 ${data.batchIndex}/${data.totalBatches} 批分镜完成，实时更新...`);
+
+                    // 添加这批的分镜页
+                    const batchPages = data.pages || [];
+                    batchPages.forEach(page => {
+                      actions.addPage(page);
+                    });
+
+                    console.log(`✅ [IDE] 已添加 ${batchPages.length} 页分镜，当前总页数: ${data.allPagesCount}`);
+
+                    // 自动保存项目到文件（批次级别的自动保存）
+                    try {
+                      const saveResult = await actions.saveProject('draft');
+                      if (saveResult.success) {
+                        console.log(`💾 [IDE] 第 ${data.batchIndex} 批数据已自动保存到项目文件`);
+                      }
+                    } catch (saveError) {
+                      console.warn('⚠️ [IDE] 自动保存失败（不影响分析继续）:', saveError.message);
+                    }
+                  }
+
                 } else if (data.type === 'complete') {
                   const result = data.data;
 
@@ -831,8 +882,17 @@ function IDEPageWrapper() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // 必须等待路由准备就绪
+    if (!router.isReady) return;
+
     // 检查URL中是否有projectId参数
     const { projectId } = router.query;
+
+    console.log(`🔍 [IDE] 路由状态检查:`, {
+      isReady: router.isReady,
+      query: router.query,
+      projectId: projectId
+    });
 
     if (projectId) {
       console.log(`📂 [IDE] 从URL加载项目: ${projectId}`);
@@ -841,7 +901,7 @@ function IDEPageWrapper() {
       console.log('🆕 [IDE] 新建项目模式');
       setLoading(false);
     }
-  }, [router.query]);
+  }, [router.isReady, router.query]);
 
   const loadProjectById = async (id) => {
     try {

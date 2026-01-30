@@ -102,9 +102,72 @@ const BackCoverContent = () => (
   </div>
 );
 
-// 图片页内容
-const ImagePageContent = ({ page, pageNumber }) => {
+// 全局图片缓存 - 避免重复加载
+const imageCache = new Map();
+const loadingImages = new Map();
+
+// 图片页内容 - 智能缓存加载，避免闪烁
+const ImagePageContent = ({ page, pageNumber, isVisible }) => {
   const imageUrl = getImageUrl(page);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  // 智能加载逻辑：每个图片URL只加载一次，全局缓存
+  useEffect(() => {
+    if (!imageUrl) return;
+
+    // 如果已经缓存，直接使用缓存状态
+    if (imageCache.has(imageUrl)) {
+      setIsLoaded(true);
+      return;
+    }
+
+    // 如果正在加载，等待加载完成
+    if (loadingImages.has(imageUrl)) {
+      const loadingPromise = loadingImages.get(imageUrl);
+      loadingPromise.then(() => {
+        setIsLoaded(true);
+      }).catch(() => {
+        setHasError(true);
+      });
+      return;
+    }
+
+    // 开始加载新图片
+    const img = new Image();
+    const loadPromise = new Promise((resolve, reject) => {
+      const handleLoad = () => {
+        imageCache.set(imageUrl, true);
+        loadingImages.delete(imageUrl);
+        setIsLoaded(true);
+        resolve();
+      };
+
+      const handleError = () => {
+        loadingImages.delete(imageUrl);
+        setHasError(true);
+        console.error(`❌ [Flipbook] 图片加载失败: 第${pageNumber}页`);
+        reject(new Error('图片加载失败'));
+      };
+
+      img.addEventListener('load', handleLoad, { once: true });
+      img.addEventListener('error', handleError, { once: true });
+    });
+
+    loadingImages.set(imageUrl, loadPromise);
+    img.src = imageUrl;
+
+    // 如果已经缓存，立即显示
+    if (img.complete) {
+      imageCache.set(imageUrl, true);
+      loadingImages.delete(imageUrl);
+      setIsLoaded(true);
+    }
+
+    return () => {
+      // 不清理：让图片保持加载状态
+    };
+  }, [imageUrl, pageNumber]);
 
   if (!imageUrl) {
     return (
@@ -114,14 +177,39 @@ const ImagePageContent = ({ page, pageNumber }) => {
     );
   }
 
+  if (hasError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-stone-100">
+        <span className="text-5xl opacity-20">❌</span>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full relative bg-stone-50 flex items-center justify-center">
+      {/* 加载占位符 - 只在首次加载时显示 */}
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-stone-100">
+          <div className="text-center">
+            <div className="w-8 h-8 border-3 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+            <p className="text-xs text-stone-400">加载中...</p>
+          </div>
+        </div>
+      )}
+
+      {/* 实际图片 - 始终渲染，用 opacity 控制显示 */}
       <img
         src={imageUrl}
         alt={`第${pageNumber}页`}
-        className="max-w-full max-h-full object-contain"
+        className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          backfaceVisibility: 'hidden'
+        }}
         draggable={false}
       />
+
       {/* 底部页码 */}
       <div className="absolute bottom-3 right-3 px-2 py-0.5 bg-black/30 rounded-full text-white/90 text-xs font-medium backdrop-blur-sm">
         {pageNumber}
@@ -710,6 +798,10 @@ const Flipbook = () => {
         >
           {bookPages.map((bookPage, index) => {
             const isFlipped = index < currentPage;
+            const isCurrentPage = index === currentPage;
+            const isPrevPage = index === currentPage - 1;
+            const isNextPage = index === currentPage + 1;
+            const isNearby = isCurrentPage || isPrevPage || isNextPage;
             const zIndex = isFlipped ? index : totalBookPages - index;
 
             return (
@@ -722,7 +814,7 @@ const Flipbook = () => {
                   transformOrigin: 'left center',
                   transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
                   transition: 'transform 1s cubic-bezier(0.645, 0.045, 0.355, 1)',
-                  zIndex: zIndex,
+                  zIndex: zIndex
                 }}
               >
                 {/* 正面 (翻页前在右侧显示) */}
@@ -735,10 +827,11 @@ const Flipbook = () => {
                   }}
                 >
                   {bookPage.front.type === 'cover' && <CoverContent title={title} />}
-                  {bookPage.front.type === 'image' && (
+                  {bookPage.front.type === 'image' && isNearby && (
                     <ImagePageContent
                       page={bookPage.front.page}
                       pageNumber={bookPage.front.pageNumber}
+                      isVisible={true}
                     />
                   )}
                   {bookPage.front.type === 'end' && <BackCoverContent />}

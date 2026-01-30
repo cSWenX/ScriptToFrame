@@ -72,13 +72,15 @@ const NavigationDock = () => {
       if (result.success) {
         setShowSaveDialog(false);
 
-        // 如果是发布成品，重新加载项目列表以解锁远程推送按钮
+        // 保存成功后，重新加载项目列表
+        await actions.loadProjectList();
+
         if (saveType === 'published') {
-          await actions.loadProjectList();
           alert('🎉 绘本已发布！');
         } else {
           alert('✅ 草稿已保存！');
         }
+        // 不跳转，留在当前页面
       } else {
         alert('❌ 保存失败: ' + result.error);
       }
@@ -461,8 +463,9 @@ const NavigationDock = () => {
                 disabled={isSaving}
                 placeholder="输入绘本名称..."
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl
-                  focus:border-orange-400 focus:outline-none
-                  disabled:bg-gray-100"
+                  text-gray-900 focus:border-orange-400 focus:outline-none
+                  disabled:bg-gray-100 disabled:text-gray-400"
+                style={{ color: '#000' }}
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleConfirmSave()}
               />

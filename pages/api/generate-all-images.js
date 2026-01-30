@@ -65,17 +65,40 @@ async function handleStreamingGeneration(req, res, requestId, frames, referenceI
           // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
           const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
-          // 生成代理URL
+          // 获取项目ID
+          const projectId = frame.project_id || config?.project_id || result.data.project_id || 'default';
           const characterId = frame.characterId || frame.id || `sequence_${frame.sequence}`;
-          const proxyImageUrl = `/api/proxy/image?characterId=${characterId}`;
+
+          // 构建本地图片路径（用于存储到 image_url）
+          let localImagePath = null;
+          if (result.data.local_path) {
+            if (frame.type === 'character') {
+              localImagePath = `/generated/${projectId}/characters/char_${characterId}.png`;
+            } else if (frame.type === 'background') {
+              localImagePath = `/generated/${projectId}/characters/char_${characterId}.png`;
+            } else {
+              // 分镜页
+              localImagePath = `/generated/${projectId}/pages/page_${frame.sequence || frame.pageIndex}.png`;
+            }
+          }
+
+          // 生成代理URL（用于前端访问）
+          let proxyImageUrl;
+          if (frame.type === 'character' || frame.type === 'background') {
+            proxyImageUrl = `/api/proxy/image?assetId=${characterId}&projectId=${projectId}`;
+          } else {
+            // 默认按分镜页处理
+            proxyImageUrl = `/api/proxy/image?pageId=${frame.sequence || frame.pageIndex}&projectId=${projectId}`;
+          }
 
           // 推送单帧完成事件
           res.write(`data: ${JSON.stringify({
             type: 'frame_complete',
             sequence: frame.sequence,
-            image_url: proxyImageUrl,  // ✅ 使用代理URL
+            image_url: localImagePath,  // ✅ 使用本地路径
+            proxy_url: proxyImageUrl,  // 代理URL（供前端使用）
             original_image_url: finalImageUrl,  // 原始URL
-            imageUrl: proxyImageUrl,  // 向后兼容
+            imageUrl: localImagePath,  // 向后兼容
             tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
             remote_url: result.data.remote_url,  // 远程存储URL
             remote_id: result.data.remote_id,  // 远程存储ID
@@ -208,15 +231,37 @@ async function handleTraditionalGeneration(req, res, requestId, frames, referenc
         // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
         const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
-        // 生成代理URL
+        // 获取项目ID
+        const projectId = frame.project_id || config?.project_id || result.data.project_id || 'default';
         const characterId = frame.characterId || frame.id || `sequence_${frame.sequence}`;
-        const proxyImageUrl = `/api/proxy/image?characterId=${characterId}`;
+
+        // 构建本地图片路径（用于存储到 image_url）
+        let localImagePath = null;
+        if (result.data.local_path) {
+          if (frame.type === 'character') {
+            localImagePath = `/generated/${projectId}/characters/char_${characterId}.png`;
+          } else if (frame.type === 'background') {
+            localImagePath = `/generated/${projectId}/characters/char_${characterId}.png`;
+          } else {
+            // 分镜页
+            localImagePath = `/generated/${projectId}/pages/page_${frame.sequence || frame.pageIndex}.png`;
+          }
+        }
+
+        // 生成代理URL（用于前端访问）
+        let proxyImageUrl;
+        if (frame.type === 'character' || frame.type === 'background') {
+          proxyImageUrl = `/api/proxy/image?assetId=${characterId}&projectId=${projectId}`;
+        } else {
+          proxyImageUrl = `/api/proxy/image?pageId=${frame.sequence || frame.pageIndex}&projectId=${projectId}`;
+        }
 
         results.push({
           sequence: frame.sequence,
-          image_url: proxyImageUrl,  // ✅ 使用代理URL
+          image_url: localImagePath,  // ✅ 使用本地路径
+          proxy_url: proxyImageUrl,  // 代理URL（供前端使用）
           original_image_url: finalImageUrl,  // 原始URL
-          imageUrl: proxyImageUrl,  // 向后兼容
+          imageUrl: localImagePath,  // 向后兼容
           tosUrl: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
           remote_url: result.data.remote_url,  // 远程存储URL
           remote_id: result.data.remote_id,  // 远程存储ID

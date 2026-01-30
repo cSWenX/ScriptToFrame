@@ -19,18 +19,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { characterId, projectId } = req.query;
+    const { characterId, assetId, pageId, projectId } = req.query;
 
-    if (!characterId) {
-      console.error(`❌ [图片代理-${requestId}] 缺少 characterId 参数`);
+    // 兼容旧参数：characterId 实际上可能是 assetId
+    const targetAssetId = assetId || characterId;
+    const targetPageId = pageId;
+
+    if (!targetAssetId && !targetPageId) {
+      console.error(`❌ [图片代理-${requestId}] 缺少必要参数`);
       return res.status(400).json({
         success: false,
-        error: '缺少必要参数: characterId'
+        error: '缺少必要参数: 需要 assetId/characterId 或 pageId'
       });
     }
 
     console.log(`🖼️ [图片代理-${requestId}] 收到请求:`, {
-      characterId,
+      assetId: targetAssetId,
+      pageId: targetPageId,
       projectId,
       timestamp: new Date().toISOString()
     });
@@ -44,6 +49,8 @@ export default async function handler(req, res) {
     // 否则搜索所有项目
     let project = null;
     let projectPath = null;
+    let imageUrl = null;
+    let imageType = null;  // 'asset' 或 'page'
 
     if (projectId) {
       projectPath = path.join(projectsDir, `${projectId}.json`);
@@ -52,7 +59,7 @@ export default async function handler(req, res) {
         project = JSON.parse(data);
       }
     } else {
-      // 搜索所有项目找到匹配的characterId
+      // 搜索所有项目找到匹配的资源
       const projectFiles = fs.readdirSync(projectsDir)
         .filter(file => file.endsWith('.json') && file !== 'index.json');
 
@@ -61,35 +68,60 @@ export default async function handler(req, res) {
         const data = fs.readFileSync(filePath, 'utf-8');
         const tempProject = JSON.parse(data);
 
-        // 在pages中查找匹配的characterId
-        const matchedPage = tempProject.pages?.find(p => p.characterId === characterId);
-        if (matchedPage) {
-          project = tempProject;
-          projectPath = filePath;
-          break;
+        // 优先查找资产（角色/背景）
+        if (targetAssetId) {
+          const asset = tempProject.assets?.find(a => a.id === targetAssetId);
+          if (asset && asset.image_url) {
+            project = tempProject;
+            projectPath = filePath;
+            imageUrl = asset.image_url;
+            imageType = 'asset';
+            break;
+          }
+        }
+
+        // 其次查找分镜页
+        if (targetPageId) {
+          const page = tempProject.pages?.find(p => p.page_index === parseInt(targetPageId) || p.scene_id === targetPageId);
+          if (page && page.image_url) {
+            project = tempProject;
+            projectPath = filePath;
+            imageUrl = page.image_url;
+            imageType = 'page';
+            break;
+          }
         }
       }
     }
 
-    if (!project) {
-      console.error(`❌ [图片代理-${requestId}] 未找到 characterId: ${characterId}`);
+    // 如果找到了项目但还需要查找具体资源
+    if (project && !imageUrl) {
+      if (targetAssetId) {
+        const asset = project.assets?.find(a => a.id === targetAssetId);
+        if (asset && asset.image_url) {
+          imageUrl = asset.image_url;
+          imageType = 'asset';
+        }
+      }
+
+      if (!imageUrl && targetPageId) {
+        const page = project.pages?.find(p => p.page_index === parseInt(targetPageId) || p.scene_id === targetPageId);
+        if (page && page.image_url) {
+          imageUrl = page.image_url;
+          imageType = 'page';
+        }
+      }
+    }
+
+    if (!imageUrl) {
+      console.error(`❌ [图片代理-${requestId}] 未找到图片: assetId=${targetAssetId}, pageId=${targetPageId}`);
       return res.status(404).json({
         success: false,
-        error: '未找到对应的图片资源'
+        error: `未找到对应的图片资源 (assetId: ${targetAssetId}, pageId: ${targetPageId})`
       });
     }
 
-    // 查找匹配的页面
-    const page = project.pages.find(p => p.characterId === characterId);
-    if (!page || !page.image_url) {
-      console.error(`❌ [图片代理-${requestId}] 页面不存在或没有图片URL`);
-      return res.status(404).json({
-        success: false,
-        error: '图片资源不存在'
-      });
-    }
-
-    const imageUrl = page.image_url;
+    console.log(`📍 [图片代理-${requestId}] 找到${imageType}图片URL: ${imageUrl.substring(0, 100)}...`);
     console.log(`📍 [图片代理-${requestId}] 找到图片URL: ${imageUrl.substring(0, 100)}...`);
 
     // 判断是本地路径还是远程URL

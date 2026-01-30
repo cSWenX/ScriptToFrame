@@ -109,16 +109,14 @@ export default function StoryTable({ stories, selectedStories, onSelectStory, on
                   {/* 操作 */}
                   <td className="p-3">
                     <div className="flex gap-2">
-                      {/* 编辑按钮 */}
-                      {displayInfo.icon === '📝' || displayInfo.icon === '📊' ? (
-                        <button
-                          onClick={() => onEditStory(story)}
-                          className="px-2 py-1 bg-blue-500 text-white text-xs rounded-lg hover:bg-blue-600"
-                          title="编辑故事"
-                        >
-                          ✏️ 编辑
-                        </button>
-                      ) : null}
+                      {/* 编辑按钮 - 始终显示 */}
+                      <button
+                        onClick={() => onEditStory(story)}
+                        className="px-2 py-1 bg-blue-500 text-white text-xs rounded-lg hover:bg-blue-600"
+                        title="编辑故事"
+                      >
+                        ✏️ 编辑
+                      </button>
 
                       {/* 删除按钮 */}
                       <button

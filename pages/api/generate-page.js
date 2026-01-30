@@ -143,11 +143,16 @@ export default async function handler(req, res) {
     // 决定最终使用的URL：优先使用远程URL，否则使用TOS URL，最后使用imageUrl
     const finalImageUrl = result.data.remote_url || result.data.tosUrl || result.data.imageUrl;
 
-    // 生成代理URL
-    const frame = result.data.frame;
-    const characterId = frame?.characterId || `page_${pageIndex}`;
-    const proxyImageUrl = `/api/proxy/image?characterId=${characterId}`;
+    // 构建本地图片路径（用于存储到 image_url）
+    // Python后端已经保存了本地文件，我们只需要构建相对路径
+    const localImagePath = result.data.local_path
+      ? `/generated/${project_id || 'default'}/pages/page_${pageIndex}.png`
+      : null;
 
+    // 生成代理URL（用于前端访问）
+    const proxyImageUrl = `/api/proxy/image?pageId=${pageIndex}&projectId=${project_id || 'default'}`;
+
+    console.log(`🔗 [页面生成-${requestId}] 本地路径: ${localImagePath}`);
     console.log(`🔗 [页面生成-${requestId}] 代理URL: ${proxyImageUrl}`);
     console.log(`📊 [页面生成-${requestId}] 远程推送状态:`, {
       has_remote_url: !!result.data.remote_url,
@@ -159,7 +164,8 @@ export default async function handler(req, res) {
       success: true,
       data: {
         pageIndex,
-        image_url: proxyImageUrl,  // ✅ 使用代理URL
+        image_url: localImagePath,  // ✅ 使用本地路径
+        proxy_url: proxyImageUrl,  // 代理URL（供前端使用）
         original_image_url: finalImageUrl,  // 原始URL
         tos_url: result.data.tosUrl,  // 即梦返回的原始TOS URL，用于修图
         remote_url: result.data.remote_url,  // 远程存储URL
